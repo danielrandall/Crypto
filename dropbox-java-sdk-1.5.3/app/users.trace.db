@@ -1,0 +1,86 @@
+02-14 19:06:55 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "SELECT FROM USERS WHERE[*] USERNAME = 'hello' "; expected "., (, AS, RIGHT, LEFT, FULL, INNER, JOIN, CROSS, NATURAL, ,, SELECT"; SQL statement:
+SELECT FROM users WHERE username = 'hello' [42001-170]
+02-14 19:07:54 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "USERS" already exists; SQL statement:
+CREATE TABLE users(Username varchar(25) NOT NULL,Password varchar(50) NOT NULL,Salt varchar(50) NOT NULL,UID varchar(20) NOT NULL,AccessKey varchar(20) NOT NULL,AccessSecret varchar(20) NOT NULL,PRIMARY KEY (Username)) [42101-170]
+02-14 19:36:00 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Column "USERNAME" not found; SQL statement:
+INSERT INTO users VALUES (username,password,salt,uid,accessKey,accessSecret) [42122-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:141)
+	at org.h2.command.dml.Insert.prepare(Insert.java:231)
+	at org.h2.command.Parser.prepareCommand(Parser.java:218)
+	at org.h2.engine.Session.prepareLocal(Session.java:414)
+	at org.h2.engine.Session.prepareCommand(Session.java:363)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1116)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:164)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:152)
+	at Linking.Database.addUser(Database.java:64)
+	at Linking.Database.main(Database.java:26)
+02-14 19:36:51 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Column "USERNAME" not found; SQL statement:
+INSERT INTO users VALUES (username,password,salt,uid,accessKey,accessSecret) [42122-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:141)
+	at org.h2.command.dml.Insert.prepare(Insert.java:231)
+	at org.h2.command.Parser.prepareCommand(Parser.java:218)
+	at org.h2.engine.Session.prepareLocal(Session.java:414)
+	at org.h2.engine.Session.prepareCommand(Session.java:363)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1116)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:164)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:152)
+	at Linking.Database.addUser(Database.java:64)
+	at Linking.Database.main(Database.java:26)
+02-14 19:44:10 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Column "AME" not found; SQL statement:
+INSERT INTO users VALUES (ame,password,salt,uid,accessKey,accessSecret) [42122-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:141)
+	at org.h2.command.dml.Insert.prepare(Insert.java:231)
+	at org.h2.command.Parser.prepareCommand(Parser.java:218)
+	at org.h2.engine.Session.prepareLocal(Session.java:414)
+	at org.h2.engine.Session.prepareCommand(Session.java:363)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1116)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:164)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:152)
+	at Linking.Database.addUser(Database.java:64)
+	at Linking.Database.main(Database.java:26)
+02-14 19:46:24 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "INSERT INTO users VALUES ('username','password','salt','uid','accessKey',[*]'accessSecret)"; SQL statement:
+INSERT INTO users VALUES ('username','password','salt','uid','accessKey','accessSecret) [42000-170]
+02-14 19:52:56 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "USERSWHERE" not found; SQL statement:
+DELETE FROM usersWHERE Username = username [42102-170]
+02-14 20:57:29 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: The object is already closed [90007-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.message.DbException.get(DbException.java:135)
+	at org.h2.jdbc.JdbcConnection.checkClosed(JdbcConnection.java:1388)
+	at org.h2.jdbc.JdbcStatement.checkClosed(JdbcStatement.java:930)
+	at org.h2.jdbc.JdbcStatement.checkClosed(JdbcStatement.java:904)
+	at org.h2.jdbc.JdbcResultSet.checkClosed(JdbcResultSet.java:2948)
+	at org.h2.jdbc.JdbcResultSet.next(JdbcResultSet.java:123)
+	at Linking.Database.checkUserExists(Database.java:59)
+	at Linking.Database.main(Database.java:23)
+02-14 20:59:49 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: The object is already closed [90007-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.message.DbException.get(DbException.java:135)
+	at org.h2.jdbc.JdbcConnection.checkClosed(JdbcConnection.java:1388)
+	at org.h2.jdbc.JdbcStatement.checkClosed(JdbcStatement.java:930)
+	at org.h2.jdbc.JdbcStatement.checkClosed(JdbcStatement.java:904)
+	at org.h2.jdbc.JdbcResultSet.checkClosed(JdbcResultSet.java:2948)
+	at org.h2.jdbc.JdbcResultSet.next(JdbcResultSet.java:123)
+	at Linking.Database.checkUserExists(Database.java:61)
+	at Linking.Database.main(Database.java:23)
