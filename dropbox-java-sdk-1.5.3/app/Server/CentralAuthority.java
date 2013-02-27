@@ -1,15 +1,45 @@
 package Server;
-import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import com.dropbox.client2.session.WebAuthSession;
+
+import Linking.State;
+
 
 
 public class CentralAuthority {
 	
+	
+	public static void options(State state) {
+		
+		System.out.println("Enter 1 to upload a file");
+        System.out.println("YOU JUST PRESSED 1");
+        
+      //  String fileContents = "Hello World!";
+     //   ByteArrayInputStream inputStream = new ByteArrayInputStream(fileContents.getBytes());
+        
+     //   DropboxOperations.uploadFile("/testing.txt", inputStream, state.getSession(), fileContents.length());
+	//	DropboxOperations.copyBetweenAccounts(state.getSession(), state.getSession(), "/testing.txt", "/testingcop.txt");
+	DropboxOperations.updateCache(state.getSession(), null, -1);
+	
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*
 	public static void main(String[] args) throws IOException {
 		 
         ServerSocket serverSocket = null;
@@ -47,5 +77,5 @@ public class CentralAuthority {
         clientSocket.close();
         serverSocket.close();
 	}
-
+*/
 }

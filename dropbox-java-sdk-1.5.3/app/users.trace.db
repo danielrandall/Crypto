@@ -84,3 +84,6 @@ org.h2.jdbc.JdbcSQLException: The object is already closed [90007-170]
 	at org.h2.jdbc.JdbcResultSet.next(JdbcResultSet.java:123)
 	at Linking.Database.checkUserExists(Database.java:61)
 	at Linking.Database.main(Database.java:23)
+02-20 16:50:09 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Value too long for column "ACCESSKEY VARCHAR(20) NOT NULL": "'$2a$10$chrdmssiiQObW7Ff91MZBOnkNnRDhAwumcpQeYie3pQ1xqdG2adVm' (60)"; SQL statement:
+INSERT INTO users VALUES ('username','$2a$10$chrdmssiiQObW7Ff91MZBOnkNnRDhAwumcpQeYie3pQ1xqdG2adVm','12575971','ajo9ppzd7qxvx0f','2e80m0s32ca4vsr') [22001-170]

@@ -9,10 +9,13 @@ import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
 
+import Server.CentralAuthority;
+
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
 import com.dropbox.client2.session.RequestTokenPair;
+import com.dropbox.client2.session.Session;
 import com.dropbox.client2.session.WebAuthSession;
 import com.dropbox.client2.session.Session.AccessType;
 import com.dropbox.client2.session.WebAuthSession.WebAuthInfo;
@@ -23,20 +26,26 @@ public final class Authentication {
     private static final String APP_SECRET = "96a0wcdkxlqxt3w";
     private static final AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
 	private static final AccessType ACCESS_TYPE = AccessType.APP_FOLDER;
+	private static final PasswordEncryptor passwordEncryptor = new BCryptEncryptor();
     
-    public static void link(String username) throws SQLException, ClassNotFoundException, MalformedURLException, DropboxException, IOException, URISyntaxException {
-    	WebAuthSession session = null;
+    public static void link(String username, String password) throws SQLException, ClassNotFoundException, MalformedURLException, DropboxException, IOException, URISyntaxException {
     	
-    	if (State.search(username)) {
-    		reauthenticate(session, username);
+    	if (!State.search(username)) {
+    		State state = authenticate(username, password);
+    		CentralAuthority.options(state);
     	} else {
-    		authenticate(session, username);
+    		/* TODO: Deal with incorrect password. */
+    		checkPassword(username, password);
+    		State state = State.load(username);
+    		WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE, state.getAccessTokens());
+    		state.setSession(session);
+    		CentralAuthority.options(state);
     	}
     }
     
-    private static void authenticate(WebAuthSession session, String username) throws DropboxException, MalformedURLException, IOException, URISyntaxException, SQLException, ClassNotFoundException {
+    private static State authenticate(String username, String password) throws DropboxException, MalformedURLException, IOException, URISyntaxException, SQLException, ClassNotFoundException {
     	
-    	session = new WebAuthSession(appKeys, ACCESS_TYPE);
+    	WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE);
         WebAuthInfo authInfo = session.getAuthInfo();
  
         RequestTokenPair pair = authInfo.requestTokenPair;
@@ -44,21 +53,21 @@ public final class Authentication {
  
         Desktop.getDesktop().browse(new URL(url).toURI());
         JOptionPane.showMessageDialog(null, "Press ok to continue once you have authenticated.");
-        String uid = session.retrieveWebAccessToken(pair);
+        
+		String uid = session.retrieveWebAccessToken(pair);
         AccessTokenPair tokens = session.getAccessTokenPair();
-    
-    	State state = State.save(username, uid, tokens.key, tokens.secret);
+        State state = State.save(username, passwordEncryptor.hashPassword(password), uid, tokens.key, tokens.secret);
+        state.setSession(session);
+        
+        return state;
     	
-    	System.out.println(state.getAccessTokens().key);
     }
     
-    private static void reauthenticate(WebAuthSession session, String username) throws ClassNotFoundException, SQLException {
-    	State state = State.load(username);
+    private static boolean checkPassword(String username, String password) {
     	
-    	System.out.println(state.getAccessTokens().key + "   2");
+    	return passwordEncryptor.checkPassword(password, State.getPassword(username));
+    		
     }
-    
-    
     
 
 }

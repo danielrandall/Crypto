@@ -5,9 +5,11 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 
+
 import com.dropbox.client2.exception.DropboxException;
 
 import Linking.Authentication;
+import Linking.H2Database;
 
 public class Login {
 
@@ -22,12 +24,15 @@ public class Login {
 	 */
 	public static void main(String[] args) throws MalformedURLException, SQLException, ClassNotFoundException, DropboxException, IOException, URISyntaxException {
 		
-		String username;
-		if (args.length == 1) {
-			username = args[0];
-			Authentication.link(username);
-		}
-		
+		//H2Database h2 = new H2Database();
+		//h2.removeUser("username");
+
+		String username = "username";
+		String password = "password";
+
+			Authentication.link(username, password);
+
+
 
 	}
 

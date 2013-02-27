@@ -1,0 +1,102 @@
+package Ciphers;
+
+import gnu.crypto.pad.IPad;
+import gnu.crypto.pad.PadFactory;
+import gnu.crypto.pad.WrongPaddingException;
+import gnu.crypto.prng.IRandom;
+import gnu.crypto.prng.LimitReachedException;
+import gnu.crypto.prng.MDGenerator;
+import gnu.crypto.prng.PRNGFactory;
+
+import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
+
+public abstract class GNUCryptoCipher {
+	
+	
+	/* Adds padding, if necessary, to the given string such that it is equal to
+	 * the desired block size.
+	 * Pads as per the given padding scheme.
+	 * Example padding scheme: "PKCS7".
+	 */
+	protected static byte[] pad(String scheme, int blockSize, byte[] input) {
+		
+		IPad padding = PadFactory.getInstance(scheme);
+		padding.init(blockSize);
+		
+		/* Get the bytes to append to the text */
+		byte[] toAppend = padding.pad(input, 0, input.length);
+		byte[] paddedText = new byte[input.length + toAppend.length];
+		
+		/* Copy the provided text */
+	    System.arraycopy(input, 0, paddedText, 0, input.length);
+	    /* Append the bytes to the end */
+	    System.arraycopy(toAppend, 0, paddedText, input.length, toAppend.length);
+	    
+	    return paddedText;
+	}
+	
+	protected static byte[] unpad(String scheme, int blockSize, byte[] paddedText) {
+		
+		IPad padding = PadFactory.getInstance(scheme);
+		padding.init(blockSize);
+
+		try {
+			/* Get the number of bytes to discard */
+			int bytesToDiscard = padding.unpad(paddedText, 0, paddedText.length);
+			byte[] unpaddedText = new byte[paddedText.length - bytesToDiscard];
+			
+			/* Copy the relevant bytes */
+			System.arraycopy(paddedText, 0, unpaddedText, 0, unpaddedText.length);
+			return unpaddedText;
+		} catch (WrongPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	
+	/* Example prngAlgorithm: "MD"
+	 * Example hash function: "MD5" */
+	protected static byte[] getIV(String prngAlgorithm, String hashFunction, byte[] seed, int length) {
+		
+		Map<String, Object> attrib = new HashMap<String, Object>();
+		IRandom rand = PRNGFactory.getInstance(prngAlgorithm);
+		
+		attrib.put(MDGenerator.MD_NAME, hashFunction);
+	    attrib.put(MDGenerator.SEEED, seed);
+	    
+	    rand.init(attrib);
+	    
+	    byte[] result = new byte[length];
+	    try {
+			rand.nextBytes(result, 0, result.length);
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LimitReachedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    return result;     
+	}
+	
+	/* A hash function with a n-bit output resist collisions up to work factor 2^(n/2) at least.
+	 * If hash-mixing was not accumulating entropy up to at least n/2 bits then this could be turned
+	 * into a collision attack on the hash function.
+	 * 
+	 * Hash as many hardware measures as possible.
+	 * 
+	 * Java isolates code from hardware
+	 */
+	protected static byte[] generateSeed() {
+		
+		return new SecureRandom().generateSeed(128);
+		
+	}
+
+}
