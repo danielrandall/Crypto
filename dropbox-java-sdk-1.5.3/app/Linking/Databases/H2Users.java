@@ -1,4 +1,4 @@
-package Linking;
+package Linking.Databases;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,15 +11,10 @@ import java.util.Map;
 /* TODO: check table exists
  * TODO: deal with exceptions */
 
-public class H2Database implements Database {
+public class H2Users extends H2Database {
 	
-	/* Database information */
-	private static final String DATABASE_LOCATION = "dropbox-java-sdk-1.5.3/app/users";
+	/* Table information */
 	private static final String TABLE_NAME = "users";
-	
-	/* Driver information */
-	private static final String DRIVER_LOCATION = "org.h2.Driver";
-	private static final String CONNECTION_PREFIX = "jdbc:h2:";
 	
 	/* User table attributes */
 	private static final String USERNAME = "Username";
@@ -43,7 +38,7 @@ public class H2Database implements Database {
 	private static Map<String, String> userAttributes;
 	
 	/* Pre: USER_ATTRIBUTES <= USER_ATTRIBUTES */
-	public H2Database() {
+	public H2Users() {
 		
 		/* Construct the map if it has not been constructed before */
 		if (userAttributes == null) {
@@ -55,31 +50,7 @@ public class H2Database implements Database {
 		}
 		
 	}
-	/*
-	public void createUserTable() throws SQLException {
-		try {
-			Class.forName(DRIVER_LOCATION);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		Connection conn = DriverManager.
-				getConnection(CONNECTION_PREFIX + DATABASE_LOCATION, "sa", "");
-		Statement s = conn.createStatement();
-	    s.executeUpdate("CREATE TABLE " + TABLE_NAME +
-	    		"(" +
-	    		"Username varchar(25) NOT NULL," +
-	    		"Password varchar(60) NOT NULL," +       
-	    		"UID varchar(20) NOT NULL," +
-	    		"AccessKey varchar(20) NOT NULL," +
-	    		"AccessSecret varchar(20) NOT NULL," +
-	    		"PRIMARY KEY (Username)" +
-	    		")");
-	    System.out.println("created");
-	    conn.close();
-	}
-	*/
+
 	public void dropUserTable() throws SQLException {
 		try {
 			Class.forName(DRIVER_LOCATION);
@@ -209,7 +180,6 @@ public class H2Database implements Database {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 	
 	public Map<String, String> getUser(String username) {

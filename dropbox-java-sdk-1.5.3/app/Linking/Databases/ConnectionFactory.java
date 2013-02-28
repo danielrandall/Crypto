@@ -1,4 +1,4 @@
-package Linking;
+package Linking.Databases;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

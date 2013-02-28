@@ -1,5 +1,7 @@
 package Ciphers;
 
+import gnu.crypto.mode.IMode;
+import gnu.crypto.mode.ModeFactory;
 import gnu.crypto.pad.IPad;
 import gnu.crypto.pad.PadFactory;
 import gnu.crypto.pad.WrongPaddingException;
@@ -7,12 +9,102 @@ import gnu.crypto.prng.IRandom;
 import gnu.crypto.prng.LimitReachedException;
 import gnu.crypto.prng.MDGenerator;
 import gnu.crypto.prng.PRNGFactory;
+import gnu.crypto.util.Base64;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class GNUCryptoCipher {
+public abstract class GNUCryptoCipher implements Cipher {
+	
+	
+	/* Cipher example: "AES"
+	 * Cipher mode example: "CFB" */
+	protected static String baseEncrypt(String cipher, String cipherMode, String paddingScheme,
+			                  String plainText, String key, byte[] iv, int blockSize) {
+		
+		byte[] key_bytes = key.getBytes(); 
+		
+		IMode mode = ModeFactory.getInstance(cipherMode, cipher, blockSize);
+	    Map<String, Object> attributes = new HashMap<String, Object>();
+	     
+	    // These attributes are defined in gnu.crypto.cipher.IBlockCipher.
+	    attributes.put(IMode.KEY_MATERIAL, key_bytes);
+	    attributes.put(IMode.CIPHER_BLOCK_SIZE, new Integer(blockSize));
+	     
+	    // These attributes are defined in IMode.
+	    attributes.put(IMode.STATE, new Integer(IMode.ENCRYPTION));
+	    attributes.put(IMode.IV, iv);
+	    
+	    try {
+			mode.init(attributes);
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    /* Pad the plaintext such that it meets the block size required */
+	    byte[] paddedText = pad(paddingScheme, blockSize, plainText.getBytes());
+	    
+        byte[] cipherText = new byte[paddedText.length];
+        for (int i = 0; i + blockSize <= paddedText.length; i += blockSize)
+	    	mode.update(paddedText, i, cipherText, i);
+        
+        return Base64.encode(cipherText);
+		
+	}
+	
+	
+	protected static String baseDecrypt(String cipher, String cipherMode, String paddingScheme,
+            String encryptedText, String key, byte[] iv, int blockSize) {
+		
+		byte[] key_bytes = key.getBytes(); 
+
+		IMode mode = ModeFactory.getInstance(cipherMode, cipher, blockSize);
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		// These attributes are defined in gnu.crypto.cipher.IBlockCipher.
+		attributes.put(IMode.KEY_MATERIAL, key_bytes);
+		attributes.put(IMode.CIPHER_BLOCK_SIZE, new Integer(blockSize));
+
+		// These attributes are defined in IMode.
+		attributes.put(IMode.STATE, new Integer(IMode.DECRYPTION));
+		attributes.put(IMode.IV, iv);
+
+		try {
+			mode.init(attributes);
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		/* Decode the previously encoded text */
+		byte[] ct = null;
+		try {
+			ct = Base64.decode(encryptedText);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		byte[] decryptedText = new byte[ct.length];
+		/* Decrypt the text */
+		for (int i = 0; i + blockSize <= ct.length; i += blockSize)
+			mode.update(ct, i, decryptedText, i);
+
+		/* Remove the previously added padding */
+		byte[] unpadded = unpad(paddingScheme, blockSize, decryptedText);
+
+		return new String(unpadded);
+	}
 	
 	
 	/* Adds padding, if necessary, to the given string such that it is equal to

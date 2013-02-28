@@ -3,6 +3,9 @@ package Linking;
 import java.sql.SQLException;
 import java.util.Map;
 
+import Linking.Databases.Database;
+import Linking.Databases.H2Users;
+
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.WebAuthSession;
 
@@ -13,7 +16,7 @@ public final class State {
     private String username;
     private String uid;
     private WebAuthSession session;
-    private static final Database database = new H2Database();
+    private static final H2Users database = new H2Users(); // INTERFACE
     
     public State() {
     	

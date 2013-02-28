@@ -1,4 +1,4 @@
-package Linking;
+package Linking.Password;
 
 public interface PasswordEncryptor {
 	

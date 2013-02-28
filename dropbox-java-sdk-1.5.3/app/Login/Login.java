@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import com.dropbox.client2.exception.DropboxException;
 
 import Linking.Authentication;
-import Linking.H2Database;
+import Linking.Databases.H2Users;
 
 public class Login {
 

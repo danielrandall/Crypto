@@ -2,7 +2,7 @@ package Ciphers;
 
 public interface Cipher {
 
-	public byte[] encrypt(byte[] file, byte[] key);
-	public byte[] decrypt(byte[] file, byte[] key);
+	public String encrypt(String file, String key, byte[] iv);
+	public String decrypt(String file, String key, byte[] iv);
 	
 }

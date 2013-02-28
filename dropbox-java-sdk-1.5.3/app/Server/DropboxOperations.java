@@ -1,9 +1,11 @@
 package Server;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.DeltaEntry;
+import com.dropbox.client2.DropboxAPI.DropboxFileInfo;
 import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.session.WebAuthSession;
@@ -20,13 +22,28 @@ public class DropboxOperations {
 		Entry newEntry = null;
 		
 		try {
-			newEntry = mDBApi.putFile("/testing.txt", inputStream, length, null, null);
+			newEntry = mDBApi.putFile(dropboxPath, inputStream, length, null, null);
 		} catch (DropboxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		return newEntry;
+	}
+	
+	
+	public static DropboxFileInfo downloadFile(WebAuthSession session, String path, OutputStream stream) {
+		
+		DropboxAPI<WebAuthSession> client = new DropboxAPI<WebAuthSession>(session);
+		
+		try {
+			return client.getFile(path, null, stream, null);
+		} catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	/* Copies a file from the sourcePath to the targetPath. This method will primarily be used
