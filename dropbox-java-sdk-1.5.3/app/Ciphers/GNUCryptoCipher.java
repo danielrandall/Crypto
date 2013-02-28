@@ -18,8 +18,7 @@ public abstract class GNUCryptoCipher {
 	/* Adds padding, if necessary, to the given string such that it is equal to
 	 * the desired block size.
 	 * Pads as per the given padding scheme.
-	 * Example padding scheme: "PKCS7".
-	 */
+	 * Example padding scheme: "PKCS7". */
 	protected static byte[] pad(String scheme, int blockSize, byte[] input) {
 		
 		IPad padding = PadFactory.getInstance(scheme);
@@ -59,7 +58,10 @@ public abstract class GNUCryptoCipher {
 	}
 	
 	
-	/* Example prngAlgorithm: "MD"
+	/* Generates a seed using Java's secure random class. With the seed the
+	 * GNU Crypto PRNG and hashing algorithm of choice is used to generate a
+	 * random number to be used as an IV.
+	 * Example prngAlgorithm: "MD"
 	 * Example hash function: "MD5" */
 	protected static byte[] getIV(String prngAlgorithm, String hashFunction, byte[] seed, int length) {
 		
