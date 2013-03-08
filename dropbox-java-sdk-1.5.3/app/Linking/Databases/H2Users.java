@@ -52,15 +52,9 @@ public class H2Users extends H2Database {
 	}
 
 	public void dropUserTable() throws SQLException {
-		try {
-			Class.forName(DRIVER_LOCATION);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-		Connection conn = DriverManager.
-				getConnection(CONNECTION_PREFIX + DATABASE_LOCATION, "sa", "");
+		Connection conn = getConnection();
+		
 		Statement s = conn.createStatement();
 	    s.executeUpdate("DROP TABLE " + TABLE_NAME);
 	    conn.close();
@@ -69,15 +63,9 @@ public class H2Users extends H2Database {
 	
 	
 	public void createUserTable() throws SQLException {
-		try {
-			Class.forName(DRIVER_LOCATION);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-		Connection conn = DriverManager.
-				getConnection(CONNECTION_PREFIX + DATABASE_LOCATION, "sa", "");
+		Connection conn = getConnection();
+		
 		Statement s = conn.createStatement();
 	    String command = "CREATE TABLE " + TABLE_NAME + "(";
 	    for (int i = 0; i < USER_ATTRIBUTES.length; i++) {
@@ -96,18 +84,11 @@ public class H2Users extends H2Database {
 	/* Pre: USER_ATTRIBUTES[0] is the primary key */
 	public boolean checkUserExists(String username) {
 		
-		try {
-			Class.forName(DRIVER_LOCATION);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Connection conn = getConnection();
 		
 	    boolean hasNext = false;
 		
 		try {
-			Connection conn = DriverManager.
-			getConnection(CONNECTION_PREFIX + DATABASE_LOCATION, "sa", "");
 			Statement s = conn.createStatement();
 			
 			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USER_ATTRIBUTES[0] + " = " + username);
@@ -125,16 +106,9 @@ public class H2Users extends H2Database {
 	/* Pre: inputs are given in the correct order. */
 	public void addUser(String[] inputs) {
 		
-		try {
-			Class.forName(DRIVER_LOCATION);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Connection conn = getConnection();
 		
 		try {
-			Connection conn = DriverManager.
-			getConnection(CONNECTION_PREFIX + DATABASE_LOCATION, "sa", "");
 			if (inputs.length == USER_ATTRIBUTES.length) {	    
 				// Need to check lengths
 					Statement s = null;
@@ -159,20 +133,13 @@ public class H2Users extends H2Database {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 	
 	public void removeUser(String username) {
-		try {
-			Class.forName(DRIVER_LOCATION);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		Connection conn = getConnection();
 		
 		try {
-			Connection conn = DriverManager.
-					getConnection(CONNECTION_PREFIX + DATABASE_LOCATION, "sa", "");
 			Statement s = conn.createStatement();
 			s.execute("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ATTRIBUTES[0] + " =" + username);
 			conn.close();
@@ -183,18 +150,12 @@ public class H2Users extends H2Database {
 	}
 	
 	public Map<String, String> getUser(String username) {
-		try {
-			Class.forName(DRIVER_LOCATION);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		Connection conn = getConnection();
 		
 	    Map<String, String> userData = new HashMap<String, String>(USER_ATTRIBUTES.length - 1);
 	    
 		try {
-			Connection conn = DriverManager.
-			getConnection(CONNECTION_PREFIX + DATABASE_LOCATION, "sa", "");
 			Statement s = conn.createStatement();	
 			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USER_ATTRIBUTES[0] + " = " + username);
 		

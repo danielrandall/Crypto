@@ -32,12 +32,12 @@ public class DropboxOperations {
 	}
 	
 	
-	public static DropboxFileInfo downloadFile(WebAuthSession session, String path, OutputStream stream) {
+	public static String downloadFile(WebAuthSession session, String path, OutputStream stream) {
 		
 		DropboxAPI<WebAuthSession> client = new DropboxAPI<WebAuthSession>(session);
 		
 		try {
-			return client.getFile(path, null, stream, null);
+			return client.getFile(path, null, stream, null).getMetadata().rev;
 		} catch (DropboxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -49,19 +49,23 @@ public class DropboxOperations {
 	/* Copies a file from the sourcePath to the targetPath. This method will primarily be used
 	 * to transfer files between accounts.
 	 * The a file/folder at the target path can not already exist. */
-	public static void copyBetweenAccounts(WebAuthSession sourceSession, WebAuthSession targetSession,
+	public static Entry copyBetweenAccounts(WebAuthSession sourceSession, WebAuthSession targetSession,
 			                           String sourcePath, String targetPath) {
 		
 		DropboxAPI<WebAuthSession> sourceClient = new DropboxAPI<WebAuthSession>(sourceSession);
 		DropboxAPI<WebAuthSession> targetClient = new DropboxAPI<WebAuthSession>(targetSession);
 		
+		Entry entry = null;
+		
         try {
 			DropboxAPI.CreatedCopyRef cr = sourceClient.createCopyRef(sourcePath);
-			targetClient.addFromCopyRef(cr.copyRef, targetPath);
+			entry = targetClient.addFromCopyRef(cr.copyRef, targetPath);
 		} catch (DropboxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        
+        return entry;
 	}
 	
 	/* Initially pass in a null cursor and then pass in the returned cursor in future calls.

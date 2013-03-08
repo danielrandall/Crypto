@@ -22,8 +22,8 @@ public abstract class GNUCryptoCipher implements Cipher {
 	
 	/* Cipher example: "AES"
 	 * Cipher mode example: "CFB" */
-	protected static String baseEncrypt(String cipher, String cipherMode, String paddingScheme,
-			                  String plainText, String key, byte[] iv, int blockSize) {
+	protected static byte[] baseEncrypt(String cipher, String cipherMode, String paddingScheme,
+			                  byte[] plainText, String key, byte[] iv, int blockSize) {
 		
 		byte[] key_bytes = key.getBytes(); 
 		
@@ -49,19 +49,39 @@ public abstract class GNUCryptoCipher implements Cipher {
 		}
 	    
 	    /* Pad the plaintext such that it meets the block size required */
-	    byte[] paddedText = pad(paddingScheme, blockSize, plainText.getBytes());
+	    byte[] paddedText = pad(paddingScheme, blockSize, plainText);
 	    
         byte[] cipherText = new byte[paddedText.length];
         for (int i = 0; i + blockSize <= paddedText.length; i += blockSize)
 	    	mode.update(paddedText, i, cipherText, i);
         
-        return Base64.encode(cipherText);
+        return cipherText;
 		
 	}
 	
+	protected static String base64Encode(byte[] text) {
+		
+		return Base64.encode(text);
+		
+	}
 	
-	protected static String baseDecrypt(String cipher, String cipherMode, String paddingScheme,
-            String encryptedText, String key, byte[] iv, int blockSize) {
+	protected static byte[] base64Decode(String text) {
+		
+		byte[] decoded = null;
+		
+		try {
+			decoded = Base64.decode(text);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return decoded;
+		
+	}	
+	
+	protected static byte[] baseDecrypt(String cipher, String cipherMode, String paddingScheme,
+            byte[] encryptedText, String key, byte[] iv, int blockSize) {
 		
 		byte[] key_bytes = key.getBytes(); 
 
@@ -85,25 +105,16 @@ public abstract class GNUCryptoCipher implements Cipher {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		/* Decode the previously encoded text */
-		byte[] ct = null;
-		try {
-			ct = Base64.decode(encryptedText);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		byte[] decryptedText = new byte[ct.length];
+		
+		byte[] decryptedText = new byte[encryptedText.length];
 		/* Decrypt the text */
-		for (int i = 0; i + blockSize <= ct.length; i += blockSize)
-			mode.update(ct, i, decryptedText, i);
+		for (int i = 0; i + blockSize <= encryptedText.length; i += blockSize)
+			mode.update(encryptedText, i, decryptedText, i);
 
 		/* Remove the previously added padding */
 		byte[] unpadded = unpad(paddingScheme, blockSize, decryptedText);
 
-		return new String(unpadded);
+		return unpadded;
 	}
 	
 	
@@ -189,7 +200,8 @@ public abstract class GNUCryptoCipher implements Cipher {
 	 */
 	protected static byte[] generateSeed() {
 		
-		return new SecureRandom().generateSeed(128);
+		/* Input to generateSeed(int) given in bytes */
+		return new SecureRandom().generateSeed(16);
 		
 	}
 

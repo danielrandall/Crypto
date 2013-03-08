@@ -87,3 +87,96 @@ org.h2.jdbc.JdbcSQLException: The object is already closed [90007-170]
 02-20 16:50:09 jdbc[2]: exception
 org.h2.jdbc.JdbcSQLException: Value too long for column "ACCESSKEY VARCHAR(20) NOT NULL": "'$2a$10$chrdmssiiQObW7Ff91MZBOnkNnRDhAwumcpQeYie3pQ1xqdG2adVm' (60)"; SQL statement:
 INSERT INTO users VALUES ('username','$2a$10$chrdmssiiQObW7Ff91MZBOnkNnRDhAwumcpQeYie3pQ1xqdG2adVm','12575971','ajo9ppzd7qxvx0f','2e80m0s32ca4vsr') [22001-170]
+03-04 11:53:44 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "FILES" already exists; SQL statement:
+CREATE TABLE files(fileRev varchar(25) NOT NULL,owner varchar(20) NOT NULL,iv binary(60) NOT NULL,PRIMARY KEY (fileRev)) [42101-170]
+03-05 14:36:55 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Column "FILE1" not found; SQL statement:
+DELETE FROM files WHERE fileRev =file1 [42122-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:141)
+	at org.h2.expression.Comparison.optimize(Comparison.java:161)
+	at org.h2.command.dml.Delete.prepare(Delete.java:125)
+	at org.h2.command.Parser.prepareCommand(Parser.java:218)
+	at org.h2.engine.Session.prepareLocal(Session.java:414)
+	at org.h2.engine.Session.prepareCommand(Session.java:363)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1116)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:164)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:152)
+	at Linking.Databases.H2Files.removeFile(H2Files.java:158)
+	at Linking.Databases.H2Files.main(H2Files.java:63)
+03-05 14:38:04 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Column "FILE1" not found; SQL statement:
+DELETE FROM files WHERE fileRev =file1 [42122-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:141)
+	at org.h2.expression.Comparison.optimize(Comparison.java:161)
+	at org.h2.command.dml.Delete.prepare(Delete.java:125)
+	at org.h2.command.Parser.prepareCommand(Parser.java:218)
+	at org.h2.engine.Session.prepareLocal(Session.java:414)
+	at org.h2.engine.Session.prepareCommand(Session.java:363)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1116)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:164)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:152)
+	at Linking.Databases.H2Files.removeFile(H2Files.java:158)
+	at Linking.Databases.H2Files.main(H2Files.java:63)
+03-05 14:39:29 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "FILES" already exists; SQL statement:
+CREATE TABLE files(fileRev varchar(25) NOT NULL,owner varchar(20) NOT NULL,iv binary(60) NOT NULL,PRIMARY KEY (fileRev)) [42101-170]
+03-05 14:41:13 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Column "FILE1" not found; SQL statement:
+DELETE FROM files WHERE fileRev =file1 [42122-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:141)
+	at org.h2.expression.Comparison.optimize(Comparison.java:161)
+	at org.h2.command.dml.Delete.prepare(Delete.java:125)
+	at org.h2.command.Parser.prepareCommand(Parser.java:218)
+	at org.h2.engine.Session.prepareLocal(Session.java:414)
+	at org.h2.engine.Session.prepareCommand(Session.java:363)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1116)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:164)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:152)
+	at Linking.Databases.H2Files.removeFile(H2Files.java:156)
+	at Linking.Databases.H2Files.main(H2Files.java:61)
+03-05 14:41:46 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Column "FILE1" not found; SQL statement:
+DELETE FROM files WHERE fileRev = file1 [42122-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:141)
+	at org.h2.expression.Comparison.optimize(Comparison.java:161)
+	at org.h2.command.dml.Delete.prepare(Delete.java:125)
+	at org.h2.command.Parser.prepareCommand(Parser.java:218)
+	at org.h2.engine.Session.prepareLocal(Session.java:414)
+	at org.h2.engine.Session.prepareCommand(Session.java:363)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1116)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:164)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:152)
+	at Linking.Databases.H2Files.removeFile(H2Files.java:156)
+	at Linking.Databases.H2Files.main(H2Files.java:61)
+03-05 14:55:50 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Column "FILE1" not found; SQL statement:
+SELECT * FROM files WHERE fileRev = file1 [42122-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:141)
+	at org.h2.expression.Comparison.optimize(Comparison.java:161)
+	at org.h2.command.dml.Select.prepare(Select.java:802)
+	at org.h2.command.Parser.prepareCommand(Parser.java:218)
+	at org.h2.engine.Session.prepareLocal(Session.java:414)
+	at org.h2.engine.Session.prepareCommand(Session.java:363)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1116)
+	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:70)
+	at Linking.Databases.H2Files.getFile(H2Files.java:180)
+	at Linking.Databases.H2Files.main(H2Files.java:55)
+03-05 16:13:23 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Value too long for column "IV BINARY(60) NOT NULL": "X'973a19b6a1979043608b829c0a658dda3d486d25086961e5641427b0844f18d9922a7a0fb189eeb8206c2e3b25400e137a176baebb44dd6d228ab6ed7d97af... (256)"; SQL statement:
+INSERT INTO files VALUES (?,?,?) [22001-170]

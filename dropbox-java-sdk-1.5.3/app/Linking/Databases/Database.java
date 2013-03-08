@@ -1,12 +1,9 @@
 package Linking.Databases;
 
-import java.util.Map;
+import java.sql.Connection;
 
 public interface Database {
 	
-	public boolean checkUserExists(String username);
-	public void addUser(String[] inputs);
-	public void removeUser(String username);
-	public Map<String, String> getUser(String username);
+	Connection getConnection();
 
 }
