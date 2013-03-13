@@ -54,6 +54,7 @@ public class CentralAuthority {
 	private static void uploadEncryptedFile(BufferedReader input, WebAuthSession session, byte[] iv) {
 		
 		String fileName = null;
+		
 		int securityLevel = 1;
 			
 		System.out.println("Enter file address");

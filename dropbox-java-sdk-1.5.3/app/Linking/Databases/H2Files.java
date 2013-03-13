@@ -24,15 +24,17 @@ public class H2Files extends H2Database {
 	private static final String FILEREV = "fileRev";
 	private static final String OWNER = "owner";
 	private static final String IV = "iv";
+	private static final String SECURITY_LEVEL = "securityLevel";
 	/* Attributes in table. Must be changed if the attributes change. */
 	/* The first element of the array is to be the primary key */
-	private static final String[] FILE_ATTRIBUTES = {FILEREV, OWNER, IV};
+	private static final String[] FILE_ATTRIBUTES = {FILEREV, OWNER, IV, SECURITY_LEVEL};
 	
 	/* User table element lengths */
 	private static final String FILEREV_LENGTH = "25";
 	private static final String OWNER_LENGTH = "25";
 	private static final String IV_LENGTH = "256";
-	private static final String[] FILE_ATTRIBUTES_LENGTH = {FILEREV_LENGTH, OWNER_LENGTH, IV_LENGTH};
+	private static final String SECURITY_LEVEL_LENGTH = "25";
+	private static final String[] FILE_ATTRIBUTES_LENGTH = {FILEREV_LENGTH, OWNER_LENGTH, IV_LENGTH, SECURITY_LEVEL_LENGTH};
 	
 	/* Maps attributes to their length. Assumes they are both ordered in the same way */
 	private static Map<String, String> fileAttributes;
@@ -54,6 +56,9 @@ public class H2Files extends H2Database {
 	public static void main(String[] args) throws SQLException {
 		
 		H2Files h = new H2Files();
+		
+		h.dropFileTable();
+		h.createFileTable();
 		
 	//	String [] inputs = {"0123", "9876", s};
 	//	h.addFile(inputs);

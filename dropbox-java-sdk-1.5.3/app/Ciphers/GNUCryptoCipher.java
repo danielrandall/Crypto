@@ -23,15 +23,13 @@ public abstract class GNUCryptoCipher implements Cipher {
 	/* Cipher example: "AES"
 	 * Cipher mode example: "CFB" */
 	protected static byte[] baseEncrypt(String cipher, String cipherMode, String paddingScheme,
-			                  byte[] plainText, String key, byte[] iv, int blockSize) {
-		
-		byte[] key_bytes = key.getBytes(); 
+			                  byte[] plainText, byte[] key, byte[] iv, int blockSize) {
 		
 		IMode mode = ModeFactory.getInstance(cipherMode, cipher, blockSize);
 	    Map<String, Object> attributes = new HashMap<String, Object>();
 	     
 	    // These attributes are defined in gnu.crypto.cipher.IBlockCipher.
-	    attributes.put(IMode.KEY_MATERIAL, key_bytes);
+	    attributes.put(IMode.KEY_MATERIAL, key);
 	    attributes.put(IMode.CIPHER_BLOCK_SIZE, new Integer(blockSize));
 	     
 	    // These attributes are defined in IMode.
@@ -81,15 +79,13 @@ public abstract class GNUCryptoCipher implements Cipher {
 	}	
 	
 	protected static byte[] baseDecrypt(String cipher, String cipherMode, String paddingScheme,
-            byte[] encryptedText, String key, byte[] iv, int blockSize) {
-		
-		byte[] key_bytes = key.getBytes(); 
+            byte[] encryptedText, byte[] key, byte[] iv, int blockSize) {
 
 		IMode mode = ModeFactory.getInstance(cipherMode, cipher, blockSize);
 		Map<String, Object> attributes = new HashMap<String, Object>();
 
 		// These attributes are defined in gnu.crypto.cipher.IBlockCipher.
-		attributes.put(IMode.KEY_MATERIAL, key_bytes);
+		attributes.put(IMode.KEY_MATERIAL, key);
 		attributes.put(IMode.CIPHER_BLOCK_SIZE, new Integer(blockSize));
 
 		// These attributes are defined in IMode.

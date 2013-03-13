@@ -1,6 +1,8 @@
 package Login;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
@@ -13,24 +15,16 @@ import Linking.Databases.H2Users;
 
 public class Login {
 
-	/**
-	 * @param args
-	 * @throws URISyntaxException 
-	 * @throws IOException 
-	 * @throws DropboxException 
-	 * @throws ClassNotFoundException 
-	 * @throws SQLException 
-	 * @throws MalformedURLException 
-	 */
-	public static void main(String[] args) throws MalformedURLException, SQLException, ClassNotFoundException, DropboxException, IOException, URISyntaxException {
+
+	public static void userLogin() throws MalformedURLException, SQLException, ClassNotFoundException, DropboxException, IOException, URISyntaxException {
 		
-		//H2Database h2 = new H2Database();
-		//h2.removeUser("username");
+		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
 		String username = "username";
 		String password = "password";
 
-			Authentication.link(username, password);
+		
+		Authentication.link(username, password);
 
 
 

@@ -27,7 +27,6 @@ public class FileOperations {
 		
 		InputStream fileStream;
 		
-		byte[] key = retrieveEncryptionKey(securityLevel);
 		
 		Entry entry = null;
 		try {
@@ -37,9 +36,14 @@ public class FileOperations {
 				byte[] fileContents = new byte[fileStream.available()];
 				fileStream.read(fileContents);
 				fileStream.close();
-				byte[] encrypted = cipher.encrypt(fileContents, "1234567891234567", iv);
+				
+				byte[] key = "1234567891234567".getBytes();
+				byte[] encrypted = cipher.encrypt(fileContents, key, iv);
+				
 				ByteArrayInputStream inputStream = new ByteArrayInputStream(encrypted);
-				entry = DropboxOperations.uploadFile(fileName, inputStream, session, encrypted.length);		
+				entry = DropboxOperations.uploadFile(fileName, inputStream, session, encrypted.length);
+				
+				KeyDerivation.storeKey(entry.rev, key, "AES");
 		    
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -55,21 +59,15 @@ public class FileOperations {
 	}
 	
 	
-	private static byte[] retrieveEncryptionKey(int securityLevel) {
-		
-		
-		
-		return null;
-		
-	}
-	
-	
 	/* The contents of the given file are extracted and decrypted. The file
 	 * is then overwritten with the plaintext. */
 	public static void decryptFile(File file, String rev) {
 		
 		Map<String, Object> data = database.getFile(rev);
 		byte[] iv = (byte[])data.get("iv");
+		String level = (String)data.get("securityLevel");
+		
+		byte[] key = KeyDerivation.retrieveKey((String)data.get("fileRev"), null, level);
 		
 		try {
 			InputStream fileStream = new java.io.FileInputStream(file);
@@ -77,7 +75,7 @@ public class FileOperations {
 			fileStream.read(fileContents);
 			fileStream.close();
 			
-			byte[] decrypted = cipher.decrypt(fileContents, "1234567891234567", iv);
+			byte[] decrypted = cipher.decrypt(fileContents, key, iv);
 			
 			FileOutputStream fileWriter = new FileOutputStream(file, false);
 			fileWriter.write(decrypted);

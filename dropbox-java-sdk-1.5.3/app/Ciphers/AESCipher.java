@@ -14,7 +14,7 @@ public class AESCipher extends GNUCryptoCipher {
 	
 	
 	@Override
-	public byte[] encrypt(byte[] file, String key, byte[] iv) {
+	public byte[] encrypt(byte[] file, byte[] key, byte[] iv) {
 		
 		return baseEncrypt(CIPHER_TYPE, MODE_TYPE, PADDING_SCHEME,
 			                  file, key, iv, BLOCK_SIZE);
@@ -22,7 +22,7 @@ public class AESCipher extends GNUCryptoCipher {
 	}
 
 	@Override
-	public byte[] decrypt(byte[] file, String key, byte[] iv) {
+	public byte[] decrypt(byte[] file, byte[] key, byte[] iv) {
 		
 		return baseDecrypt(CIPHER_TYPE, MODE_TYPE, PADDING_SCHEME,
                 file, key, iv, BLOCK_SIZE);
