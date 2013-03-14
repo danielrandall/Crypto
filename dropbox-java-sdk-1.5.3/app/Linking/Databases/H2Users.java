@@ -1,8 +1,5 @@
 package Linking.Databases;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,12 +17,12 @@ public class H2Users extends H2Database {
 	private static final String TABLE_NAME = "users";
 	
 	/* User table attributes */
-	private static final String USERNAME = "username";
-	private static final String PASSWORD = "password";
-	private static final String UID = "uid";
-	private static final String ACCESSKEY = "accessKey";
-	private static final String ACCESSSECRET = "accessSecret";
-	private static final String FRIENDS = "friends";
+	public static final String USERNAME = "username";
+	public static final String PASSWORD = "password";
+	public static final String UID = "uid";
+	public static final String ACCESSKEY = "accessKey";
+	public static final String ACCESSSECRET = "accessSecret";
+	public static final String FRIENDS = "friends";
 	/* Attributes in table. Must be changed if the attributes change. */
 	/* The first element of the array is to be the primary key */
 	private static final String[] USER_ATTRIBUTES = {USERNAME, PASSWORD, UID,
@@ -41,6 +38,36 @@ public class H2Users extends H2Database {
 	private static final String[] USER_ATTRIBUTES_LENGTH = {USERNAME_LENGTH,
 		                        PASSWORD_LENGTH, UID_LENGTH, ACCESSKEY_LENGTH,
 		                                 ACCESSSECRET_LENGTH, FRIENDS_LENGTH};
+	
+	public static void main(String[] args) throws SQLException {
+		
+		H2Users h = new H2Users();
+		
+		h.dropUserTable();
+		h.createUserTable();
+		
+		
+		/*
+		FriendsList f = new FriendsList();
+		f.addFriend("friend", new Interval(1, 2));
+		
+		h.addUser("username", "password", "uid", "accessKey", "accessSecret", f);
+		
+		f = new FriendsList();
+		f.addFriend("f", new Interval(2, 3));
+		
+		h.updateFriends("username", f);
+		
+		Map<String, Object> m = h.getUser("username");
+		
+		FriendsList fl = (FriendsList)m.get("friends");
+		
+		if (!fl.isFriend("friend"))
+			System.out.println("true");
+		if (fl.isFriend("f"))
+			System.out.println("true");
+		*/
+	}
 	
 	/* Maps attributes to their length. Assumes they are both ordered in the same way */
 	private static Map<String, String> userAttributes;
@@ -119,7 +146,7 @@ public class H2Users extends H2Database {
 		return hasNext;
 	}
 	
-	/* Pre: inputs are given in the correct order. */
+
 	public void addUser(String username, String password, String uid,
 			          String accessKey, String accessSecret, Object friends) {
 		
@@ -146,6 +173,28 @@ public class H2Users extends H2Database {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public void updateFriends(String username, Object friends) {
+
+		Connection conn = getConnection();
+
+		try {
+			String command = "UPDATE " + TABLE_NAME
+			          + " SET " + FRIENDS + "= ? WHERE " + USERNAME + " = " + username;
+	
+			PreparedStatement statement = conn.prepareStatement(command);
+			statement.setObject(1, friends);
+			
+			statement.executeUpdate();
+	
+			conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
 	public void removeUser(String username) {

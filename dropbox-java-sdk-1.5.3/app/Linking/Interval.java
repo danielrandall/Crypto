@@ -1,7 +1,11 @@
 package Linking;
 
-public class Interval {
+public class Interval implements Permissions {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8259409064838243549L;
 	private int lowerBound;
 	private int upperBound;
 	

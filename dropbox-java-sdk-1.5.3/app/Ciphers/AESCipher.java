@@ -7,9 +7,10 @@ public class AESCipher extends GNUCryptoCipher {
 	private static final String PADDING_SCHEME = "PKCS7";
 	/* Block size used for the cipher. Recorded in bytes. */
 	private static final int BLOCK_SIZE = 16;
-	/* Key size used for the cipher. Recorded in bits. */
-	private static final int KEY_SIZE = 32;
-	private static final int IV_SIZE = 256;
+	/* Key size used for the cipher. Recorded in bytes. */
+	private static final int KEY_SIZE = 16;
+	/* Key size used for the cipher. Recorded in bytes. */
+	private static final int IV_SIZE = 16;
 	
 	private static final String PRNG_ALGORITHM = "MD";
 	private static final String HASH_FUNCTION = "MD5";
@@ -44,13 +45,5 @@ public class AESCipher extends GNUCryptoCipher {
 		return getIV(PRNG_ALGORITHM, HASH_FUNCTION, generateSeed(), IV_SIZE);
 		
 	}
-
-
-	
-	
-
-	
-	
-	
 
 }

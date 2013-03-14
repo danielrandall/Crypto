@@ -61,8 +61,8 @@ public class FileOperations {
 	public static void decryptFile(File file, String rev, String uid) {
 		
 		Map<String, Object> data = database.getFile(rev);
-		byte[] iv = (byte[])data.get("iv");
-		int level = (Integer)data.get("securityLevel");
+		byte[] iv = (byte[])data.get(H2Files.IV);
+		int level = (Integer)data.get(H2Files.SECURITY_LEVEL);
 		
 		byte[] key = KeyDerivation.retrieveKey(uid, Integer.toString(level), cipher);
 		

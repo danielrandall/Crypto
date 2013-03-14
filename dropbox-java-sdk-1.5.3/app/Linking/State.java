@@ -1,6 +1,5 @@
 package Linking;
 
-import java.sql.SQLException;
 import java.util.Map;
 
 import Linking.Databases.H2Users;
@@ -22,52 +21,71 @@ public final class State {
     }
 
     public State(String username, String uid, AccessTokenPair linkKey) {
+    	
         this.linkKey = linkKey;
         this.username = username;
         this.uid = uid;
+        
     }
     
     public static State save(String username, String password, String uid, String accessKey,
-    		            String accessSecret) throws SQLException, ClassNotFoundException {
-        database.addUser(username, password, uid, accessKey, accessSecret, null);
+    		            String accessSecret) {
+    	
+        database.addUser(username, password, uid, accessKey, accessSecret, new FriendsList());
         return new State(username, uid, new AccessTokenPair(accessKey, accessSecret));
+        
     }
     
-    public static boolean search(String username) throws SQLException, ClassNotFoundException {
+    public static boolean search(String username) {
+    	
     	return database.checkUserExists(username);
+    	
     }
     
-    public static State load(String username) throws ClassNotFoundException, SQLException {
+    public static State load(String username) {
+    	
 		Map<String, Object> userData = database.getUser(username);
-		String uid = (String)userData.get("uid");
-		String accessKey = (String)userData.get("accessKey");
-		String accessSecret = (String)userData.get("accessSecret");
+		String uid = (String)userData.get(H2Users.UID);
+		String accessKey = (String)userData.get(H2Users.ACCESSKEY);
+		String accessSecret = (String)userData.get(H2Users.ACCESSSECRET);
 		return new State(username, uid, new AccessTokenPair(accessKey, accessSecret));
     }
     
     public static String getPassword(String username) {
+    	
     	Map<String, Object> userData = database.getUser(username);
-		return (String)userData.get("Password");
+		return (String)userData.get(H2Users.PASSWORD);
+		
     }
     
     public AccessTokenPair getAccessTokens() {
+    	
     	return linkKey;
+    	
     }
     
     public String getUsername() {
+    	
     	return username;
+    	
     }
     
     public String getUID() {
+    	
     	return uid;
+    	
     }
     
     public void setSession(WebAuthSession session) {
+    	
     	this.session = session;
+    	
     }
     
     public WebAuthSession getSession() {
+    	
     	return session;
+    	
     }
     
 }

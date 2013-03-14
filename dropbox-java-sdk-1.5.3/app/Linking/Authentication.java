@@ -1,18 +1,15 @@
 package Linking;
 
 import java.awt.Desktop;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.sql.SQLException;
-
 import javax.swing.JOptionPane;
 
 import Linking.Password.BCryptEncryptor;
 import Linking.Password.PasswordEncryptor;
-import Server.CentralAuthority;
-
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
@@ -29,36 +26,76 @@ public final class Authentication {
 	private static final AccessType ACCESS_TYPE = AccessType.APP_FOLDER;
 	private static final PasswordEncryptor passwordEncryptor = new BCryptEncryptor();
     
-    public static void link(String username, String password) throws SQLException, ClassNotFoundException, MalformedURLException, DropboxException, IOException, URISyntaxException {
+    public static State link(BufferedReader input) {
     	
-    	if (!State.search(username)) {
-    		State state = authenticate(username, password);
-    		CentralAuthority.options(state);
-    	} else {
-    		/* TODO: Deal with incorrect password. */
-    		checkPassword(username, password);
+
+    		String username = null;
+    		String password = null;
+		
+    		boolean userPassAccepted = false; 
+		
+    		try {
+		
+    			while (!userPassAccepted) {
+				
+    				System.out.println("Enter username");
+    				username = input.readLine();
+    				
+    				System.out.println("Enter password");
+    				password = input.readLine();
+			
+    				userPassAccepted = checkPassword(username, password);
+			
+    				if (!userPassAccepted)
+    					System.out.println("Username or password incorrect");
+			
+    			}
+    			
+    		} catch (IOException e) {
+    				// TODO Auto-generated catch block
+    				e.printStackTrace();
+    		}
+    		
     		State state = State.load(username);
     		WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE, state.getAccessTokens());
     		state.setSession(session);
-    		CentralAuthority.options(state);
-    	}
+    		
+    		return state;
     }
     
-    private static State authenticate(String username, String password) throws DropboxException, MalformedURLException, IOException, URISyntaxException, SQLException, ClassNotFoundException {
+    public static State authenticate(String username, String password) {
     	
     	WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE);
-        WebAuthInfo authInfo = session.getAuthInfo();
- 
-        RequestTokenPair pair = authInfo.requestTokenPair;
-        String url = authInfo.url;
- 
-        Desktop.getDesktop().browse(new URL(url).toURI());
-        JOptionPane.showMessageDialog(null, "Press ok to continue once you have authenticated.");
+        WebAuthInfo authInfo;
+        State state = null;
+		
+        try {
         
-		String uid = session.retrieveWebAccessToken(pair);
-        AccessTokenPair tokens = session.getAccessTokenPair();
-        State state = State.save(username, passwordEncryptor.hashPassword(password), uid, tokens.key, tokens.secret);
-        state.setSession(session);
+			authInfo = session.getAuthInfo();
+			RequestTokenPair pair = authInfo.requestTokenPair;
+			String url = authInfo.url;
+ 
+			Desktop.getDesktop().browse(new URL(url).toURI());
+			JOptionPane.showMessageDialog(null, "Press ok to continue once you have authenticated.");
+        
+			String uid = session.retrieveWebAccessToken(pair);
+			AccessTokenPair tokens = session.getAccessTokenPair();
+			state = State.save(username, passwordEncryptor.hashPassword(password), uid, tokens.key, tokens.secret);
+			state.setSession(session);
+        
+        } catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         
         return state;
     	

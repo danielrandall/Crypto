@@ -19,12 +19,13 @@ import java.util.Map;
 
 public abstract class GNUCryptoCipher implements Cipher {
 	
-	
 	/* Returns null if the key is invalid
 	 * Cipher example: "AES"
 	 * Cipher mode example: "CFB" */
 	protected static byte[] baseEncrypt(String cipher, String cipherMode, String paddingScheme,
 			                  byte[] plainText, byte[] key, byte[] iv, int blockSize) {
+		
+		System.out.println(key.length);
 		
 		IMode mode = ModeFactory.getInstance(cipherMode, cipher, blockSize);
 	    Map<String, Object> attributes = new HashMap<String, Object>();

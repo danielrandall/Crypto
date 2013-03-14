@@ -14,7 +14,7 @@ public class BCryptEncryptor implements PasswordEncryptor {
 	public boolean checkPassword(String pass, String encrypted) {
 		// Check that an unencrypted password matches one that has
 		// previously been hashed
-		
+
 		return BCrypt.checkpw(pass, encrypted);
 	}
 }

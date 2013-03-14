@@ -19,10 +19,10 @@ public class H2Files extends H2Database {
 	private static final String TABLE_NAME = "files";
 	
 	/* File table attributes */
-	private static final String FILEREV = "fileRev";
-	private static final String OWNER = "owner";
-	private static final String IV = "iv";
-	private static final String SECURITY_LEVEL = "securityLevel";
+	public static final String FILEREV = "fileRev";
+	public static final String OWNER = "owner";
+	public static final String IV = "iv";
+	public static final String SECURITY_LEVEL = "securityLevel";
 	/* Attributes in table. Must be changed if the attributes change. */
 	/* The first element of the array is to be the primary key */
 	private static final String[] FILE_ATTRIBUTES = {FILEREV, OWNER, IV, SECURITY_LEVEL};

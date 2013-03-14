@@ -37,27 +37,38 @@ public class CentralAuthority {
 	
 	private static void addUser(BufferedReader input, State state) {
 		
-		String username = null;
+		String usernameToAdd = null;
 		
 		boolean userExists = false;
+		int lowerBound = 5;
+		int upperBound = 5;
 		
-		while (!userExists) {
+		try {
 		
-			System.out.println("Enter user name to friend");
+			while (!userExists) {
 		
-			try {
-				username = input.readLine();
+				System.out.println("Enter user name to friend");
+		
+				usernameToAdd = input.readLine();
 			
-				userExists = UserOperations.checkUserExists(username);
+				userExists = UserOperations.checkUserExists(usernameToAdd);
 				
 				if (!userExists)
 					System.out.println("User does not exist. Try again.");
-			
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+			
+			System.out.println("Enter lower bound security level");
+			lowerBound = Integer.parseInt(input.readLine());   // DEAL WITH NON INT ENTRY
+			
+			System.out.println("Enter upper bound security level");
+			upperBound = Integer.parseInt(input.readLine());   // DEAL WITH NON INT ENTRY
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
+		UserOperations.addUserToFriendsList(state.getUsername(), usernameToAdd, lowerBound, upperBound);
 		
 	}
 

@@ -8,7 +8,7 @@ public class FriendsList implements Serializable {
 	
 	private static final long serialVersionUID = 4200911073443895773L;
 	
-	private Map<String, Interval> list = new HashMap<String, Interval>();
+	private Map<String, Permissions> list = new HashMap<String, Permissions>();
 	
 	public boolean isFriend(String username) {
 		
@@ -16,7 +16,7 @@ public class FriendsList implements Serializable {
 		
 	}
 	
-	public void addFriend(String username, Interval bounds) {
+	public void addFriend(String username, Permissions bounds) {
 		
 		list.put(username, bounds);
 		
@@ -28,9 +28,15 @@ public class FriendsList implements Serializable {
 		
 	}
 	
-	public void editFriendPermissions(String username, Interval newBounds) {
+	public void editFriendPermissions(String username, Permissions newBounds) {
 		
 		list.put(username, newBounds);
+		
+	}
+	
+	public Permissions getFriendPermissions(String username) {
+		
+		return list.get(username);
 		
 	}
 	
