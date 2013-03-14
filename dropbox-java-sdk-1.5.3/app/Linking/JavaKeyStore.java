@@ -9,8 +9,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.Enumeration;
 
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 public class JavaKeyStore implements KeyStores {
@@ -111,6 +111,8 @@ public class JavaKeyStore implements KeyStores {
   
 	public void storeKey(String id, byte[] key, String algorithm) {
 		
+		System.out.println(new String(key));
+		System.out.println(algorithm);
 		SecretKeySpec skSpec = new SecretKeySpec(key, algorithm);
 		
 		SecretKeyEntry skEntry = new KeyStore.SecretKeyEntry(skSpec);
@@ -174,6 +176,21 @@ public class JavaKeyStore implements KeyStores {
 		
 	}
 	
+	public void clearKeystore() {
+		
+		try {
+			Enumeration<String> keys = keystore.aliases();
+			
+			while (keys.hasMoreElements())
+				keystore.deleteEntry(keys.nextElement());
+				storeKS();
+		} catch (KeyStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
 	private void storeKS() {
 		
 		FileOutputStream fos;

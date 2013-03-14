@@ -4,31 +4,41 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import Ciphers.Cipher;
 import Linking.JavaKeyStore;
 import Linking.KeyStores;
 
 public class KeyDerivation {
 	
 	
-	
 	private static KeyStores keystore = new JavaKeyStore();
 	
 	
-	public static byte[] retrieveKey(String file, String user, String level) {
+	public static byte[] retrieveKey(String user, String level, Cipher cipher) {
+	
+	//	keystore.removeKey(user + level);
 		
-		return keystore.retrieveKey(file, "keystorepassword".toCharArray());
+		byte[] key;
+		
+		if (keystore.checkKeyExists(user + level))
+			key = keystore.retrieveKey(user + level, "keystorepassword".toCharArray());
+		else {
+			key = cipher.generateKey();
+			storeKey(user, level, key, "AES");
+		}
+		
+		return key;
 		
 	}
 	
-	public static void storeKey(String id, byte[] key, String algorithm) {
+	private static void storeKey(String user, String level, byte[] key, String algorithm) {
 		
-		keystore.storeKey(id, key, algorithm);
+		
+		keystore.storeKey(user + level, key, algorithm);
 		
 	}
 	
 	protected boolean userFilePermission(String file, String user) {
-		
-		
 		
 		return false;
 		
@@ -51,6 +61,9 @@ public class KeyDerivation {
 			}
 		
 			passwordAccepted = keystore.checkPassword(keyPassword.toCharArray());
+			
+		//	keystore.clearKeystore();
+
 		}
 		
 	}

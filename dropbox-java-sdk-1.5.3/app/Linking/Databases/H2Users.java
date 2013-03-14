@@ -1,7 +1,10 @@
 package Linking.Databases;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -17,14 +20,16 @@ public class H2Users extends H2Database {
 	private static final String TABLE_NAME = "users";
 	
 	/* User table attributes */
-	private static final String USERNAME = "Username";
-	private static final String PASSWORD = "Password";
-	private static final String UID = "UID";
-	private static final String ACCESSKEY = "AccessKey";
-	private static final String ACCESSSECRET = "AccessSecret";
+	private static final String USERNAME = "username";
+	private static final String PASSWORD = "password";
+	private static final String UID = "uid";
+	private static final String ACCESSKEY = "accessKey";
+	private static final String ACCESSSECRET = "accessSecret";
+	private static final String FRIENDS = "friends";
 	/* Attributes in table. Must be changed if the attributes change. */
 	/* The first element of the array is to be the primary key */
-	private static final String[] USER_ATTRIBUTES = {USERNAME, PASSWORD, UID, ACCESSKEY, ACCESSSECRET};
+	private static final String[] USER_ATTRIBUTES = {USERNAME, PASSWORD, UID,
+		                                     ACCESSKEY, ACCESSSECRET, FRIENDS};
 	
 	/* User table element lengths */
 	private static final String USERNAME_LENGTH = "25";
@@ -32,7 +37,10 @@ public class H2Users extends H2Database {
 	private static final String UID_LENGTH = "20";
 	private static final String ACCESSKEY_LENGTH = "20";
 	private static final String ACCESSSECRET_LENGTH = "20";
-	private static final String[] USER_ATTRIBUTES_LENGTH = {USERNAME_LENGTH, PASSWORD_LENGTH, UID_LENGTH, ACCESSKEY_LENGTH, ACCESSSECRET_LENGTH};
+	private static final String FRIENDS_LENGTH = "10000";
+	private static final String[] USER_ATTRIBUTES_LENGTH = {USERNAME_LENGTH,
+		                        PASSWORD_LENGTH, UID_LENGTH, ACCESSKEY_LENGTH,
+		                                 ACCESSSECRET_LENGTH, FRIENDS_LENGTH};
 	
 	/* Maps attributes to their length. Assumes they are both ordered in the same way */
 	private static Map<String, String> userAttributes;
@@ -42,7 +50,8 @@ public class H2Users extends H2Database {
 		
 		/* Construct the map if it has not been constructed before */
 		if (userAttributes == null) {
-			assert USER_ATTRIBUTES.length <= USER_ATTRIBUTES_LENGTH.length : "Every attribute needs a length";
+			assert USER_ATTRIBUTES.length <= USER_ATTRIBUTES_LENGTH.length :
+				                          "Every attribute needs a length";
 		
 			userAttributes = new HashMap<String, String>(USER_ATTRIBUTES.length);
 			for (int i = 0; i < USER_ATTRIBUTES.length; i++)
@@ -68,10 +77,16 @@ public class H2Users extends H2Database {
 		
 		Statement s = conn.createStatement();
 	    String command = "CREATE TABLE " + TABLE_NAME + "(";
+	    
 	    for (int i = 0; i < USER_ATTRIBUTES.length; i++) {
-	    	command = command + USER_ATTRIBUTES[i] + " " + "varchar("
-	    	                  +  userAttributes.get(USER_ATTRIBUTES[i]) + ") NOT NULL,";
+	    	if (USER_ATTRIBUTES[i].equals(FRIENDS))
+	    		command = command + USER_ATTRIBUTES[i] + " " + "other("
+	    		    +  userAttributes.get(USER_ATTRIBUTES[i]) + ") NOT NULL,";
+	    	else
+	    		command = command + USER_ATTRIBUTES[i] + " " + "varchar("
+	    		   	+  userAttributes.get(USER_ATTRIBUTES[i]) + ") NOT NULL,";
 	    }
+	    
 	    command = command + "PRIMARY KEY (" + USER_ATTRIBUTES[0] + ")";
 	    command = command + ")";
 
@@ -91,7 +106,8 @@ public class H2Users extends H2Database {
 		try {
 			Statement s = conn.createStatement();
 			
-			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USER_ATTRIBUTES[0] + " = " + username);
+			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME +
+					     " WHERE " + USER_ATTRIBUTES[0] + " = " + username);
 			hasNext = r.next();
 		
 			conn.close();
@@ -104,35 +120,32 @@ public class H2Users extends H2Database {
 	}
 	
 	/* Pre: inputs are given in the correct order. */
-	public void addUser(String[] inputs) {
+	public void addUser(String username, String password, String uid,
+			          String accessKey, String accessSecret, Object friends) {
 		
 		Connection conn = getConnection();
 		
 		try {
-			if (inputs.length == USER_ATTRIBUTES.length) {	    
-				// Need to check lengths
-					Statement s = null;
-					s = conn.createStatement();
-					String command = "INSERT INTO " + TABLE_NAME + " VALUES (";
-					for (int i = 0; i < inputs.length; i++) {
-						command = command + "'" + inputs[i] + "'";
-						if (i != inputs.length - 1)
-							command = command + ",";
-					}
-					command = command + ")";
-
-					s.execute(command);
-				} else 
-					throw new IllegalArgumentException("Incorrect number of inputs." +
-							"Number required: " + USER_ATTRIBUTES.length +
-							" Number supplied: " + inputs.length);
-			System.out.println("added");
-				conn.close();
+			String command = "INSERT INTO " + TABLE_NAME
+					          + " VALUES (?,?,?,?,?,?)";
+			
+			PreparedStatement statement = conn.prepareStatement(command);
+			statement.setString(1, username);
+			statement.setString(2, password);
+			statement.setString(3, uid);
+			statement.setString(4, accessKey);
+			statement.setString(5, accessSecret);
+			statement.setObject(6, friends);
+					
+            statement.executeUpdate();
+			
+			conn.close();
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
 	
 	public void removeUser(String username) {
@@ -149,28 +162,43 @@ public class H2Users extends H2Database {
 		}
 	}
 	
-	public Map<String, String> getUser(String username) {
+	public Map<String, Object> getUser(String username) {
 		
 		Connection conn = getConnection();
-		
-	    Map<String, String> userData = new HashMap<String, String>(USER_ATTRIBUTES.length - 1);
+
+	    Map<String, Object> userData = new HashMap<String, Object>(USER_ATTRIBUTES.length - 1);
 	    
 		try {
 			Statement s = conn.createStatement();	
-			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USER_ATTRIBUTES[0] + " = " + username);
+			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USER_ATTRIBUTES[0] + " = '" + username + "'");
 		
 			if (r.next()) {
-				for (int i = 1; i < USER_ATTRIBUTES.length; i++) 
-					userData.put(USER_ATTRIBUTES[i], r.getString(USER_ATTRIBUTES[i]));
+				
+				String password = r.getString(2);
+				userData.put(USER_ATTRIBUTES[1], password);
+				
+				String uid = r.getString(3);
+				userData.put(USER_ATTRIBUTES[2], uid);
+				
+				String accessKey = r.getString(4);
+				userData.put(USER_ATTRIBUTES[3], accessKey);
+				
+				String accessSecret = r.getString(5);
+				userData.put(USER_ATTRIBUTES[4], accessSecret);
+				
+				Object friends = r.getObject(6);
+				userData.put(USER_ATTRIBUTES[5], friends);
 			}
-			
+
 			conn.close();
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		return userData;
+		
 	}
 
 }

@@ -11,5 +11,7 @@ public interface KeyStores {
 	public void storeKey(String id, byte[] key, String algorithm);
 	
 	public boolean checkKeyExists(String id);
+	
+	public void clearKeystore();
 
 }

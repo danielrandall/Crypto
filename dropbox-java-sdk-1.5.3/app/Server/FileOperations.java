@@ -13,8 +13,6 @@ import com.dropbox.client2.session.WebAuthSession;
 
 import Ciphers.AESCipher;
 import Ciphers.Cipher;
-import Linking.Databases.Database;
-import Linking.Databases.H2Database;
 import Linking.Databases.H2Files;
 
 public class FileOperations {
@@ -23,10 +21,10 @@ public class FileOperations {
 	
 	private static Cipher cipher = new AESCipher();
 	
-	public static void encryptFile(File file, String fileName, WebAuthSession session, byte[] iv, int securityLevel) {
+	public static void encryptFile(File file, String fileName, WebAuthSession session, int securityLevel, String uid) {
 		
 		InputStream fileStream;
-		
+		byte[] iv = cipher.generateIV();
 		
 		Entry entry = null;
 		try {
@@ -37,13 +35,12 @@ public class FileOperations {
 				fileStream.read(fileContents);
 				fileStream.close();
 				
-				byte[] key = "1234567891234567".getBytes();
+				byte[] key = KeyDerivation.retrieveKey(uid, Integer.toString(securityLevel), cipher);
+				
 				byte[] encrypted = cipher.encrypt(fileContents, key, iv);
 				
 				ByteArrayInputStream inputStream = new ByteArrayInputStream(encrypted);
 				entry = DropboxOperations.uploadFile(fileName, inputStream, session, encrypted.length);
-				
-				KeyDerivation.storeKey(entry.rev, key, "AES");
 		    
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -55,19 +52,19 @@ public class FileOperations {
 		}
 		
 		/* Add to database */
-		database.addFile(entry.rev, "", iv);
+		database.addFile(entry.rev, uid, iv, securityLevel);
 	}
 	
 	
 	/* The contents of the given file are extracted and decrypted. The file
 	 * is then overwritten with the plaintext. */
-	public static void decryptFile(File file, String rev) {
+	public static void decryptFile(File file, String rev, String uid) {
 		
 		Map<String, Object> data = database.getFile(rev);
 		byte[] iv = (byte[])data.get("iv");
-		String level = (String)data.get("securityLevel");
+		int level = (Integer)data.get("securityLevel");
 		
-		byte[] key = KeyDerivation.retrieveKey((String)data.get("fileRev"), null, level);
+		byte[] key = KeyDerivation.retrieveKey(uid, Integer.toString(level), cipher);
 		
 		try {
 			InputStream fileStream = new java.io.FileInputStream(file);

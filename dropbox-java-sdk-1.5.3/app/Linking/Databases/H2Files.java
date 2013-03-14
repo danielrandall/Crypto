@@ -4,12 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,10 +89,14 @@ public class H2Files extends H2Database {
 	    	if (FILE_ATTRIBUTES[i].equals(IV))
 	    		command = command + FILE_ATTRIBUTES[i] + " " + "binary("
   	                  +  fileAttributes.get(FILE_ATTRIBUTES[i]) + ") NOT NULL,";
+	    	else if (FILE_ATTRIBUTES[i].equals(SECURITY_LEVEL))
+	    		command = command + FILE_ATTRIBUTES[i] + " " + "int("
+	  	                  +  fileAttributes.get(FILE_ATTRIBUTES[i]) + ") NOT NULL,";
 	    	else
 	    		command = command + FILE_ATTRIBUTES[i] + " " + "varchar("
 	    				+  fileAttributes.get(FILE_ATTRIBUTES[i]) + ") NOT NULL,";
 	    }
+	    
 	    command = command + "PRIMARY KEY (" + FILE_ATTRIBUTES[0] + ")";
 	    command = command + ")";
 
@@ -105,19 +107,19 @@ public class H2Files extends H2Database {
 	
 	
 	/* Pre: inputs are given in the correct order. */
-	public void addFile(String fileRev, String owner, byte[] iv) {
+	public void addFile(String fileRev, String owner, byte[] iv, int securityLevel) {
 		
 		Connection conn = getConnection();
 		
 		try {
-			String command = "INSERT INTO " + TABLE_NAME + " VALUES (?,?,?)";
+			String command = "INSERT INTO " + TABLE_NAME + " VALUES (?,?,?,?)";
 			PreparedStatement statement = conn.prepareStatement(command);
 			statement.setString(1, fileRev);
 			statement.setString(2, owner);
 			statement.setBinaryStream(3, new ByteArrayInputStream(iv), iv.length);
+			statement.setInt(4, securityLevel);
 					
             statement.executeUpdate();
-			System.out.println("added");
 			
 			conn.close();
 
@@ -156,13 +158,17 @@ public class H2Files extends H2Database {
 			if (r.next()) {
 				String fileRev = r.getString(1);
 				userData.put(FILE_ATTRIBUTES[0], fileRev);
+				
 				String owner = r.getString(2);
 				userData.put(FILE_ATTRIBUTES[1], owner);
+				
 				InputStream in = r.getBinaryStream(3);
 				byte[] b = new byte[in.available()];
 				in.read(b);
 				userData.put(FILE_ATTRIBUTES[2], b);
 				
+				int i = r.getInt(4);
+				userData.put(FILE_ATTRIBUTES[3], i);
 			}
 
 			conn.close();

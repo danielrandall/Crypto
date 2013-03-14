@@ -20,7 +20,8 @@ import java.util.Map;
 public abstract class GNUCryptoCipher implements Cipher {
 	
 	
-	/* Cipher example: "AES"
+	/* Returns null if the key is invalid
+	 * Cipher example: "AES"
 	 * Cipher mode example: "CFB" */
 	protected static byte[] baseEncrypt(String cipher, String cipherMode, String paddingScheme,
 			                  byte[] plainText, byte[] key, byte[] iv, int blockSize) {
@@ -41,6 +42,8 @@ public abstract class GNUCryptoCipher implements Cipher {
 		} catch (InvalidKeyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
+			return null;
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -78,6 +81,9 @@ public abstract class GNUCryptoCipher implements Cipher {
 		
 	}	
 	
+	/* Returns null if the key is invalid
+	 * 
+	 */
 	protected static byte[] baseDecrypt(String cipher, String cipherMode, String paddingScheme,
             byte[] encryptedText, byte[] key, byte[] iv, int blockSize) {
 
@@ -97,6 +103,8 @@ public abstract class GNUCryptoCipher implements Cipher {
 		} catch (InvalidKeyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
+			return null;
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -186,6 +194,32 @@ public abstract class GNUCryptoCipher implements Cipher {
 	    return result;     
 	}
 	
+	
+	protected static byte[] getKey(String prngAlgorithm, String hashFunction, byte[] seed, int length) {
+		
+		Map<String, Object> attrib = new HashMap<String, Object>();
+		IRandom rand = PRNGFactory.getInstance(prngAlgorithm);
+		
+		attrib.put(MDGenerator.MD_NAME, hashFunction);
+	    attrib.put(MDGenerator.SEEED, seed);
+	    
+	    rand.init(attrib);
+	    
+	    byte[] result = new byte[length];
+	    try {
+			rand.nextBytes(result, 0, result.length);
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LimitReachedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    return result;   
+		
+	}
+	
 	/* A hash function with a n-bit output resist collisions up to work factor 2^(n/2) at least.
 	 * If hash-mixing was not accumulating entropy up to at least n/2 bits then this could be turned
 	 * into a collision attack on the hash function.
@@ -200,5 +234,6 @@ public abstract class GNUCryptoCipher implements Cipher {
 		return new SecureRandom().generateSeed(16);
 		
 	}
+	
 
 }

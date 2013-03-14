@@ -3,7 +3,6 @@ package Linking;
 import java.sql.SQLException;
 import java.util.Map;
 
-import Linking.Databases.Database;
 import Linking.Databases.H2Users;
 
 import com.dropbox.client2.session.AccessTokenPair;
@@ -30,8 +29,7 @@ public final class State {
     
     public static State save(String username, String password, String uid, String accessKey,
     		            String accessSecret) throws SQLException, ClassNotFoundException {
-    	String[] input = {username, password, uid, accessKey, accessSecret};
-        database.addUser(input);
+        database.addUser(username, password, uid, accessKey, accessSecret, null);
         return new State(username, uid, new AccessTokenPair(accessKey, accessSecret));
     }
     
@@ -40,16 +38,16 @@ public final class State {
     }
     
     public static State load(String username) throws ClassNotFoundException, SQLException {
-		Map<String, String> userData = database.getUser(username);
-		String uid = userData.get("UID");
-		String accessKey = userData.get("AccessKey");
-		String accessSecret = userData.get("AccessSecret");
+		Map<String, Object> userData = database.getUser(username);
+		String uid = (String)userData.get("uid");
+		String accessKey = (String)userData.get("accessKey");
+		String accessSecret = (String)userData.get("accessSecret");
 		return new State(username, uid, new AccessTokenPair(accessKey, accessSecret));
     }
     
     public static String getPassword(String username) {
-    	Map<String, String> userData = database.getUser(username);
-		return userData.get("Password");
+    	Map<String, Object> userData = database.getUser(username);
+		return (String)userData.get("Password");
     }
     
     public AccessTokenPair getAccessTokens() {

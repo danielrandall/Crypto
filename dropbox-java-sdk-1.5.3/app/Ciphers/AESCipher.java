@@ -5,8 +5,10 @@ public class AESCipher extends GNUCryptoCipher {
 	private static final String CIPHER_TYPE = "AES";
 	private static final String MODE_TYPE = "CFB";
 	private static final String PADDING_SCHEME = "PKCS7";
+	/* Block size used for the cipher. Recorded in bytes. */
 	private static final int BLOCK_SIZE = 16;
-	private static final int KEY_SIZE = 256;
+	/* Key size used for the cipher. Recorded in bits. */
+	private static final int KEY_SIZE = 32;
 	private static final int IV_SIZE = 256;
 	
 	private static final String PRNG_ALGORITHM = "MD";
@@ -31,8 +33,9 @@ public class AESCipher extends GNUCryptoCipher {
 
 	@Override
 	public byte[] generateKey() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return getKey(PRNG_ALGORITHM, HASH_FUNCTION, generateSeed(), KEY_SIZE);
+		
 	}
 
 	@Override
