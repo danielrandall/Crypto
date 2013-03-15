@@ -275,3 +275,22 @@ Caused by: java.io.NotSerializableException: Linking.Interval
 03-14 20:31:01 jdbc[2]: exception
 org.h2.jdbc.JdbcSQLException: Table "USERSSET" not found; SQL statement:
 UPDATE usersSET friends= ? WHERE username = username [42102-170]
+03-15 10:49:38 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Column "DROP" not found; SQL statement:
+SELECT * FROM users WHERE username = drop [42122-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:141)
+	at org.h2.expression.Comparison.optimize(Comparison.java:161)
+	at org.h2.command.dml.Select.prepare(Select.java:802)
+	at org.h2.command.Parser.prepareCommand(Parser.java:218)
+	at org.h2.engine.Session.prepareLocal(Session.java:414)
+	at org.h2.engine.Session.prepareCommand(Session.java:363)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1116)
+	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:70)
+	at Linking.Databases.H2Users.checkUserExists(H2Users.java:136)
+	at Server.UserOperations.checkUserExists(UserOperations.java:20)
+	at Server.UserOperations.Register(UserOperations.java:52)
+	at Login.Login.userLogin(Login.java:41)
+	at Server.Setup.main(Setup.java:37)

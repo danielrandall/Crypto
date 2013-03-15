@@ -43,8 +43,8 @@ public class H2Users extends H2Database {
 		
 		H2Users h = new H2Users();
 		
-		h.dropUserTable();
-		h.createUserTable();
+	//	h.dropUserTable();
+	//	h.createUserTable();
 		
 		
 		/*
@@ -134,7 +134,7 @@ public class H2Users extends H2Database {
 			Statement s = conn.createStatement();
 			
 			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME +
-					     " WHERE " + USER_ATTRIBUTES[0] + " = " + username);
+					     " WHERE " + USER_ATTRIBUTES[0] + " = '" + username + "'");
 			hasNext = r.next();
 		
 			conn.close();

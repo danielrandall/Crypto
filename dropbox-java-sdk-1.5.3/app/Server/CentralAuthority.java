@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import com.dropbox.client2.session.WebAuthSession;
 
+import Linking.Authentication;
 import Linking.State;
 
 /* TODO: update file list */
@@ -22,10 +23,10 @@ public class CentralAuthority {
 		try {
 			String decision = input.readLine();
 			if (decision.equals("1"))
-				uploadEncryptedFile(input, state.getSession(), state.getUID());
+				uploadEncryptedFile(input, state.getSession(), state.getUsername());
 
 			if (decision.equals("2"))
-				downloadDecryptedFile(input, state.getSession(), state.getUID());
+				downloadDecryptedFile(input, state.getSession(), state.getUsername());
 			if	(decision.equals("3"))
 				addUser(input, state);
 		} catch (IOException e) {
@@ -68,13 +69,22 @@ public class CentralAuthority {
 			e.printStackTrace();
 		}
 		
+		/* Add user to friends list */
 		UserOperations.addUserToFriendsList(state.getUsername(), usernameToAdd, lowerBound, upperBound);
+		
+		State friendState = Authentication.createState(usernameToAdd);
+		
+		/* Share files with user */
+		DropboxOperations.shareFilesWithFriend(usernameToAdd,
+		            friendState.getSession(), state.getUsername(),
+		                                      state.getSession());
+		
 		
 	}
 
 	/* The user is request for the address of the local file to be uploaded.
 	 * If the file exists then it is encrypted and uploaded to Dropbox. */
-	private static void uploadEncryptedFile(BufferedReader input, WebAuthSession session, String uid) {
+	private static void uploadEncryptedFile(BufferedReader input, WebAuthSession session, String username) {
 		
 		String fileName = null;
 		
@@ -92,7 +102,7 @@ public class CentralAuthority {
 		}
 		File file = new File(fileName);
 		if(file.exists())
-			 FileOperations.encryptFile(file, fileName, session, securityLevel, uid);
+			 FileOperations.encryptFile(file, fileName, session, securityLevel, username);
 		else
 			System.out.println("File does not exist");
 	}

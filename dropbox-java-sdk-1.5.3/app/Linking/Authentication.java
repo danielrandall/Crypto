@@ -56,11 +56,17 @@ public final class Authentication {
     				e.printStackTrace();
     		}
     		
-    		State state = State.load(username);
-    		WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE, state.getAccessTokens());
-    		state.setSession(session);
-    		
-    		return state;
+    		return createState(username);
+    }
+    
+    public static State createState(String username) {
+    	
+    	State state = State.load(username);
+		WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE, state.getAccessTokens());
+		state.setSession(session);
+		
+		return state;
+    	
     }
     
     public static State authenticate(String username, String password) {

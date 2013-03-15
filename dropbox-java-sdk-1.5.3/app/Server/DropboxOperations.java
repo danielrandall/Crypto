@@ -69,7 +69,8 @@ public class DropboxOperations {
 	
 	/* Initially pass in a null cursor and then pass in the returned cursor in future calls.
 	 * Page limit of -1 means no limit. */
-	public static String updateCache(WebAuthSession session, String cursor, int pageLimit) {
+	public static String updateCache(WebAuthSession session, String cursor, int pageLimit,
+											WebAuthSession targetSession) {
 		
 		DropboxAPI<WebAuthSession> client = new DropboxAPI<WebAuthSession>(session);
 		int pageNum = 0;
@@ -88,7 +89,8 @@ public class DropboxOperations {
             
 				/* Apply the entries one by one. */
 				for (DeltaEntry<DropboxAPI.Entry> e : page.entries) {
-					applyDelta(e);
+				//	applyDelta(e);
+					copyBetweenAccounts(session, targetSession, e.lcPath, e.lcPath);
 					changed = true;
 				}
             
@@ -116,6 +118,16 @@ public class DropboxOperations {
 		} else {
     	   System.out.println("- " + e.lcPath);
 		}
+	}
+
+
+	/* Get updated list of files and then share them with desired user. */
+	public static void shareFilesWithFriend(String usernameToAdd,
+			            WebAuthSession friendSession, String username,
+			                        WebAuthSession session) {
+		
+		updateCache(session, null, -1, friendSession);
+		
 	}
 	
 	

@@ -21,7 +21,7 @@ public class FileOperations {
 	
 	private static Cipher cipher = new AESCipher();
 	
-	public static void encryptFile(File file, String fileName, WebAuthSession session, int securityLevel, String uid) {
+	public static void encryptFile(File file, String fileName, WebAuthSession session, int securityLevel, String username) {
 		
 		InputStream fileStream;
 		byte[] iv = cipher.generateIV();
@@ -35,7 +35,7 @@ public class FileOperations {
 				fileStream.read(fileContents);
 				fileStream.close();
 				
-				byte[] key = KeyDerivation.retrieveKey(uid, Integer.toString(securityLevel), cipher);
+				byte[] key = KeyDerivation.retrieveKey(username, Integer.toString(securityLevel), cipher);
 				
 				byte[] encrypted = cipher.encrypt(fileContents, key, iv);
 				
@@ -52,19 +52,19 @@ public class FileOperations {
 		}
 		
 		/* Add to database */
-		database.addFile(entry.rev, uid, iv, securityLevel);
+		database.addFile(entry.rev, username, iv, securityLevel);
 	}
 	
 	
 	/* The contents of the given file are extracted and decrypted. The file
 	 * is then overwritten with the plaintext. */
-	public static void decryptFile(File file, String rev, String uid) {
+	public static void decryptFile(File file, String rev, String username) {
 		
 		Map<String, Object> data = database.getFile(rev);
 		byte[] iv = (byte[])data.get(H2Files.IV);
 		int level = (Integer)data.get(H2Files.SECURITY_LEVEL);
 		
-		byte[] key = KeyDerivation.retrieveKey(uid, Integer.toString(level), cipher);
+		byte[] key = KeyDerivation.retrieveKey(username, Integer.toString(level), cipher);
 		
 		try {
 			InputStream fileStream = new java.io.FileInputStream(file);
