@@ -43,8 +43,8 @@ public class H2Users extends H2Database {
 		
 		H2Users h = new H2Users();
 		
-	//	h.dropUserTable();
-	//	h.createUserTable();
+		h.dropUserTable();
+		h.createUserTable();
 		
 		
 		/*

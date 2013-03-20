@@ -6,51 +6,41 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
-
 import com.dropbox.client2.DropboxAPI.Entry;
-import com.dropbox.client2.session.WebAuthSession;
-
+import com.dropbox.client2.session.Session;
 import Ciphers.AESCipher;
 import Ciphers.Cipher;
-import Linking.Databases.H2Files;
 
 public class FileOperations {
 	
 	private static Cipher cipher = new AESCipher();
 	
-	public static void encryptFile(File file, String fileName, ServerComms comms) {
+	public static void encryptFile(File file, String fileName, Session session, ServerComms comms) {
 		
 		InputStream fileStream;
 		byte[] iv = cipher.generateIV();
 		
 		try {
+			
 			fileStream = new java.io.FileInputStream(file);
-		
-			try {
-				byte[] fileContents = new byte[fileStream.available()];
-				fileStream.read(fileContents);
-				fileStream.close();
 				
-				/* Send file */
-				comms.sendBytes(fileContents, fileContents.length);
-				/* Send iv */
-				comms.sendBytes(iv, iv.length);
-				/* Send filename */
-				comms.toServer(fileName);
+			byte[] fileContents = new byte[fileStream.available()];
+			fileStream.read(fileContents);
+			fileStream.close();
 				
-	//			byte[] key = KeyDerivation.retrieveKey(username, Integer.toString(securityLevel), cipher);
+			byte[] key = comms.getBytes();
 				
-	//			byte[] encrypted = cipher.encrypt(fileContents, key, iv);
+			byte[] encrypted = cipher.encrypt(fileContents, key, iv);
 				
-	//			ByteArrayInputStream inputStream = new ByteArrayInputStream(encrypted);
+			ByteArrayInputStream inputStream = new ByteArrayInputStream(encrypted);
+			Entry entry = DropboxOperations.uploadFile(fileName, inputStream, session, encrypted.length);
 				
+			/* Send iv */
+			comms.sendBytes(iv, iv.length);
+			/* Send file id */
+			comms.toServer(entry.rev);
 		    
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -60,14 +50,11 @@ public class FileOperations {
 	
 	/* The contents of the given file are extracted and decrypted. The file
 	 * is then overwritten with the plaintext. */
-	/*
-	public static void decryptFile(File file, String rev, String username) {
+	
+	public static void decryptFile(File file, String rev, ServerComms comms) {
 		
-		Map<String, Object> data = database.getFile(rev);
-		byte[] iv = (byte[])data.get(H2Files.IV);
-		int level = (Integer)data.get(H2Files.SECURITY_LEVEL);
-		
-		byte[] key = KeyDerivation.retrieveKey(username, Integer.toString(level), cipher);
+		byte[] iv = comms.getBytes();
+		byte[] key = comms.getBytes();
 		
 		try {
 			InputStream fileStream = new java.io.FileInputStream(file);
@@ -80,6 +67,7 @@ public class FileOperations {
 			FileOutputStream fileWriter = new FileOutputStream(file, false);
 			fileWriter.write(decrypted);
 			fileWriter.close();
+			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -89,5 +77,5 @@ public class FileOperations {
 		} 
 		
 	}
-	*/
+
 }

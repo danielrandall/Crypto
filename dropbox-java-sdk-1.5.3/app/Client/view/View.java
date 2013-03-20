@@ -116,5 +116,57 @@ public class View {
 		outputToUser("File does not exist");
 		
 	}
+	
+	public String getFileName() {
+		
+		outputToUser("Enter file to download");
+		
+		return getInput();
+		
+	}
+	
+	public String getDownloadLocation() {
+		
+		outputToUser("Enter download location");
+		
+		return getInput();
+		
+	}
+	
+	public void fileExists() {
+		
+		outputToUser("File exists at location. Aborted.");
+		
+	}
+	
+	public String addUser() {
+		
+		outputToUser("Enter user name to friend");
+		
+		return getInput();
+		
+	}
+	
+	public void userNotExist() {
+		
+		outputToUser("User does not exist. Try again.");
+		
+	}
+	
+	public String getLowerBound() {
+		
+		outputToUser("Enter lower bound security level");
+		
+		return getInput();
+		
+	}
+	
+	public String getUpperBound() {
+		
+		outputToUser("Enter upper bound security level");
+		
+		return getInput();
+		
+	}
 
 }

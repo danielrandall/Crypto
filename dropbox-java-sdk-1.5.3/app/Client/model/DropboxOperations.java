@@ -1,4 +1,4 @@
-package server;
+package Client.model;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -7,9 +7,26 @@ import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.DeltaEntry;
 import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.exception.DropboxException;
+import com.dropbox.client2.session.AccessTokenPair;
+import com.dropbox.client2.session.AppKeyPair;
 import com.dropbox.client2.session.Session;
+import com.dropbox.client2.session.WebAuthSession;
+import com.dropbox.client2.session.Session.AccessType;
 
 public class DropboxOperations {
+	
+	private static final String APP_KEY = "bpyf040d6hcvi5t";
+    private static final String APP_SECRET = "96a0wcdkxlqxt3w";
+    private static final AppKeyPair KEY_PAIR = new AppKeyPair(APP_KEY, APP_SECRET);
+	private static final AccessType ACCESS_TYPE = AccessType.APP_FOLDER;
+	
+    public static Session makeSession(String key, String secret) {
+    	
+    	AccessTokenPair atp = new AccessTokenPair(key, secret);
+		
+    	return new WebAuthSession(KEY_PAIR, ACCESS_TYPE, atp);    	
+    	
+    }
 
 	/* Uploads a file to the location dropboxPath for the current logged in user.
 	 * Will not overwrite existing file. Pass in revision (rev - entry.rev)

@@ -1,6 +1,7 @@
 package Client.model;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,12 +11,13 @@ import java.net.Socket;
 public class ServerComms {
 	
 	private static final String HOST_NAME = "localhost";
-	private static final int PORT_NUMBER = 4438;
+	private static final int PORT_NUMBER = 4436;
 	
 	private Socket socket = null;
 	private PrintWriter out = null;
     private BufferedReader in = null;
     private DataOutputStream dOut = null;
+    private DataInputStream dis = null;
     
     public ServerComms() {
     	
@@ -25,6 +27,7 @@ public class ServerComms {
 			out = new PrintWriter(socket.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			dOut = new DataOutputStream(socket.getOutputStream());
+			dis = new DataInputStream(socket.getInputStream());
 			
     	} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -88,5 +91,24 @@ public class ServerComms {
 			e.printStackTrace();
 		}
     }
+    
+    public byte[] getBytes() {
+		
+		byte[] data = null;
+		
+		try {
+			
+			int length = dis.readInt();
+			data = new byte[length];
+			dis.readFully(data);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return data;
+		
+	}
 
 }

@@ -5,7 +5,7 @@ import Client.view.View;
 public class Register {
 	
 	private static final String TRUE = "1";
-	private static final String FALSE = "0";
+	//private static final String FALSE = "0";
 
 	public static void userRegister(ServerComms comm, View view) {
 		

@@ -2,6 +2,7 @@ package server;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -13,6 +14,7 @@ public class ClientComms {
 	private Socket socket = null;
 	private PrintWriter out = null;
 	private DataInputStream dis = null;
+	private DataOutputStream dOut = null;
 	
 	public ClientComms(Socket socket) {
 		
@@ -25,6 +27,7 @@ public class ClientComms {
 
 			out = new PrintWriter(socket.getOutputStream(), true);
 			dis = new DataInputStream(socket.getInputStream());
+			dOut = new DataOutputStream(socket.getOutputStream());
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -95,5 +98,19 @@ public class ClientComms {
 		return data;
 		
 	}
+
+
+    public void sendBytes(byte[] bytes, int length) {
+    	
+    	try {
+    		
+    		dOut.writeInt(length);
+			dOut.write(bytes);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 
 }
