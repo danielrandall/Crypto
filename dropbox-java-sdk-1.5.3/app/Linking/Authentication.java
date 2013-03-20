@@ -1,12 +1,14 @@
 package Linking;
 
 import java.awt.Desktop;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.swing.JOptionPane;
+
+import server.ClientComms;
+import server.UserOperations;
 
 import Linking.Password.BCryptEncryptor;
 import Linking.Password.PasswordEncryptor;
@@ -25,55 +27,49 @@ public final class Authentication {
     private static final AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
 	private static final AccessType ACCESS_TYPE = AccessType.APP_FOLDER;
 	private static final PasswordEncryptor passwordEncryptor = new BCryptEncryptor();
+	
+	private static final String TRUE = "1";
+	private static final String FALSE = "0";
     
-    public static State link(BufferedReader input) {
+    public static User link(ClientComms comms) {
     	
-
-    		String username = null;
-    		String password = null;
+    	boolean accepted = false;
+		String username = null;
+		String password = null;
 		
-    		boolean userPassAccepted = false; 
+		while (!accepted) {
+			
+			username = comms.fromClient();
+			password = comms.fromClient();
+			
+    		accepted = checkUserPass(username, password);
+			
+    		/* Tell client the user/pass was incorrect */
+    		if (!accepted)
+    			comms.toClient(FALSE);
+    	}
 		
-    		try {
-		
-    			while (!userPassAccepted) {
-				
-    				System.out.println("Enter username");
-    				username = input.readLine();
-    				
-    				System.out.println("Enter password");
-    				password = input.readLine();
-			
-    				userPassAccepted = checkPassword(username, password);
-			
-    				if (!userPassAccepted)
-    					System.out.println("Username or password incorrect");
-			
-    			}
+		/* Tell client the user/pass was correct */
+		comms.toClient(TRUE);
     			
-    		} catch (IOException e) {
-    				// TODO Auto-generated catch block
-    				e.printStackTrace();
-    		}
-    		
-    		return createState(username);
+    	return createUser(username);
     }
     
-    public static State createState(String username) {
+    public static User createUser(String username) {
     	
-    	State state = State.load(username);
-		WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE, state.getAccessTokens());
-		state.setSession(session);
+    	User user = User.load(username);
+		WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE, user.getAccessTokens());
+		user.setSession(session);
 		
-		return state;
+		return user;
     	
     }
     
-    public static State authenticate(String username, String password) {
+    public static User authenticate(String username, String password) {
     	
     	WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE);
         WebAuthInfo authInfo;
-        State state = null;
+        User user = null;
 		
         try {
         
@@ -86,8 +82,8 @@ public final class Authentication {
         
 			String uid = session.retrieveWebAccessToken(pair);
 			AccessTokenPair tokens = session.getAccessTokenPair();
-			state = State.save(username, passwordEncryptor.hashPassword(password), uid, tokens.key, tokens.secret);
-			state.setSession(session);
+			user = User.save(username, passwordEncryptor.hashPassword(password), uid, tokens.key, tokens.secret);
+			user.setSession(session);
         
         } catch (DropboxException e) {
 			// TODO Auto-generated catch block
@@ -103,13 +99,16 @@ public final class Authentication {
 			e.printStackTrace();
 		}
         
-        return state;
+        return user;
     	
     }
     
-    private static boolean checkPassword(String username, String password) {
+    private static boolean checkUserPass(String username, String password) {
     	
-    	return passwordEncryptor.checkPassword(password, State.getPassword(username));
+    	if (UserOperations.checkUserExists(username))
+    		return passwordEncryptor.checkPassword(password, User.getPassword(username));
+    	else
+    		return false;
     		
     }
     
