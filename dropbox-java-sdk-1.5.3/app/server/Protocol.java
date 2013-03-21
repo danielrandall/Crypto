@@ -12,14 +12,18 @@ public class Protocol {
 		
 		User user = null;
 		
-		/* Recieve login or register decision */
-		String decision = comms.fromClient();
+		while (user == null) {
 		
-		if (decision.equals(LOGIN))
-			user = Authentication.link(comms);
+			/* Recieve login or register decision */
+			String decision = comms.fromClient();
+		
+			if (decision.equals(LOGIN))
+				user = Authentication.link(comms);
 			
-		if (decision.equals(REGISTER))
-			user = UserOperations.register(comms);
+			if (decision.equals(REGISTER))
+				user = UserOperations.register(comms);
+		
+		}
 		
 		CentralAuthority.options(user, comms);
 		

@@ -15,7 +15,7 @@ public class FileOperations {
 	
 	private static Cipher cipher = new AESCipher();
 	
-	public static void encryptFile(File file, String fileName, Session session, ServerComms comms) {
+	public static void encryptFile(File file, String fileName, Session session) {
 		
 		InputStream fileStream;
 		byte[] iv = cipher.generateIV();
@@ -28,7 +28,7 @@ public class FileOperations {
 			fileStream.read(fileContents);
 			fileStream.close();
 				
-			byte[] key = comms.getBytes();
+			byte[] key = ServerComms.getBytes();
 				
 			byte[] encrypted = cipher.encrypt(fileContents, key, iv);
 				
@@ -36,9 +36,9 @@ public class FileOperations {
 			Entry entry = DropboxOperations.uploadFile(fileName, inputStream, session, encrypted.length);
 				
 			/* Send iv */
-			comms.sendBytes(iv, iv.length);
+			ServerComms.sendBytes(iv, iv.length);
 			/* Send file id */
-			comms.toServer(entry.rev);
+			ServerComms.toServer(entry.rev);
 		    
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -53,8 +53,8 @@ public class FileOperations {
 	
 	public static void decryptFile(File file, String rev, ServerComms comms) {
 		
-		byte[] iv = comms.getBytes();
-		byte[] key = comms.getBytes();
+		byte[] iv = ServerComms.getBytes();
+		byte[] key = ServerComms.getBytes();
 		
 		try {
 			InputStream fileStream = new java.io.FileInputStream(file);

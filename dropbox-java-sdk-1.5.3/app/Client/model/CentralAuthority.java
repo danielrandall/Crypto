@@ -16,16 +16,17 @@ public class CentralAuthority {
 	private static final String DOWNLOAD_FILE = "2";
 	private static final String ADD_FRIEND = "3";
 	
+	/*
 	public static void options(ServerComms comms, View view) {
 		
-		String key = comms.fromServer();
-		String secret = comms.fromServer();
+		String key = ServerComms.fromServer();
+		String secret = ServerComms.fromServer();
 		
 		Session session = DropboxOperations.makeSession(key, secret);
 		
 		String option = view.getCentralDecision();
 		
-		comms.toServer(option);
+		ServerComms.toServer(option);
 		
 		if (option.equals(UPLOAD_FILE))
 			uploadFile(comms, view, session);
@@ -37,7 +38,7 @@ public class CentralAuthority {
 			addFriend(comms, view, session);
 		
 	}
-
+    */
 
 	private static void addFriend(ServerComms comms, View view, Session session) {
 		
@@ -50,10 +51,10 @@ public class CentralAuthority {
 			usernameToAdd = view.addUser();
 		
 			/* Send username to server */
-			comms.toServer(usernameToAdd);
+			ServerComms.toServer(usernameToAdd);
 			
 			/* Recieve response */
-			response = comms.fromServer();
+			response = ServerComms.fromServer();
 			
 			if (response.equals(TRUE))
 				userExists = true;
@@ -64,32 +65,21 @@ public class CentralAuthority {
 		String lowerBound = view.getLowerBound();
 		String upperBound = view.getUpperBound();
 		
-		comms.toServer(lowerBound);
-		comms.toServer(upperBound);
+		ServerComms.toServer(lowerBound);
+		ServerComms.toServer(upperBound);
 	}
 
 
-	private static void uploadFile(ServerComms comms, View view, Session session) {
+	public static void uploadFile(String fileLocation, int securityLevel) {
 		
-		boolean fileAccepted = false;
-		String fileLocation = null;
-		File file = null;
+		ServerComms.toServer(UPLOAD_FILE);
 		
-		while (!fileAccepted) {
-			fileLocation = view.getFileLocation();
-			file = new File(fileLocation);
-			if(file.exists())
-				fileAccepted = true;
-			else
-				view.fileNotAccepted();
-		}
-		
-		String securityLevel = view.getSecurityLevel();
+		File file = new File(fileLocation);
 		
 		/* Send security level of file to server */
-		comms.toServer(securityLevel);
+		ServerComms.toServer(Integer.toString(securityLevel));
 		
-		FileOperations.encryptFile(file, fileLocation, session, comms);
+		FileOperations.encryptFile(file, fileLocation, DropboxOperations.getSession());
 		
 	}
 	
@@ -121,7 +111,7 @@ public class CentralAuthority {
 		String rev = DropboxOperations.downloadFile(session, fileDownloadName, outputStream);
 		
 		/* Send file information to the server */
-		comms.toServer(rev);
+		ServerComms.toServer(rev);
 		
 		FileOperations.decryptFile(file, rev, comms);	
 		

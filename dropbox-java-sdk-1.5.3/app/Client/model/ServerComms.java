@@ -11,33 +11,17 @@ import java.net.Socket;
 public class ServerComms {
 	
 	private static final String HOST_NAME = "localhost";
-	private static final int PORT_NUMBER = 4436;
+	private static final int PORT_NUMBER = 4429;
 	
-	private Socket socket = null;
-	private PrintWriter out = null;
-    private BufferedReader in = null;
-    private DataOutputStream dOut = null;
-    private DataInputStream dis = null;
-    
-    public ServerComms() {
-    	
-    	try {
-    		
-    		socket = new Socket(HOST_NAME, PORT_NUMBER);
-			out = new PrintWriter(socket.getOutputStream(), true);
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			dOut = new DataOutputStream(socket.getOutputStream());
-			dis = new DataInputStream(socket.getInputStream());
-			
-    	} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
+	private static Socket socket = null;
+	private static PrintWriter out = null;
+    private static BufferedReader in = null;
+    private static DataOutputStream dOut = null;
+    private static DataInputStream dis = null;
     
     /* Cleans up after itself.
      * Call before ending this session. */
-    public void destroy() {
+    public static void destroy() {
     	
     	try {
     	
@@ -53,7 +37,7 @@ public class ServerComms {
     }
     
     /* Sends string from user to the server */
-    public void toServer(String fromUser) {
+    public static void toServer(String fromUser) {
     	
     	out.println(fromUser);
     	
@@ -61,7 +45,7 @@ public class ServerComms {
     
     /* Gets string output from the server.
      * Call this function when expecting. */
-    public String fromServer() {
+    public static String fromServer() {
     	
     	String fromServer = null;
     	
@@ -79,7 +63,7 @@ public class ServerComms {
     }
     
     
-    public void sendBytes(byte[] bytes, int length) {
+    public static void sendBytes(byte[] bytes, int length) {
     	
     	try {
     		
@@ -92,13 +76,14 @@ public class ServerComms {
 		}
     }
     
-    public byte[] getBytes() {
+    public static byte[] getBytes() {
 		
 		byte[] data = null;
 		
 		try {
 			
 			int length = dis.readInt();
+			System.out.println(length);
 			data = new byte[length];
 			dis.readFully(data);
 			
@@ -108,6 +93,25 @@ public class ServerComms {
 		}
 		
 		return data;
+		
+	}
+
+	public static void setup() {
+		
+		System.out.println("settingup");
+		
+		try {
+    		
+    		socket = new Socket(HOST_NAME, PORT_NUMBER);
+			out = new PrintWriter(socket.getOutputStream(), true);
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			dOut = new DataOutputStream(socket.getOutputStream());
+			dis = new DataInputStream(socket.getInputStream());
+			
+    	} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 

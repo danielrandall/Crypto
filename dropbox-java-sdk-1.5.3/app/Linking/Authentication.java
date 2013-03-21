@@ -36,17 +36,16 @@ public final class Authentication {
     	boolean accepted = false;
 		String username = null;
 		String password = null;
-		
-		while (!accepted) {
 			
-			username = comms.fromClient();
-			password = comms.fromClient();
+		username = comms.fromClient();
+		password = comms.fromClient();
 			
-    		accepted = checkUserPass(username, password);
+    	accepted = checkUserPass(username, password);
 			
-    		/* Tell client the user/pass was incorrect */
-    		if (!accepted)
-    			comms.toClient(FALSE);
+    	/* Tell client the user/pass was incorrect */
+    	if (!accepted) {
+    		comms.toClient(FALSE);
+    		return null;
     	}
 		
 		/* Tell client the user/pass was correct */

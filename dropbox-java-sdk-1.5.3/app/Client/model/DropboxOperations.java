@@ -20,11 +20,21 @@ public class DropboxOperations {
     private static final AppKeyPair KEY_PAIR = new AppKeyPair(APP_KEY, APP_SECRET);
 	private static final AccessType ACCESS_TYPE = AccessType.APP_FOLDER;
 	
+	private static Session session;
+	
     public static Session makeSession(String key, String secret) {
     	
     	AccessTokenPair atp = new AccessTokenPair(key, secret);
 		
-    	return new WebAuthSession(KEY_PAIR, ACCESS_TYPE, atp);    	
+    	session = new WebAuthSession(KEY_PAIR, ACCESS_TYPE, atp);
+    	
+    	return session;
+    	
+    }
+    
+    public static Session getSession() {
+    	
+    	return session;
     	
     }
 

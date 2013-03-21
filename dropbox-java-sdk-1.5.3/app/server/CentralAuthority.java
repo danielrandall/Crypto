@@ -19,23 +19,20 @@ public class CentralAuthority {
 		comms.toClient(user.getAccessTokens().key);
 		comms.toClient(user.getAccessTokens().secret);
 		
-		/* Get central option from user */
-		String decision = comms.fromClient();
-		
-		if (decision.equals(UPLOAD_FILE))
-			uploadEncryptedFile(user.getUsername(), comms);
+		while(true) {
 			
-		if (decision.equals(DOWNLOAD_FILE))
-			downloadDecryptedFile(user.getUsername(), comms);
+			/* Get central option from user */
+			String decision = comms.fromClient();
 		
-		if (decision.equals(ADD_FRIEND))
-			addFriend(user.getUsername(), user.getSession(), comms);
-
-		//	if (decision.equals("2"))
-			//	downloadDecryptedFile(user.getSession(), user.getUsername());
-		//	if	(decision.equals("3"))
-		//		addUser(user);
-
+			if (decision.equals(UPLOAD_FILE))
+				uploadEncryptedFile(user.getUsername(), comms);
+			
+			if (decision.equals(DOWNLOAD_FILE))
+				downloadDecryptedFile(user.getUsername(), comms);
+		
+			if (decision.equals(ADD_FRIEND))
+				addFriend(user.getUsername(), user.getSession(), comms);
+		}
 	
 	}
 	
