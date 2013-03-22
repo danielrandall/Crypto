@@ -2,8 +2,6 @@ package Client.controller;
 
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
-
 import Client.model.CentralAuthority;
 import Client.view.MenuFrame;
 

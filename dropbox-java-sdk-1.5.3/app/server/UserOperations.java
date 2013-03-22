@@ -35,29 +35,21 @@ public class UserOperations {
 
 
 	public static User register(ClientComms comms) {
-		
-		String username = null;
-		String password = null;
-		
-		boolean usernameAccepted = false; 
-		
-		
-		while (!usernameAccepted) {
 			
-			username = comms.fromClient();
+		String username = comms.fromClient();
 			
-			usernameAccepted = !checkUserExists(username);
+		boolean	usernameAccepted = !checkUserExists(username);
 			
-			if (!usernameAccepted)
-				comms.toClient(FALSE);
-			
+		if (!usernameAccepted) {
+			comms.toClient(FALSE);
+			return null;
 		}
 		
 		comms.toClient(TRUE);
 		
-		password = comms.fromClient();
+		String password = comms.fromClient();
 
-		return Authentication.authenticate(username, password);
+		return Authentication.authenticate(username, password, comms);
 		
 	}
 	

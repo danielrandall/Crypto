@@ -1,39 +1,25 @@
 package Client.model;
 
-import Client.view.View;
-
 public class Register {
 	
 	private static final String TRUE = "1";
-	//private static final String FALSE = "0";
+	private static final String REGISTER = "2";
 
-	public static void userRegister(ServerComms comm, View view) {
+	public static boolean userRegister(String username, String password) {
 		
-		String username = null;
-		String password = null;
-		String trueFalse = null;
+		/* Tell the server a user wishes to register */
+		ServerComms.toServer(REGISTER);
 		
-		boolean usernameAccepted = false; 
-		
-		while (!usernameAccepted) {
+		/* Give the server the desired username */
+		ServerComms.toServer(username);
 			
-			username = view.getUsername();
+		/* If the server accepts the username */
+		if (!ServerComms.fromServer().equals(TRUE))
+			return false;
+			
+		ServerComms.toServer(password);
 		
-			comm.toServer(username);
-			
-			trueFalse = comm.fromServer();
-			
-			/* If the server accepts the username then exit the loop */
-			if (trueFalse.equals(TRUE))
-				usernameAccepted = true;
-			else
-				System.out.println("Username unavailable");
-			
-		}
-
-		password = view.getPassword();
-		
-		comm.toServer(password);
+		return true;
 		
 	}
 

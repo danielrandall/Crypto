@@ -11,7 +11,7 @@ import java.net.Socket;
 public class ServerComms {
 	
 	private static final String HOST_NAME = "localhost";
-	private static final int PORT_NUMBER = 4429;
+	private static final int PORT_NUMBER = 4428;
 	
 	private static Socket socket = null;
 	private static PrintWriter out = null;
@@ -97,8 +97,6 @@ public class ServerComms {
 	}
 
 	public static void setup() {
-		
-		System.out.println("settingup");
 		
 		try {
     		

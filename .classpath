@@ -5,25 +5,17 @@
 	<classpathentry kind="src" path="dropbox-java-sdk-1.5.3/examples/SearchCache"/>
 	<classpathentry kind="src" path="dropbox-java-sdk-1.5.3/src/main/java"/>
 	<classpathentry kind="src" path="dropbox-java-sdk-1.5.3/src/test/java"/>
-	<classpathentry kind="lib" path="dropbox-java-sdk-1.5.3/lib/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="dropbox-java-sdk-1.5.3/lib/dropbox-java-sdk-1.5.3.jar"/>
-	<classpathentry kind="lib" path="dropbox-java-sdk-1.5.3/lib/httpclient-4.0.3.jar"/>
-	<classpathentry kind="lib" path="dropbox-java-sdk-1.5.3/lib/httpcore-4.0.1.jar"/>
-	<classpathentry kind="lib" path="dropbox-java-sdk-1.5.3/lib/httpmime-4.0.3.jar"/>
-	<classpathentry kind="lib" path="dropbox-java-sdk-1.5.3/lib/json_simple-1.1.jar"/>
-	<classpathentry kind="lib" path="dropbox-java-sdk-1.5.3/lib/test/junit-4.10.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/homes/dr1810/Crypto/dropbox-java-sdk-1.5.3/lib/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="/homes/dr1810/Crypto/dropbox-java-sdk-1.5.3/lib/dropbox-java-sdk-1.5.3.jar" sourcepath="/homes/dr1810/Downloads/dropbox-java-sdk-1.5.3.zip"/>
-	<classpathentry kind="lib" path="/homes/dr1810/Crypto/dropbox-java-sdk-1.5.3/lib/httpclient-4.0.3.jar"/>
-	<classpathentry kind="lib" path="/homes/dr1810/Crypto/dropbox-java-sdk-1.5.3/lib/httpcore-4.0.1.jar"/>
-	<classpathentry kind="lib" path="/homes/dr1810/Crypto/dropbox-java-sdk-1.5.3/lib/httpmime-4.0.3.jar"/>
-	<classpathentry kind="lib" path="/homes/dr1810/Crypto/dropbox-java-sdk-1.5.3/lib/json_simple-1.1.jar"/>
-	<classpathentry kind="lib" path="/homes/dr1810/Crypto/dropbox-java-sdk-1.5.3/lib/test/junit-4.10.jar"/>
-	<classpathentry kind="lib" path="/homes/dr1810/Crypto/dropbox-java-sdk-1.5.3/lib/h2-1.3.170.jar"/>
-	<classpathentry kind="lib" path="/homes/dr1810/Crypto/dropbox-java-sdk-1.5.3/lib/gnu-crypto.jar"/>
-	<classpathentry kind="lib" path="/homes/dr1810/Crypto/dropbox-java-sdk-1.5.3/lib/javax-crypto.jar"/>
-	<classpathentry kind="lib" path="/homes/dr1810/Crypto/dropbox-java-sdk-1.5.3/lib/javax-security.jar"/>
-	<classpathentry kind="lib" path="forms-1.3.0.jar" sourcepath="forms-1.3.0-src.zip"/>
+	<classpathentry kind="lib" path="/home/cat/Crypto/dropbox-java-sdk-1.5.3/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/home/cat/Crypto/dropbox-java-sdk-1.5.3/lib/dropbox-java-sdk-1.5.3.jar"/>
+	<classpathentry kind="lib" path="/home/cat/Crypto/dropbox-java-sdk-1.5.3/lib/gnu-crypto.jar"/>
+	<classpathentry kind="lib" path="/home/cat/Crypto/dropbox-java-sdk-1.5.3/lib/h2-1.3.170.jar"/>
+	<classpathentry kind="lib" path="/home/cat/Crypto/dropbox-java-sdk-1.5.3/lib/httpclient-4.0.3.jar"/>
+	<classpathentry kind="lib" path="/home/cat/Crypto/dropbox-java-sdk-1.5.3/lib/httpcore-4.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/cat/Crypto/dropbox-java-sdk-1.5.3/lib/httpmime-4.0.3.jar"/>
+	<classpathentry kind="lib" path="/home/cat/Crypto/dropbox-java-sdk-1.5.3/lib/javax-crypto.jar"/>
+	<classpathentry kind="lib" path="/home/cat/Crypto/dropbox-java-sdk-1.5.3/lib/javax-security.jar"/>
+	<classpathentry kind="lib" path="/home/cat/Crypto/dropbox-java-sdk-1.5.3/lib/json_simple-1.1.jar"/>
+	<classpathentry kind="lib" path="/home/cat/Crypto/dropbox-java-sdk-1.5.3/lib/test/junit-4.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

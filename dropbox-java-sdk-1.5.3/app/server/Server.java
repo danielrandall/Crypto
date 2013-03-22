@@ -6,7 +6,7 @@ import java.net.ServerSocket;
  
 public class Server {
 	
-	private static final int PORT_NUMBER = 4429;
+	private static final int PORT_NUMBER = 4428;
 	
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = null;

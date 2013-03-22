@@ -354,3 +354,24 @@ SELECT ID FROM INFORMATION_SCHEMA.LOBS WHERE TABLE = ? [90098-170]
 	at org.h2.jdbc.JdbcPreparedStatement.executeQuery(JdbcPreparedStatement.java:109)
 	at org.h2.store.LobStorage.removeAllForTable(LobStorage.java:174)
 	... 2 more
+03-22 03:55:01 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Column "DOLLY" not found; SQL statement:
+UPDATE users SET friends= ? WHERE username = dolly [42122-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:141)
+	at org.h2.expression.Comparison.optimize(Comparison.java:161)
+	at org.h2.command.dml.Update.prepare(Update.java:177)
+	at org.h2.command.Parser.prepareCommand(Parser.java:218)
+	at org.h2.engine.Session.prepareLocal(Session.java:414)
+	at org.h2.engine.Session.prepareCommand(Session.java:363)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1116)
+	at org.h2.jdbc.JdbcPreparedStatement.<init>(JdbcPreparedStatement.java:74)
+	at org.h2.jdbc.JdbcConnection.prepareStatement(JdbcConnection.java:267)
+	at Linking.Databases.H2Users.updateFriends(H2Users.java:186)
+	at server.UserOperations.addUserToFriendsList(UserOperations.java:33)
+	at server.CentralAuthority.addFriend(CentralAuthority.java:59)
+	at server.CentralAuthority.options(CentralAuthority.java:34)
+	at server.Protocol.begin(Protocol.java:28)
+	at server.ServerThread.run(ServerThread.java:23)

@@ -64,8 +64,8 @@ public final class Authentication {
     	
     }
     
-    public static User authenticate(String username, String password) {
-    	
+    public static User authenticate(String username, String password, ClientComms comms) {
+    	/*
     	WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE);
         WebAuthInfo authInfo;
         User user = null;
@@ -81,9 +81,17 @@ public final class Authentication {
         
 			String uid = session.retrieveWebAccessToken(pair);
 			AccessTokenPair tokens = session.getAccessTokenPair();
-			user = User.save(username, passwordEncryptor.hashPassword(password), uid, tokens.key, tokens.secret);
+			*/
+    	
+    		String key = comms.fromClient();
+    		String secret = comms.fromClient();
+    		String uid = comms.fromClient();
+    		
+    		WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE, new AccessTokenPair(key, secret));
+    		
+			User user = User.save(username, passwordEncryptor.hashPassword(password), uid, key, secret);
 			user.setSession(session);
-        
+        /*
         } catch (DropboxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -97,6 +105,7 @@ public final class Authentication {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
         
         return user;
     	

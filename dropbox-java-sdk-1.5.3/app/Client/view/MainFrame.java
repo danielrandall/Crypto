@@ -17,6 +17,7 @@ import javax.swing.JButton;
 
 import Client.controller.Controller;
 import Client.controller.LogInCommand;
+import Client.controller.RegisterCommand;
 
 public class MainFrame extends JFrame {
 	
@@ -34,6 +35,10 @@ public class MainFrame extends JFrame {
 	private final JTextField passwordBox = new JTextField();
 	private final JButton logInButton = new JButton("Log In");
 	private final JButton registerButton = new JButton("Register");
+	private final JTextField registerUsername = new JTextField();
+	private final JLabel label = new JLabel("Password");
+	private final JTextField registerPassword = new JTextField();
+	private final JLabel label_1 = new JLabel("Username");
 
 	/**
 	 * Launch the application.
@@ -62,10 +67,18 @@ public class MainFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public MainFrame() {
+		label_1.setVerticalAlignment(SwingConstants.TOP);
+		label_1.setFont(new Font("Dialog", Font.BOLD, 10));
+		registerPassword.setColumns(10);
+		label.setFont(new Font("Dialog", Font.BOLD, 10));
+		registerUsername.setColumns(10);
 		registerButton.setFont(new Font("Dialog", Font.BOLD, 10));
 		
-		Object[] objects = {this, usernameBox, passwordBox};
-		logInButton.addActionListener(new GenericActionListener(new LogInCommand(), objects));
+		Object[] objects = {this, registerUsername, registerPassword};
+		registerButton.addActionListener(new GenericActionListener(new RegisterCommand(), objects));
+		
+		Object[] objects2 = {this, usernameBox, passwordBox};
+		logInButton.addActionListener(new GenericActionListener(new LogInCommand(), objects2));
 		
 		logInButton.setFont(new Font("Dialog", Font.BOLD, 10));
 		passwordBox.setColumns(10);
@@ -130,18 +143,37 @@ public class MainFrame extends JFrame {
 		mid.add(register);
 		GroupLayout gl_register = new GroupLayout(register);
 		gl_register.setHorizontalGroup(
-			gl_register.createParallelGroup(Alignment.LEADING)
+			gl_register.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_register.createSequentialGroup()
-					.addGap(48)
-					.addComponent(registerButton)
-					.addContainerGap(90, Short.MAX_VALUE))
+					.addGroup(gl_register.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_register.createSequentialGroup()
+							.addGroup(gl_register.createParallelGroup(Alignment.LEADING)
+								.addComponent(registerUsername, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addGroup(gl_register.createSequentialGroup()
+									.addComponent(label, GroupLayout.PREFERRED_SIZE, 54, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED, 60, GroupLayout.PREFERRED_SIZE)))
+							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(registerButton))
+						.addComponent(label_1, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
+						.addComponent(registerPassword, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap())
 		);
 		gl_register.setVerticalGroup(
 			gl_register.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_register.createSequentialGroup()
-					.addContainerGap(45, Short.MAX_VALUE)
+					.addGap(39)
 					.addComponent(registerButton)
 					.addGap(28))
+				.addGroup(Alignment.LEADING, gl_register.createSequentialGroup()
+					.addComponent(label_1, GroupLayout.PREFERRED_SIZE, 14, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_register.createSequentialGroup()
+						.addComponent(registerUsername, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(label, GroupLayout.PREFERRED_SIZE, 13, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(registerPassword, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(13, Short.MAX_VALUE))
 		);
 		register.setLayout(gl_register);
 		

@@ -41,16 +41,15 @@ public class CentralAuthority {
 		boolean userExists = false;
 		String usernameToAdd = null;
 		
-		while (!userExists) {
-		
-			usernameToAdd = comms.fromClient();
+		usernameToAdd = comms.fromClient();
 			
-			userExists = UserOperations.checkUserExists(usernameToAdd);
+		userExists = UserOperations.checkUserExists(usernameToAdd);
 			
-			if (userExists)
-				comms.toClient(TRUE);
-			else
-				comms.toClient(FALSE);
+		if (userExists)
+			comms.toClient(TRUE);
+		else {
+			comms.toClient(FALSE);
+			return;
 		}
 			
 		int lowerBound = Integer.parseInt(comms.fromClient());   // DEAL WITH NON INT ENTRY

@@ -15,7 +15,10 @@ public class FileOperations {
 	public static void encryptFile(int securityLevel, String username, ClientComms comms) {
 		
 		byte[] key = KeyDerivation.retrieveKey(username, Integer.toString(securityLevel), cipher);
+		System.out.println("here");
+		System.out.println(key.length);
 		comms.sendBytes(key, key.length);
+		System.out.println("not here");
 				
 		byte[] iv = comms.getBytes();
 		String rev = comms.fromClient();

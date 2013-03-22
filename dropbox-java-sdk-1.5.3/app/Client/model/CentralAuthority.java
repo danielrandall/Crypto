@@ -40,61 +40,58 @@ public class CentralAuthority {
 	}
     */
 
-	private static void addFriend(ServerComms comms, View view, Session session) {
+	public static boolean addFriend(String usernameToAdd, int lowerBound, int upperBound) {
 		
-		boolean userExists = false;
-		String usernameToAdd = null;
+		/* Tell server a user is to be added */
+		ServerComms.toServer(ADD_FRIEND);
+		
 		String response = null;
-
-		while (!userExists) {
 	
-			usernameToAdd = view.addUser();
-		
-			/* Send username to server */
-			ServerComms.toServer(usernameToAdd);
+		/* Send username to server */
+		ServerComms.toServer(usernameToAdd);
 			
-			/* Recieve response */
-			response = ServerComms.fromServer();
+		/* Receive response */
+		response = ServerComms.fromServer();
 			
-			if (response.equals(TRUE))
-				userExists = true;
-			else
-				view.userNotExist();
-		}
+		if (!response.equals(TRUE))
+			return false;
 		
-		String lowerBound = view.getLowerBound();
-		String upperBound = view.getUpperBound();
+		/* Send bounds to the server */
+		ServerComms.toServer(Integer.toString(lowerBound));
+		ServerComms.toServer(Integer.toString(upperBound));
 		
-		ServerComms.toServer(lowerBound);
-		ServerComms.toServer(upperBound);
+		return true;
+		
 	}
 
 
 	public static void uploadFile(String fileLocation, int securityLevel) {
 		
+		/* Tell the server the user wishes to upload a file */
 		ServerComms.toServer(UPLOAD_FILE);
-		
-		File file = new File(fileLocation);
 		
 		/* Send security level of file to server */
 		ServerComms.toServer(Integer.toString(securityLevel));
 		
-		FileOperations.encryptFile(file, fileLocation, DropboxOperations.getSession());
+		File file = new File(fileLocation);
+		
+		FileOperations.encryptFile(file, file.getName(), DropboxOperations.getSession());
 		
 	}
 	
-	private static void downloadFile(ServerComms comms, View view, Session session) {
+	public static void downloadFile(String fileDownloadName, String downloadLocation) {
 		
-		String fileDownloadName = view.getFileName();
-		
-		String downloadLocation = view.getDownloadLocation();
+		/* Tell server a file is being downloaded */
+		ServerComms.toServer(DOWNLOAD_FILE);
 		
 		File file = new File(downloadLocation);
 		
+		/*
 		if (file.exists()) {
 			view.fileExists();
 			return;
 		}
+		*/
 		
 		FileOutputStream outputStream = null;
 		
@@ -108,12 +105,12 @@ public class CentralAuthority {
 		}
 		
 		// Returns info
-		String rev = DropboxOperations.downloadFile(session, fileDownloadName, outputStream);
+		String rev = DropboxOperations.downloadFile(DropboxOperations.getSession(), fileDownloadName, outputStream);
 		
 		/* Send file information to the server */
 		ServerComms.toServer(rev);
 		
-		FileOperations.decryptFile(file, rev, comms);	
+		FileOperations.decryptFile(file, rev);	
 		
 		
 	}

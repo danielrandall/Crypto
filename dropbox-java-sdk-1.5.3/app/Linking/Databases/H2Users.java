@@ -181,7 +181,7 @@ public class H2Users extends H2Database {
 
 		try {
 			String command = "UPDATE " + TABLE_NAME
-			          + " SET " + FRIENDS + "= ? WHERE " + USERNAME + " = " + username;
+			          + " SET " + FRIENDS + "= ? WHERE " + USERNAME + " = '" + username + "'";
 	
 			PreparedStatement statement = conn.prepareStatement(command);
 			statement.setObject(1, friends);

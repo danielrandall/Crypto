@@ -70,10 +70,13 @@ public class DropboxOperations {
 	/* Initially pass in a null cursor and then pass in the returned cursor in future calls.
 	 * Page limit of -1 means no limit. */
 	public static String updateCache(Session session, String cursor, int pageLimit,
-											Session targetSession) {
+											Session targetSession, String folderName) {
 		
 		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
+		
 		int pageNum = 0;
+		
+		String destPath;
 		
 		while (pageLimit < 0 || pageNum < pageLimit) {
 			DropboxAPI.DeltaPage<DropboxAPI.Entry> page;
@@ -88,8 +91,8 @@ public class DropboxOperations {
             
 				/* Apply the entries one by one. */
 				for (DeltaEntry<DropboxAPI.Entry> e : page.entries) {
-				//	applyDelta(e);
-					copyBetweenAccounts(session, targetSession, e.lcPath, e.lcPath);
+					destPath = folderName + e.lcPath;
+					copyBetweenAccounts(session, targetSession, e.lcPath, destPath);
 				}
             
 				cursor = page.cursor;     
@@ -112,7 +115,16 @@ public class DropboxOperations {
 			            Session friendSession, String username,
 			                        Session session) {
 		
-		updateCache(session, null, -1, friendSession);
+		DropboxAPI<Session> client = new DropboxAPI<Session>(friendSession);
+		String folderName = "/friends/" + username;
+		try {
+			client.createFolder(folderName);
+		} catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+		
+		updateCache(session, null, -1, friendSession, folderName);
 		
 	}
 	

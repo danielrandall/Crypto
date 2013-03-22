@@ -1,7 +1,14 @@
 package Client.model;
 
+import java.awt.Desktop;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import javax.swing.JOptionPane;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.DeltaEntry;
@@ -9,9 +16,11 @@ import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
+import com.dropbox.client2.session.RequestTokenPair;
 import com.dropbox.client2.session.Session;
 import com.dropbox.client2.session.WebAuthSession;
 import com.dropbox.client2.session.Session.AccessType;
+import com.dropbox.client2.session.WebAuthSession.WebAuthInfo;
 
 public class DropboxOperations {
 	
@@ -55,6 +64,46 @@ public class DropboxOperations {
 		}
 		
 		return newEntry;
+	}
+	
+	public static boolean authenticate() {
+		
+		WebAuthSession session = new WebAuthSession(KEY_PAIR, ACCESS_TYPE);
+        WebAuthInfo authInfo;
+		
+        try {
+        
+			authInfo = session.getAuthInfo();
+			RequestTokenPair pair = authInfo.requestTokenPair;
+			String url = authInfo.url;
+ 
+			Desktop.getDesktop().browse(new URL(url).toURI());
+			JOptionPane.showMessageDialog(null, "Press ok to continue once you have authenticated.");
+        
+			String uid = session.retrieveWebAccessToken(pair);
+			AccessTokenPair tokens = session.getAccessTokenPair();
+			
+			ServerComms.toServer(tokens.key);
+			ServerComms.toServer(tokens.secret);
+			ServerComms.toServer(uid);
+			
+			makeSession(tokens.key, tokens.secret);
+			
+        } catch (DropboxException e) {
+			return false;
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        return true;
+		
 	}
 	
 	
