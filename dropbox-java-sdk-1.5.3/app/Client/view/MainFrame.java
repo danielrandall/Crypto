@@ -7,21 +7,30 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextField;
 import java.awt.GridLayout;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 import java.awt.Font;
 import javax.swing.SwingConstants;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
 
 import Client.controller.Controller;
 import Client.controller.LogInCommand;
-import Client.controller.RegisterCommand;
+import javax.swing.BoxLayout;
+import java.awt.Component;
+import javax.swing.Box;
+import java.awt.FlowLayout;
+import java.awt.Dimension;
+import javax.swing.JPasswordField;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class MainFrame extends JFrame {
 	
+	/* Frame to transfer to when a user logs in */
 	private MenuFrame mFrame = new MenuFrame();
+	/* Frame to transfer to when a user decides to register */
+	private RegisterFrame rFrame = new RegisterFrame();
 
 	private JPanel contentPane;
 	private final JPanel mid = new JPanel();
@@ -32,18 +41,60 @@ public class MainFrame extends JFrame {
 	private final JLabel lblUsername = new JLabel("Username");
 	private final JTextField usernameBox = new JTextField();
 	private final JLabel lblPassword = new JLabel("Password");
-	private final JTextField passwordBox = new JTextField();
+	private final JPasswordField passwordBox = new JPasswordField();
 	private final JButton logInButton = new JButton("Log In");
 	private final JButton registerButton = new JButton("Register");
-	private final JTextField registerUsername = new JTextField();
-	private final JLabel label = new JLabel("Password");
-	private final JTextField registerPassword = new JTextField();
-	private final JLabel label_1 = new JLabel("Username");
+	private JLabel lblRegisterQuestion;
+	private final Component verticalStrut = Box.createVerticalStrut(20);
+	private final Component rigidArea = Box.createRigidArea(new Dimension(0, 5));
+	private final JPanel passwordPanel = new JPanel();
+	private final JPanel usernamePanel = new JPanel();
+	private final JPanel logInFormPanel = new JPanel();
+	private final JPanel logInButtonPanel = new JPanel();
+	private final Component horizontalGlue = Box.createHorizontalGlue();
+	private final Component rigidArea_1 = Box.createRigidArea(new Dimension(190, 0));
+	private final JPanel panel = new JPanel();
+	private final JLabel lblFancyApplicationName = new JLabel("fancy application name");
+	private final Component rigidArea_2 = Box.createRigidArea(new Dimension(20, 20));
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		
+		/* Set nicer look and feel */
+		
+		/*
+			try {
+				UIManager.setLookAndFeel(
+				        UIManager.getSystemLookAndFeelClassName());
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (InstantiationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IllegalAccessException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (UnsupportedLookAndFeelException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			*/
+			
+			try {
+			    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+			        if ("Nimbus".equals(info.getName())) {
+			            UIManager.setLookAndFeel(info.getClassName());
+			            break;
+			        }
+			    }
+			} catch (Exception e) {
+			    // If Nimbus is not available, you can set the GUI to another look and feel.
+			}
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -67,115 +118,93 @@ public class MainFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public MainFrame() {
-		label_1.setVerticalAlignment(SwingConstants.TOP);
-		label_1.setFont(new Font("Dialog", Font.BOLD, 10));
-		registerPassword.setColumns(10);
-		label.setFont(new Font("Dialog", Font.BOLD, 10));
-		registerUsername.setColumns(10);
+		registerButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				register();
+			}
+		});
+		registerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		registerButton.setFont(new Font("Dialog", Font.BOLD, 10));
 		
-		Object[] objects = {this, registerUsername, registerPassword};
-		registerButton.addActionListener(new GenericActionListener(new RegisterCommand(), objects));
+		//Object[] objects = {this, registerUsername, registerPassword};
+		//registerButton.addActionListener(new GenericActionListener(new RegisterCommand(), objects));
 		
 		Object[] objects2 = {this, usernameBox, passwordBox};
+		logInFormPanel.add(usernamePanel);
+		usernamePanel.add(lblUsername);
+		lblUsername.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblUsername.setFont(new Font("Dialog", Font.PLAIN, 10));
+		usernameBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+		usernameBox.setFont(new Font("Dialog", Font.PLAIN, 12));
+		usernameBox.setHorizontalAlignment(SwingConstants.LEFT);
+		usernamePanel.add(usernameBox);
+		usernameBox.setColumns(10);
+		usernamePanel.setLayout(new BoxLayout(usernamePanel, BoxLayout.PAGE_AXIS));
+		logInFormPanel.add(passwordPanel);
+		passwordPanel.add(lblPassword);
+		lblPassword.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblPassword.setFont(new Font("Dialog", Font.PLAIN, 10));
+		passwordBox.setAlignmentX(0.15f);
+		passwordBox.setHorizontalAlignment(SwingConstants.LEFT);
+		passwordPanel.add(passwordBox);
+		passwordBox.setColumns(10);
+		FlowLayout flowLayout = (FlowLayout) logInButtonPanel.getLayout();
+		flowLayout.setAlignment(FlowLayout.RIGHT);
+		logInButtonPanel.setBorder(null);
+		
+		logInFormPanel.add(logInButtonPanel);
+		
+		logInButtonPanel.add(rigidArea_1);
+		logInButtonPanel.add(logInButton);
 		logInButton.addActionListener(new GenericActionListener(new LogInCommand(), objects2));
 		
 		logInButton.setFont(new Font("Dialog", Font.BOLD, 10));
-		passwordBox.setColumns(10);
-		lblPassword.setFont(new Font("Dialog", Font.BOLD, 10));
-		usernameBox.setColumns(10);
-		lblUsername.setVerticalAlignment(SwingConstants.TOP);
-		lblUsername.setFont(new Font("Dialog", Font.BOLD, 10));
+		
+		logInButtonPanel.add(horizontalGlue);
 		initGUI();
 	}
 	private void initGUI() {
+		lblUsername.setLabelFor(usernameBox);
+		lblPassword.setLabelFor(passwordBox);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 600, 400);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new GridLayout(0, 1, 0, 0));
 		
 		contentPane.add(header);
+		header.setLayout(new GridLayout(0, 2, 0, 0));
+		
+		header.add(panel);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		
+		panel.add(rigidArea_2);
+		lblFancyApplicationName.setFont(new Font("Dialog", Font.BOLD, 14));
+		
+		panel.add(lblFancyApplicationName);
 		
 		contentPane.add(mid);
 		mid.setLayout(new GridLayout(0, 2, 0, 0));
 		
 		mid.add(login);
-		GroupLayout gl_login = new GroupLayout(login);
-		gl_login.setHorizontalGroup(
-			gl_login.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_login.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_login.createParallelGroup(Alignment.LEADING)
-						.addComponent(usernameBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblUsername)))
-				.addGroup(gl_login.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblPassword)
-					.addPreferredGap(ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
-					.addComponent(logInButton)
-					.addGap(20))
-				.addGroup(gl_login.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(passwordBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(89, Short.MAX_VALUE))
-		);
-		gl_login.setVerticalGroup(
-			gl_login.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_login.createSequentialGroup()
-					.addGroup(gl_login.createParallelGroup(Alignment.TRAILING)
-						.addGroup(gl_login.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(logInButton))
-						.addGroup(gl_login.createSequentialGroup()
-							.addComponent(lblUsername, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(usernameBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(lblPassword)))
-					.addGap(1)
-					.addComponent(passwordBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
-		);
-		login.setLayout(gl_login);
+		login.setLayout(new BoxLayout(login, BoxLayout.Y_AXIS));
+		
+		login.add(logInFormPanel);
+		passwordPanel.setLayout(new BoxLayout(passwordPanel, BoxLayout.PAGE_AXIS));
 		
 		mid.add(register);
-		GroupLayout gl_register = new GroupLayout(register);
-		gl_register.setHorizontalGroup(
-			gl_register.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_register.createSequentialGroup()
-					.addGroup(gl_register.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_register.createSequentialGroup()
-							.addGroup(gl_register.createParallelGroup(Alignment.LEADING)
-								.addComponent(registerUsername, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addGroup(gl_register.createSequentialGroup()
-									.addComponent(label, GroupLayout.PREFERRED_SIZE, 54, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED, 60, GroupLayout.PREFERRED_SIZE)))
-							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(registerButton))
-						.addComponent(label_1, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
-						.addComponent(registerPassword, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap())
-		);
-		gl_register.setVerticalGroup(
-			gl_register.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_register.createSequentialGroup()
-					.addGap(39)
-					.addComponent(registerButton)
-					.addGap(28))
-				.addGroup(Alignment.LEADING, gl_register.createSequentialGroup()
-					.addComponent(label_1, GroupLayout.PREFERRED_SIZE, 14, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_register.createSequentialGroup()
-						.addComponent(registerUsername, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(label, GroupLayout.PREFERRED_SIZE, 13, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(registerPassword, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(13, Short.MAX_VALUE))
-		);
-		register.setLayout(gl_register);
+		register.setLayout(new BoxLayout(register, BoxLayout.Y_AXIS));
+		
+		register.add(verticalStrut);
+		
+		lblRegisterQuestion = new JLabel("Not already a member?");
+		lblRegisterQuestion.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lblRegisterQuestion.setHorizontalAlignment(SwingConstants.CENTER);
+		register.add(lblRegisterQuestion);
+		
+		register.add(rigidArea);
+		register.add(registerButton);
 		
 		contentPane.add(footer);
 	}
@@ -188,5 +217,15 @@ public class MainFrame extends JFrame {
 		
 		mFrame.setVisible(true);
 	}
-
+	
+	
+	public void register() {
+		
+		usernameBox.setText("");
+		passwordBox.setText("");
+		setVisible(false);
+		
+		rFrame.setVisible(true);
+		
+	}
 }

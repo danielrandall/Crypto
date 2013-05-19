@@ -63,6 +63,7 @@ public class ServerComms {
     }
     
     
+    /* Sends bytes to the server. */
     public static void sendBytes(byte[] bytes, int length) {
     	
     	try {
@@ -76,6 +77,9 @@ public class ServerComms {
 		}
     }
     
+    
+    /* Gets byte output from the server.
+     * Call this function when expecting. */
     public static byte[] getBytes() {
 		
 		byte[] data = null;

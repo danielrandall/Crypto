@@ -31,16 +31,20 @@ public class DropboxOperations {
 	
 	private static Session session;
 	
+	
+	/* Given the necessary information this method creates a Dropbox session
+	 * and stores it and returns it.
+	 */
     public static Session makeSession(String key, String secret) {
     	
     	AccessTokenPair atp = new AccessTokenPair(key, secret);
-		
     	session = new WebAuthSession(KEY_PAIR, ACCESS_TYPE, atp);
     	
     	return session;
     	
     }
     
+    /* Returns the stored session. */
     public static Session getSession() {
     	
     	return session;
@@ -48,8 +52,9 @@ public class DropboxOperations {
     }
 
 	/* Uploads a file to the location dropboxPath for the current logged in user.
-	 * Will not overwrite existing file. Pass in revision (rev - entry.rev)
-	 * if you want to overwrite the file with the same name. */
+	 * Will not overwrite existing file.
+	 * Pass in revision (rev - entry.rev) if you want to overwrite the file
+	 * with the same name. */
 	public static Entry uploadFile(String dropboxPath, InputStream inputStream,
 			                        Session sourceSession, int length) {
 		
@@ -66,6 +71,12 @@ public class DropboxOperations {
 		return newEntry;
 	}
 	
+	
+	/* Prompts a user to authenticate the app with Dropbox.
+	 * Once the authentication information (key and secret) is acquired it is
+	 * sent to the server to be stored and a new Session is created locally and
+	 * stored.
+	 */
 	public static boolean authenticate() {
 		
 		WebAuthSession session = new WebAuthSession(KEY_PAIR, ACCESS_TYPE);
@@ -77,6 +88,8 @@ public class DropboxOperations {
 			RequestTokenPair pair = authInfo.requestTokenPair;
 			String url = authInfo.url;
  
+			/* Open a window in the user's browser so they can authenticate
+			 * the app */
 			Desktop.getDesktop().browse(new URL(url).toURI());
 			JOptionPane.showMessageDialog(null, "Press ok to continue once you have authenticated.");
         
