@@ -30,7 +30,7 @@ public class MainFrame extends JFrame {
 	/* Frame to transfer to when a user logs in */
 	private MenuFrame mFrame = new MenuFrame();
 	/* Frame to transfer to when a user decides to register */
-	private RegisterFrame rFrame = new RegisterFrame();
+	private RegisterFrame rFrame = new RegisterFrame(this);
 
 	private JPanel contentPane;
 	private final JPanel mid = new JPanel();
@@ -126,10 +126,7 @@ public class MainFrame extends JFrame {
 		registerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		registerButton.setFont(new Font("Dialog", Font.BOLD, 10));
 		
-		//Object[] objects = {this, registerUsername, registerPassword};
-		//registerButton.addActionListener(new GenericActionListener(new RegisterCommand(), objects));
-		
-		Object[] objects2 = {this, usernameBox, passwordBox};
+		Object[] objects1 = {this, usernameBox, passwordBox};
 		logInFormPanel.add(usernamePanel);
 		usernamePanel.add(lblUsername);
 		lblUsername.setVerticalAlignment(SwingConstants.BOTTOM);
@@ -156,7 +153,7 @@ public class MainFrame extends JFrame {
 		
 		logInButtonPanel.add(rigidArea_1);
 		logInButtonPanel.add(logInButton);
-		logInButton.addActionListener(new GenericActionListener(new LogInCommand(), objects2));
+		logInButton.addActionListener(new GenericActionListener(new LogInCommand(), objects1));
 		
 		logInButton.setFont(new Font("Dialog", Font.BOLD, 10));
 		

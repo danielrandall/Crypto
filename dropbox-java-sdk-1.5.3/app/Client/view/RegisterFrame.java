@@ -1,6 +1,7 @@
 package Client.view;
 
 import java.awt.EventQueue;
+import java.awt.Frame;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -9,6 +10,9 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import Client.controller.RegisterCommand;
+
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
@@ -17,22 +21,24 @@ import java.awt.Color;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JPasswordField;
 
 public class RegisterFrame extends JFrame {
 	
 	/* Frame to transfer to when a user cancels registration */
-	private MainFrame mainFrame = new MainFrame();
+	private Frame prevFrame;
 	/* Menu to transfer to if a user successfully completes registration */
 	private MenuFrame menuFrame = new MenuFrame();
+	
 
 	private JPanel contentPane;
 	private JLabel lblUsername;
 	private JTextField usernameField;
 	private JLabel lblUsernameError;
 	private JLabel lblPassword;
-	private JTextField passwordField;
+	private JPasswordField passwordField;
 	private JLabel lblReenterPassword;
-	private JTextField reenterPasswordField;
+	private JPasswordField reenterPasswordField;
 	private JLabel lblPasswordError;
 	private JPanel buttonPanel;
 	private JButton btnRegister;
@@ -57,7 +63,7 @@ public class RegisterFrame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RegisterFrame frame = new RegisterFrame();
+					RegisterFrame frame = new RegisterFrame(null);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -69,7 +75,8 @@ public class RegisterFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public RegisterFrame() {
+	public RegisterFrame(Frame frame) {
+		prevFrame = frame;
 		initGUI();
 	}
 	private void initGUI() {
@@ -116,30 +123,34 @@ public class RegisterFrame extends JFrame {
 		
 		lblUsernameError = new JLabel("Username already in use");
 		lblUsernameError.setForeground(Color.RED);
+		lblUsernameError.setVisible(false);
 		contentPane.add(lblUsernameError, "6, 4, left, default");
 		
 		lblPassword = new JLabel("Password");
 		contentPane.add(lblPassword, "2, 8, right, default");
 		
-		passwordField = new JTextField();
+		passwordField = new JPasswordField();
 		contentPane.add(passwordField, "4, 8, left, default");
 		passwordField.setColumns(10);
 		
 		lblReenterPassword = new JLabel("Re-enter password");
 		contentPane.add(lblReenterPassword, "2, 12, right, default");
 		
-		reenterPasswordField = new JTextField();
+		reenterPasswordField = new JPasswordField();
 		contentPane.add(reenterPasswordField, "4, 12, left, default");
 		reenterPasswordField.setColumns(10);
 		
 		lblPasswordError = new JLabel("Passwords do not match");
 		lblPasswordError.setForeground(Color.RED);
+		lblPasswordError.setVisible(false);
 		contentPane.add(lblPasswordError, "6, 12, left, default");
 		
 		buttonPanel = new JPanel();
-		contentPane.add(buttonPanel, "6, 20, fill, fill");
+		contentPane.add(buttonPanel, "6, 16, fill, fill");
 		
+		Object[] objects = {this, usernameField, passwordField, reenterPasswordField};
 		btnRegister = new JButton("Register");
+		btnRegister.addActionListener(new GenericActionListener(new RegisterCommand(), objects));
 		buttonPanel.add(btnRegister);
 		
 		btnCancel = new JButton("Cancel");
@@ -152,17 +163,6 @@ public class RegisterFrame extends JFrame {
 		buttonPanel.add(btnCancel);
 	}
 	
-	private void register() {
-		
-		usernameField.setText("");
-		passwordField.setText("");
-		reenterPasswordField.setText("");
-		setVisible(false);
-		
-		menuFrame.setVisible(true);
-		
-	}
-	
 	private void cancel() {
 		
 		usernameField.setText("");
@@ -170,7 +170,47 @@ public class RegisterFrame extends JFrame {
 		reenterPasswordField.setText("");
 		setVisible(false);
 		
-		mainFrame.setVisible(true);
+	    prevFrame.setVisible(true);
+		
+	}
+	
+	/* Called when registration is completed successfully.
+	 * The user is then taken to a new window
+	 */
+	public void register() {
+		
+		usernameField.setText("");
+		passwordField.setText("");
+		reenterPasswordField.setText("");
+		lblPasswordError.setVisible(false);
+		lblUsernameError.setVisible(false);
+		setVisible(false);
+		
+		menuFrame.setVisible(true);
+		
+	}
+	
+	/* Called when there is a problem with the entered passwords.
+	 * Right now this is only called when the passwords entered do not match
+	 * and results in an error message being displayed to the user
+	 */
+	public void passwordError() {
+		
+		passwordField.setText("");
+		reenterPasswordField.setText("");
+		lblPasswordError.setVisible(true);
+		
+	}
+	
+	
+	/* Called when there is a problem with the username entered.
+	 * Right now this is only called when the username is already in use
+	 * and results in an error message being displayed to the user
+	 */
+	public void usernameError() {
+		
+		usernameField.setText("");
+		lblUsernameError.setVisible(true);
 		
 	}
 
