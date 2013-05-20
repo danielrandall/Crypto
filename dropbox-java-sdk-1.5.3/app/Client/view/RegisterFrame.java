@@ -45,40 +45,13 @@ public class RegisterFrame extends JFrame {
 	private JButton btnCancel;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		
-		try {
-		    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-		        if ("Nimbus".equals(info.getName())) {
-		            UIManager.setLookAndFeel(info.getClassName());
-		            break;
-		        }
-		    }
-		} catch (Exception e) {
-		    // If Nimbus is not available, you can set the GUI to another look and feel.
-		}
-		
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					RegisterFrame frame = new RegisterFrame(null);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
 	public RegisterFrame(Frame frame) {
 		prevFrame = frame;
 		initGUI();
 	}
+	
 	private void initGUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);

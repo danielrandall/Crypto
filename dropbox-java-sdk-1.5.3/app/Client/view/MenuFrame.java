@@ -16,6 +16,8 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import Client.controller.AddFriendCommand;
 import Client.controller.FileDownloadCommand;
@@ -26,12 +28,14 @@ import java.io.File;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.BoxLayout;
+import javax.swing.JList;
 
 public class MenuFrame extends JFrame {
 
 	private JPanel contentPane;
 	private final JPanel actions = new JPanel();
-	private final JPanel panel_1 = new JPanel();
+	private final JPanel files = new JPanel();
 	private final JTextField uploadFileTextField = new JTextField();
 	private final JButton uploadChooseButton = new JButton("Choose");
 	private final JButton btnUploadFile = new JButton("Upload file");
@@ -49,11 +53,25 @@ public class MenuFrame extends JFrame {
 	private final JLabel MaxSecurityLabel = new JLabel("Max Security Level");
 	private final JSpinner maxSecuritySpinner = new JSpinner();
 	private final JSpinner minSecuritySpinner = new JSpinner();
+	private JLabel lblUploadedFiles;
+	private JList list;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		
+		try {
+		    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+		        if ("Nimbus".equals(info.getName())) {
+		            UIManager.setLookAndFeel(info.getClassName());
+		            break;
+		        }
+		    }
+		} catch (Exception e) {
+		    // If Nimbus is not available, you can set the GUI to another look and feel.
+		}
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -115,7 +133,7 @@ public class MenuFrame extends JFrame {
 		minSecuritySpinner.setModel(new SpinnerNumberModel(1, 1, 5, 1));
 		GroupLayout gl_actions = new GroupLayout(actions);
 		gl_actions.setHorizontalGroup(
-			gl_actions.createParallelGroup(Alignment.LEADING)
+			gl_actions.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_actions.createSequentialGroup()
 					.addGroup(gl_actions.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_actions.createSequentialGroup()
@@ -130,7 +148,7 @@ public class MenuFrame extends JFrame {
 							.addContainerGap()
 							.addComponent(downloadLocationTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(downloadChooseButton, GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE))
+							.addComponent(downloadChooseButton, GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE))
 						.addGroup(gl_actions.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(lblDownloadLocation))
@@ -159,24 +177,23 @@ public class MenuFrame extends JFrame {
 								.addComponent(usernameToAddTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(lblUsername))))
 					.addContainerGap())
-				.addGroup(Alignment.TRAILING, gl_actions.createSequentialGroup()
-					.addContainerGap(19, Short.MAX_VALUE)
+				.addGroup(gl_actions.createSequentialGroup()
+					.addContainerGap(18, Short.MAX_VALUE)
 					.addComponent(MinSecurityLabel)
 					.addGap(18)
 					.addComponent(MaxSecurityLabel)
 					.addGap(26))
-				.addGroup(gl_actions.createSequentialGroup()
-					.addGap(55)
-					.addComponent(minSecuritySpinner, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 88, Short.MAX_VALUE)
-					.addComponent(maxSecuritySpinner, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
+				.addGroup(Alignment.LEADING, gl_actions.createSequentialGroup()
+					.addGap(43)
+					.addComponent(minSecuritySpinner, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+					.addComponent(maxSecuritySpinner, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
 					.addGap(64))
 				.addGroup(gl_actions.createSequentialGroup()
 					.addGap(67)
 					.addComponent(btnAddFriend)
-					.addContainerGap(97, Short.MAX_VALUE))
+					.addContainerGap(96, Short.MAX_VALUE))
 		);
-		maxSecuritySpinner.setModel(new SpinnerNumberModel(1, 1, 5, 1));
 		gl_actions.setVerticalGroup(
 			gl_actions.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_actions.createSequentialGroup()
@@ -203,7 +220,7 @@ public class MenuFrame extends JFrame {
 						.addComponent(downloadChooseButton, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnDownloadFile)
-					.addPreferredGap(ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
 					.addComponent(lblUsername)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(usernameToAddTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -212,14 +229,17 @@ public class MenuFrame extends JFrame {
 						.addComponent(MaxSecurityLabel)
 						.addComponent(MinSecurityLabel))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_actions.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_actions.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_actions.createSequentialGroup()
-							.addComponent(minSecuritySpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(btnAddFriend))
-						.addComponent(maxSecuritySpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addComponent(minSecuritySpinner, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED))
+						.addGroup(gl_actions.createSequentialGroup()
+							.addComponent(maxSecuritySpinner, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
+							.addGap(12)))
+					.addComponent(btnAddFriend)
 					.addGap(40))
 		);
+		maxSecuritySpinner.setModel(new SpinnerNumberModel(1, 1, 5, 1));
 		btnDownloadFile.setFont(new Font("Dialog", Font.BOLD, 12));
 		
 		Object[] objects2 = {this, fileToDownTextField, downloadLocationTextField};
@@ -229,7 +249,14 @@ public class MenuFrame extends JFrame {
 		downloadChooseButton.setFont(new Font("Dialog", Font.BOLD, 10));
 		actions.setLayout(gl_actions);
 		
-		contentPane.add(panel_1);
+		contentPane.add(files);
+		files.setLayout(new BoxLayout(files, BoxLayout.PAGE_AXIS));
+		
+		lblUploadedFiles = new JLabel("Uploaded files");
+		files.add(lblUploadedFiles);
+		
+		list = new JList();
+		files.add(list);
 	}
 	
 	private void run() {

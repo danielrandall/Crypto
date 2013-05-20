@@ -118,6 +118,11 @@ public class MainFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public MainFrame() {
+		initGUI();
+	}
+	
+	private void initGUI() {
+		
 		registerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				register();
@@ -158,9 +163,7 @@ public class MainFrame extends JFrame {
 		logInButton.setFont(new Font("Dialog", Font.BOLD, 10));
 		
 		logInButtonPanel.add(horizontalGlue);
-		initGUI();
-	}
-	private void initGUI() {
+		
 		lblUsername.setLabelFor(usernameBox);
 		lblPassword.setLabelFor(passwordBox);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
