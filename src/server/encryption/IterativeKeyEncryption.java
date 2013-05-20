@@ -1,4 +1,4 @@
-package server;
+package server.encryption;
 
 import Ciphers.Cipher;
 

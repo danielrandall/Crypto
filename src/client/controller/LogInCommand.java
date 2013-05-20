@@ -22,7 +22,7 @@ public class LogInCommand implements Command {
 		if (Login.userLogin(username, password))
 			frame.login();
 		else
-			System.out.println("false");
+			frame.loginFail();
 		
 	}
 

@@ -11,30 +11,6 @@ public class CentralAuthority {
 	private static final String UPLOAD_FILE = "1";
 	private static final String DOWNLOAD_FILE = "2";
 	private static final String ADD_FRIEND = "3";
-	
-	/*
-	public static void options(ServerComms comms, View view) {
-		
-		String key = ServerComms.fromServer();
-		String secret = ServerComms.fromServer();
-		
-		Session session = DropboxOperations.makeSession(key, secret);
-		
-		String option = view.getCentralDecision();
-		
-		ServerComms.toServer(option);
-		
-		if (option.equals(UPLOAD_FILE))
-			uploadFile(comms, view, session);
-		
-		if (option.equals(DOWNLOAD_FILE))
-			downloadFile(comms, view, session);
-		
-		if (option.equals(ADD_FRIEND))
-			addFriend(comms, view, session);
-		
-	}
-    */
 
 	public static boolean addFriend(String usernameToAdd, int lowerBound, int upperBound) {
 		

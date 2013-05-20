@@ -2,8 +2,9 @@ package client.model.users;
 
 import java.util.Map;
 
+import server.databases.H2Users;
 
-import client.model.linking.databases.H2Users;
+
 import client.model.users.friends.FriendsList;
 
 import com.dropbox.client2.session.AccessTokenPair;

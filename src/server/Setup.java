@@ -5,6 +5,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 
+import server.encryption.KeyDerivation;
+
 import com.dropbox.client2.exception.DropboxException;
 
 public class Setup {

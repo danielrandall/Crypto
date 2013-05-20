@@ -10,31 +10,18 @@ import java.net.Socket;
 
 public class ServerComms {
 	
+	/* Connection info */
 	private static final String HOST_NAME = "localhost";
-	private static final int PORT_NUMBER = 4428;
+	private static final int PORT_NUMBER = 4450;
+	
+	/* Server communication constants */
+	private static final String EXIT_CODE = "999";
 	
 	private static Socket socket = null;
 	private static PrintWriter out = null;
     private static BufferedReader in = null;
     private static DataOutputStream dOut = null;
     private static DataInputStream dis = null;
-    
-    /* Cleans up after itself.
-     * Call before ending this session. */
-    public static void destroy() {
-    	
-    	try {
-    	
-    		dOut.close();
-    		in.close();
-    		out.close();
-			socket.close();
-    	
-    	} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
     
     /* Sends string from user to the server */
     public static void toServer(String fromUser) {
@@ -116,5 +103,31 @@ public class ServerComms {
 		}
 		
 	}
+	
+	/* Called when communication with the server ceases for this session */
+	public static void exit() {
+		
+		toServer(EXIT_CODE);
+		destroy();
+		
+	}
+	
+	
+	/* Cleans up after itself.
+     * Call before ending this session. */
+    private static void destroy() {
+    	
+    	try {
+    	
+    		dOut.close();
+    		in.close();
+    		out.close();
+			socket.close();
+    	
+    	} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 
 }

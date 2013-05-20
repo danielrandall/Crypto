@@ -20,7 +20,7 @@ public class RegisterCommand implements Command {
 		String password = ((JTextComponent) objects[2]).getText();
 		String reenterPassword = ((JTextComponent) objects[3]).getText();
 		
-		if (!password.equals(reenterPassword))
+		if (Register.passwordCheck(password, reenterPassword))
 			frame.passwordError();
 		else
 			if (Register.userRegister(username, password)) {

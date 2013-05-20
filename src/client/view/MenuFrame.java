@@ -30,7 +30,7 @@ import client.controller.AddFriendCommand;
 import client.controller.FileDownloadCommand;
 import client.controller.FileUploadCommand;
 
-public class MenuFrame extends JFrame {
+public class MenuFrame extends BaseFrame {
 
 	private JPanel contentPane;
 	private final JPanel actions = new JPanel();

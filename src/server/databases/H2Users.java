@@ -1,4 +1,4 @@
-package client.model.linking.databases;
+package server.databases;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,7 +45,6 @@ public class H2Users extends H2Database {
 		
 		h.dropUserTable();
 		h.createUserTable();
-		
 		
 		/*
 		FriendsList f = new FriendsList();

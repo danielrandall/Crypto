@@ -1,4 +1,4 @@
-package server;
+package server.operations;
 
 import java.io.InputStream;
 import java.io.OutputStream;

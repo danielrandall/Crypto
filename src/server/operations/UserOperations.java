@@ -1,7 +1,8 @@
-package server;
+package server.operations;
 
+import server.ClientComms;
+import server.databases.H2Users;
 import client.model.linking.Authentication;
-import client.model.linking.databases.H2Users;
 import client.model.users.User;
 import client.model.users.friends.FriendsList;
 import client.model.users.friends.Interval;
@@ -38,7 +39,7 @@ public class UserOperations {
 			
 		String username = comms.fromClient();
 			
-		boolean	usernameAccepted = !checkUserExists(username);
+		boolean	 usernameAccepted = !checkUserExists(username);
 			
 		if (!usernameAccepted) {
 			comms.toClient(FALSE);

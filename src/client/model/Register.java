@@ -2,7 +2,10 @@ package client.model;
 
 public class Register {
 	
+	/* Message constants from server */
 	private static final String TRUE = "1";
+	
+	/* Message constants to send to server */
 	private static final String REGISTER = "2";
 
 	public static boolean userRegister(String username, String password) {
@@ -20,6 +23,12 @@ public class Register {
 		ServerComms.toServer(password);
 		
 		return true;
+		
+	}
+	
+	public static boolean passwordCheck(String password, String reenterPassword) {
+		
+		return password.equals(reenterPassword);
 		
 	}
 

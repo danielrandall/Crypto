@@ -21,7 +21,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 
-public class RegisterFrame extends JFrame {
+public class RegisterFrame extends BaseFrame {
 	
 	/* Frame to transfer to when a user cancels registration */
 	private Frame prevFrame;
@@ -51,6 +51,8 @@ public class RegisterFrame extends JFrame {
 	}
 	
 	private void initGUI() {
+		addWindowListener(this);
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -181,6 +183,8 @@ public class RegisterFrame extends JFrame {
 	public void usernameError() {
 		
 		usernameField.setText("");
+		passwordField.setText("");
+		reenterPasswordField.setText("");
 		lblUsernameError.setVisible(true);
 		
 	}

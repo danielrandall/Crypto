@@ -1,4 +1,4 @@
-package client.model.linking.databases;
+package server.databases;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

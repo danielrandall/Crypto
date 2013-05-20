@@ -1,4 +1,7 @@
 package server;
+import server.operations.ServerDropboxOperations;
+import server.operations.ServerFileOperations;
+import server.operations.UserOperations;
 import client.model.linking.Authentication;
 import client.model.users.User;
 
@@ -14,6 +17,8 @@ public class CentralAuthority {
 	
 	private static final String TRUE = "1";
 	private static final String FALSE = "0";
+	
+	private static final String EXIT_CODE = "999";
 	
 	public static void options(User user, ClientComms comms) {
 		
@@ -33,6 +38,9 @@ public class CentralAuthority {
 		
 			if (decision.equals(ADD_FRIEND))
 				addFriend(user.getUsername(), user.getSession(), comms);
+			
+			if (decision.equals(EXIT_CODE))
+				return;
 		}
 	
 	}

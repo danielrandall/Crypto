@@ -5,12 +5,14 @@ import java.net.Socket;
 public class ServerThread extends Thread {
 	
     private ClientComms comms = null;
+    private Socket socket;
  
     
     public ServerThread(Socket socket) {
     	
     	super();
     	comms = new ClientComms(socket);
+    	this.socket = socket;
     	
     }
  

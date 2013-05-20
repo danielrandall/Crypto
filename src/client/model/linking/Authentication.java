@@ -1,7 +1,7 @@
 package client.model.linking;
 
 import server.ClientComms;
-import server.UserOperations;
+import server.operations.UserOperations;
 
 import client.model.linking.password.BCryptEncryptor;
 import client.model.linking.password.PasswordEncryptor;
