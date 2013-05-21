@@ -1,5 +1,9 @@
 package client.model;
 
+import client.model.linking.keystore.KeyStoreOperations;
+import client.model.linking.password.BCryptEncryptor;
+import client.model.linking.password.PasswordEncryptor;
+
 public class Login {
 
 	/* Meaning of messages from the Server */
@@ -7,6 +11,8 @@ public class Login {
 	
 	/* Meaning of messages from the Client */
 	private static final String LOGIN = "1";
+	
+	private static final PasswordEncryptor passwordEncryptor = new BCryptEncryptor();
 	
 	/* Given the username and password check it with server
 	 * TODO: Send the password encrypted.
@@ -22,6 +28,7 @@ public class Login {
 		
 		if (ServerComms.fromServer().equals(TRUE)) {
 			acquireConnection();
+			KeyStoreOperations.login(username, password);
 			return true;
 		} else
 			return false;

@@ -18,11 +18,9 @@ public class ServerFileOperations {
 	
 	public static void encryptFile(int securityLevel, String username, ClientComms comms) {
 		
-		byte[] key = KeyDerivation.retrieveKey(username, Integer.toString(securityLevel), cipher);
-		System.out.println("here");
-		System.out.println(key.length);
-		comms.sendBytes(key, key.length);
-		System.out.println("not here");
+		//byte[] key = KeyDerivation.retrieveKey(username, Integer.toString(securityLevel), cipher);
+
+		//comms.sendBytes(key, key.length);
 				
 		byte[] iv = comms.getBytes();
 		String rev = comms.fromClient();
@@ -32,18 +30,20 @@ public class ServerFileOperations {
 	}
 	
 	
-	/* The contents of the given file are extracted and decrypted. The file
-	 * is then overwritten with the plaintext. */
-	public static void decryptFile(String rev, String username, ClientComms comms) {
+	/* Retrieves a files IV and security level */
+	public static Object[] getFileInfo(String rev) {
 		
 		Map<String, Object> data = database.getFile(rev);
+		
+		Object[] fileInfo = new Object[2];
+		
 		byte[] iv = (byte[])data.get(H2Files.IV);
 		int level = (Integer)data.get(H2Files.SECURITY_LEVEL);
 		
-		byte[] key = KeyDerivation.retrieveKey(username, Integer.toString(level), cipher);
+		fileInfo[0] = iv;
+		fileInfo[1] = level;
 		
-		comms.sendBytes(iv, iv.length);
-		comms.sendBytes(key, key.length);
+		return fileInfo;	
 		
 	}
 	

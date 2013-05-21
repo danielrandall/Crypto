@@ -17,7 +17,6 @@ import javax.swing.JButton;
 import javax.swing.BoxLayout;
 import java.awt.Component;
 import javax.swing.Box;
-import java.awt.FlowLayout;
 import java.awt.Dimension;
 import javax.swing.JPasswordField;
 
@@ -26,9 +25,6 @@ import client.controller.LogInCommand;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import Ciphers.AESCipher;
 import Ciphers.Cipher;
+import Ciphers.SecurityVariables;
 
 public class FileOperations {
 	
@@ -17,7 +18,7 @@ public class FileOperations {
 	public static byte[][] encryptFile(File file, String fileName, byte[] key) {
 		
 		InputStream fileStream;
-		byte[] iv = cipher.generateIV();
+		byte[] iv = SecurityVariables.generateIV();
 		
 		byte[][] encryptedFileInfo = new byte[2][];
 		

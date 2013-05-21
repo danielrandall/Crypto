@@ -1,4 +1,4 @@
-package client.model.users.friends;
+package server.users.friends;
 
 public class Interval implements Permissions {
 	

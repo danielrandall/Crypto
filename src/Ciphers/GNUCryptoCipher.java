@@ -25,8 +25,6 @@ public abstract class GNUCryptoCipher implements Cipher {
 	protected static byte[] baseEncrypt(String cipher, String cipherMode, String paddingScheme,
 			                  byte[] plainText, byte[] key, byte[] iv, int blockSize) {
 		
-		System.out.println(key.length);
-		
 		IMode mode = ModeFactory.getInstance(cipherMode, cipher, blockSize);
 	    Map<String, Object> attributes = new HashMap<String, Object>();
 	     

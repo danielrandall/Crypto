@@ -8,6 +8,7 @@ import client.model.linking.keystore.JavaKeyStore;
 import client.model.linking.keystore.KeyStores;
 
 import Ciphers.Cipher;
+import Ciphers.SecurityVariables;
 
 public class KeyDerivation {
 	
@@ -19,21 +20,20 @@ public class KeyDerivation {
 	
 	//	keystore.removeKey(user + level);
 		
-		byte[] key;
-		
+		byte[] key = null;
+	/*	
 		if (keystore.checkKeyExists(user + level))
-			key = keystore.retrieveKey(user + level, "keystorepassword".toCharArray());
+		//	key = keystore.retrieveKey(user + level, "keystorepassword".toCharArray());
 		else {
-			key = cipher.generateKey();
+			key = SecurityVariables.generateKey();
 			storeKey(user, level, key, "AES");
 		}
-		
+		*/
 		return key;
 		
 	}
 	
-	private static void storeKey(String user, String level, byte[] key, String algorithm) {
-		
+	public static void storeKey(String user, String level, byte[] key, String algorithm) {
 		
 		keystore.storeKey(user + level, key, algorithm);
 		
@@ -61,9 +61,9 @@ public class KeyDerivation {
 				e.printStackTrace();
 			}
 		
-			passwordAccepted = keystore.checkPassword(keyPassword.toCharArray());
+			passwordAccepted = keystore.checkPassword("keystorelocation", keyPassword.toCharArray());
 			
-		//	keystore.clearKeystore();
+	//		keystore.clearKeystore();
 
 		}
 		

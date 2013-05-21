@@ -40,7 +40,7 @@ public class Setup {
 	
 	public static void setup() {
 		
-		KeyDerivation.setup();
+	//	KeyDerivation.setup();
 		
 	}
 

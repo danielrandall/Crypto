@@ -2,8 +2,8 @@ package server;
 import server.operations.ServerDropboxOperations;
 import server.operations.ServerFileOperations;
 import server.operations.UserOperations;
+import server.users.User;
 import client.model.linking.Authentication;
-import client.model.users.User;
 
 import com.dropbox.client2.session.Session;
 
@@ -67,7 +67,7 @@ public class CentralAuthority {
 		/* Add user to friends list */
 		UserOperations.addUserToFriendsList(username, usernameToAdd, lowerBound, upperBound);
 		
-		User frienduser = Authentication.createUser(usernameToAdd);
+		User frienduser = Authentication.loadUser(usernameToAdd);
 		
 		/* Share files with user */
 		ServerDropboxOperations.shareFilesWithFriend(usernameToAdd,
@@ -93,7 +93,13 @@ public class CentralAuthority {
 		
 		String rev = comms.fromClient();
 		
-		ServerFileOperations.decryptFile(rev, username, comms);
+		Object[] fileInfo = ServerFileOperations.getFileInfo(rev);
+		
+		byte[] iv = (byte[]) fileInfo[0];
+		int securityLevel = (Integer) fileInfo[1];
+		
+		comms.sendBytes(iv, iv.length);
+		comms.toClient(Integer.toString(securityLevel));
 		
 	}
 	

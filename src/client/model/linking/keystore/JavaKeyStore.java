@@ -17,7 +17,7 @@ public class JavaKeyStore implements KeyStores {
 	
 	private KeyStore keystore;
 	private  char[] keystorePassword;
-	private final String KEYSTORE_LOCATION = "keystore";
+	private String keystoreLocation;
 	
 	/* TODO: passwords for specific keys */
 	
@@ -29,18 +29,19 @@ public class JavaKeyStore implements KeyStores {
 	 */
 	
 	
-	public boolean checkPassword(char[] password) {
+	public boolean checkPassword(String username, char[] password) {
 
 	    java.io.FileInputStream input = null;
 	    
 	    try {
 	    	
 	    	/* Default type does not allow for storage of non-private
-	    	 * (symmetric) keys
-	    	 */
+	    	 * (symmetric) keys */
 	    	keystore = KeyStore.getInstance("JCEKS");
 	    	
-	        input = new java.io.FileInputStream(KEYSTORE_LOCATION);
+	    	keystoreLocation = username;
+	    		    	
+	        input = new java.io.FileInputStream(keystoreLocation);
 	        
 	        keystore.load(input, password);
 	        
@@ -80,12 +81,16 @@ public class JavaKeyStore implements KeyStores {
 	public void createKeystore(String keystoreName, char[] password) {
 		
 	    try {
+	    	keystoreLocation = keystoreName;
+	    	
 	    	keystore = KeyStore.getInstance("JCEKS");
 	    	
-	    	//   input = new java.io.FileInputStream(KEYSTORE_LOCATION);
+	    	//   input = new java.io.FileInputStream(keystoreLocation);
 	        
 	    	/* Create empty keystore */
 	        keystore.load(null, password);
+	        
+	        keystorePassword = password;
 	        
 	        storeKS();
 	        
@@ -128,12 +133,12 @@ public class JavaKeyStore implements KeyStores {
 		
 	}
 	
-	public byte[] retrieveKey(String id, char[] password) {
+	public byte[] retrieveKey(String id) {
 		
 		byte[] key = null;
 		
 		try {
-			key = keystore.getKey(id, password).getEncoded();
+			key = keystore.getKey(id, keystorePassword).getEncoded();
 		} catch (UnrecoverableKeyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -195,7 +200,7 @@ public class JavaKeyStore implements KeyStores {
 		
 		FileOutputStream fos;
 		try {
-			fos = new FileOutputStream(KEYSTORE_LOCATION);
+			fos = new FileOutputStream(keystoreLocation);
 			
 	        /* Permanently store keystore */
 	        keystore.store(fos, keystorePassword);

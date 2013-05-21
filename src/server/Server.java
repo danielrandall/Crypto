@@ -47,7 +47,6 @@ public class Server {
 				if (serverSocket != null) {
 					try {
 						serverSocket.close();
-						System.out.println("closed");
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

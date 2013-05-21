@@ -70,10 +70,12 @@ public class DropboxOperations {
 	 * sent to the server to be stored and a new Session is created locally and
 	 * stored.
 	 */
-	public static boolean authenticate() {
+	public static String[] authenticate() {
 		
 		WebAuthSession session = new WebAuthSession(KEY_PAIR, ACCESS_TYPE);
         WebAuthInfo authInfo;
+        
+        String[] authenticationInfo = new String[3];
 		
         try {
         
@@ -89,14 +91,14 @@ public class DropboxOperations {
 			String uid = session.retrieveWebAccessToken(pair);
 			AccessTokenPair tokens = session.getAccessTokenPair();
 			
-			ServerComms.toServer(tokens.key);
-			ServerComms.toServer(tokens.secret);
-			ServerComms.toServer(uid);
+			authenticationInfo[0] = tokens.key;
+			authenticationInfo[1] = tokens.secret;
+			authenticationInfo[2] = uid;
 			
 			makeSession(tokens.key, tokens.secret);
 			
         } catch (DropboxException e) {
-			return false;
+			return null;
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -108,7 +110,7 @@ public class DropboxOperations {
 			e.printStackTrace();
 		}
         
-        return true;
+		return authenticationInfo;
 		
 	}
 	

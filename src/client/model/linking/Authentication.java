@@ -2,10 +2,10 @@ package client.model.linking;
 
 import server.ClientComms;
 import server.operations.UserOperations;
+import server.users.User;
 
 import client.model.linking.password.BCryptEncryptor;
 import client.model.linking.password.PasswordEncryptor;
-import client.model.users.User;
 
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
@@ -43,10 +43,13 @@ public final class Authentication {
 		/* Tell client the user/pass was correct */
 		comms.toClient(TRUE);
     			
-    	return createUser(username);
+    	return loadUser(username);
     }
     
-    public static User createUser(String username) {
+    /* Loads a user given a username, creates a new session and returns the
+     * user.
+     * Used for existing users. */
+    public static User loadUser(String username) {
     	
     	User user = User.load(username);
 		WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE, user.getAccessTokens());
@@ -56,58 +59,27 @@ public final class Authentication {
     	
     }
     
-    public static User authenticate(String username, String password, ClientComms comms) {
-    	/*
-    	WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE);
-        WebAuthInfo authInfo;
-        User user = null;
-		
-        try {
-        
-			authInfo = session.getAuthInfo();
-			RequestTokenPair pair = authInfo.requestTokenPair;
-			String url = authInfo.url;
- 
-			Desktop.getDesktop().browse(new URL(url).toURI());
-			JOptionPane.showMessageDialog(null, "Press ok to continue once you have authenticated.");
-        
-			String uid = session.retrieveWebAccessToken(pair);
-			AccessTokenPair tokens = session.getAccessTokenPair();
-			*/
-    	
-    		String key = comms.fromClient();
-    		String secret = comms.fromClient();
-    		String uid = comms.fromClient();
+    /* Creates a session and User. Returns the Users.
+     * Used for newly register users */
+    public static User createUser(String username, String password,
+    		                          ClientComms comms, String key,
+    		                          String secret, String uid) {
     		
     		WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE, new AccessTokenPair(key, secret));
     		
-			User user = User.save(username, passwordEncryptor.hashPassword(password), uid, key, secret);
+			User user = User.save(username, password, uid, key, secret);
 			user.setSession(session);
-        /*
-        } catch (DropboxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
         
         return user;
     	
     }
     
+    /* Checks that the given password matches the stored password for that user */
     private static boolean checkUserPass(String username, String password) {
     	
-    	if (UserOperations.checkUserExists(username))
+    	if (UserOperations.checkUserExists(username)) {
     		return passwordEncryptor.checkPassword(password, User.getPassword(username));
-    	else
+    	} else
     		return false;
     		
     }

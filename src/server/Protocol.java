@@ -1,8 +1,8 @@
 package server;
 
 import server.operations.UserOperations;
+import server.users.User;
 import client.model.linking.Authentication;
-import client.model.users.User;
  
 public class Protocol {
 	
@@ -18,15 +18,15 @@ public class Protocol {
 		
 			/* Recieve login or register decision */
 			String decision = comms.fromClient();
+			
+			if (decision == null || decision.equals(EXIT_CODE))
+				return;
 		
 			if (decision.equals(LOGIN))
 				user = Authentication.link(comms);
 			
 			if (decision.equals(REGISTER))
-				user = UserOperations.register(comms);
-			
-			if (decision.equals(EXIT_CODE))
-				return;
+				user = UserOperations.registerAttempt(comms);
 		
 		}
 		

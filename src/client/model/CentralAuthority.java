@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+import client.model.linking.keystore.KeyStoreOperations;
+
 public class CentralAuthority {
 	
 	private static final String TRUE = "1";
@@ -46,7 +48,8 @@ public class CentralAuthority {
 		/* Send security level of file to server. */
 		ServerComms.toServer(Integer.toString(securityLevel));
 		
-		byte[] key = ServerComms.getBytes();
+		byte[] key = KeyStoreOperations.retrieveOwnKey(Integer.toString(securityLevel));
+		//byte[] key = ServerComms.getBytes();
 		
 		File file = new File(fileLocation);
 		String fileName = file.getName();
@@ -99,7 +102,9 @@ public class CentralAuthority {
 		
 		/* Retrieve necessary information from the server */
 		byte[] iv = ServerComms.getBytes();
-		byte[] key = ServerComms.getBytes();
+		String securityLevel = ServerComms.fromServer();
+		
+		byte[] key = KeyStoreOperations.retrieveOwnKey(securityLevel);
 		
 		FileOperations.decryptFile(file, rev, iv, key);	
 		

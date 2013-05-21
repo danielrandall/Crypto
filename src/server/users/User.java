@@ -1,11 +1,11 @@
-package client.model.users;
+package server.users;
 
 import java.util.Map;
 
 import server.databases.H2Users;
+import server.users.friends.FriendsList;
 
 
-import client.model.users.friends.FriendsList;
 
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.WebAuthSession;

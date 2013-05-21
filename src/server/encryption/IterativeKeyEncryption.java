@@ -1,6 +1,7 @@
 package server.encryption;
 
 import Ciphers.Cipher;
+import Ciphers.SecurityVariables;
 
 public class IterativeKeyEncryption implements KeyAssignmentScheme {
 	
@@ -32,7 +33,7 @@ public class IterativeKeyEncryption implements KeyAssignmentScheme {
 		
 		/* Encrypt keys accordingly */
 		for (int i = 1; i < USED_SECURITY_LEVELS - 1; i++) {
-				byte[] iv = cipher.generateIV();
+				byte[] iv = SecurityVariables.generateIV();
 				byte[] key = cipher.encrypt(rawKeys[i], rawKeys[i - 1], iv);
 				
 				ivs[i - 1] = iv;
