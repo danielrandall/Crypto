@@ -1,8 +1,8 @@
 package server;
 
 import server.operations.UserOperations;
+import server.users.Authentication;
 import server.users.User;
-import client.model.linking.Authentication;
  
 public class Protocol {
 	

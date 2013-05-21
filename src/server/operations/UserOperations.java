@@ -3,11 +3,11 @@ package server.operations;
 import server.ClientComms;
 import server.databases.H2Users;
 import server.encryption.KeyDerivation;
+import server.users.Authentication;
 import server.users.User;
 import server.users.friends.FriendsList;
 import server.users.friends.Interval;
 import server.users.friends.Permissions;
-import client.model.linking.Authentication;
 
 public class UserOperations {
 	

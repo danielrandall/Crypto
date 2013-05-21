@@ -2,8 +2,8 @@ package server;
 import server.operations.ServerDropboxOperations;
 import server.operations.ServerFileOperations;
 import server.operations.UserOperations;
+import server.users.Authentication;
 import server.users.User;
-import client.model.linking.Authentication;
 
 import com.dropbox.client2.session.Session;
 

@@ -34,6 +34,9 @@ public class FileOperations {
 			
 			encryptedFileInfo[0] = encryptedFile;
 			encryptedFileInfo[1] = iv;
+			
+			System.out.println(key.toString());
+			System.out.println(iv.toString());
 		    
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -48,6 +51,9 @@ public class FileOperations {
 	/* The contents of the given file are extracted and decrypted. The file
 	 * is then overwritten with the plaintext. */
 	public static void decryptFile(File file, String rev, byte[] iv, byte[] key) {
+		
+		System.out.println(key.toString());
+		System.out.println(iv.toString());
 		
 		try {
 			InputStream fileStream = new java.io.FileInputStream(file);
