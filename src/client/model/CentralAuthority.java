@@ -1,5 +1,6 @@
 package client.model;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -14,10 +15,10 @@ public class CentralAuthority {
 
 	public static boolean addFriend(String usernameToAdd, int lowerBound, int upperBound) {
 		
+		String response = null;
+		
 		/* Tell server a user is to be added */
 		ServerComms.toServer(ADD_FRIEND);
-		
-		String response = null;
 	
 		/* Send username to server */
 		ServerComms.toServer(usernameToAdd);
@@ -39,15 +40,29 @@ public class CentralAuthority {
 
 	public static void uploadFile(String fileLocation, int securityLevel) {
 		
-		/* Tell the server the user wishes to upload a file */
+		/* Tell the server the user wishes to upload a file. */
 		ServerComms.toServer(UPLOAD_FILE);
 		
-		/* Send security level of file to server */
+		/* Send security level of file to server. */
 		ServerComms.toServer(Integer.toString(securityLevel));
 		
-		File file = new File(fileLocation);
+		byte[] key = ServerComms.getBytes();
 		
-		FileOperations.encryptFile(file, file.getName(), DropboxOperations.getSession());
+		File file = new File(fileLocation);
+		String fileName = file.getName();
+		
+		byte[][] encryptedFileInfo = FileOperations.encryptFile(file, fileName, key);
+		
+		byte[] encryptedFile = encryptedFileInfo[0];
+		byte[] iv = encryptedFileInfo[1];
+		
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(encryptedFile);
+		String rev = DropboxOperations.uploadFile(fileName, inputStream, encryptedFile.length);
+		
+		/* Send iv, needed for decryption, to be stored in the server. */
+		ServerComms.sendBytes(iv, iv.length);
+		/* Send file id to the server for file identification. */
+		ServerComms.toServer(rev);
 		
 	}
 	
@@ -76,14 +91,17 @@ public class CentralAuthority {
 			e.printStackTrace();
 		}
 		
-		// Returns info
-		String rev = DropboxOperations.downloadFile(DropboxOperations.getSession(), fileDownloadName, outputStream);
+		/* Returns info */
+		String rev = DropboxOperations.downloadFile(fileDownloadName, outputStream);
 		
 		/* Send file information to the server */
 		ServerComms.toServer(rev);
 		
-		FileOperations.decryptFile(file, rev);	
+		/* Retrieve necessary information from the server */
+		byte[] iv = ServerComms.getBytes();
+		byte[] key = ServerComms.getBytes();
 		
+		FileOperations.decryptFile(file, rev, iv, key);	
 		
 	}
 

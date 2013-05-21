@@ -29,6 +29,9 @@ public class CentralAuthority {
 			
 			/* Get central option from user */
 			String decision = comms.fromClient();
+			
+			if (decision == null || decision.equals(EXIT_CODE))
+				return;
 		
 			if (decision.equals(UPLOAD_FILE))
 				uploadEncryptedFile(user.getUsername(), comms);
@@ -38,9 +41,6 @@ public class CentralAuthority {
 		
 			if (decision.equals(ADD_FRIEND))
 				addFriend(user.getUsername(), user.getSession(), comms);
-			
-			if (decision.equals(EXIT_CODE))
-				return;
 		}
 	
 	}

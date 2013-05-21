@@ -1,13 +1,10 @@
 package client.model;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import com.dropbox.client2.DropboxAPI.Entry;
-import com.dropbox.client2.session.Session;
 import Ciphers.AESCipher;
 import Ciphers.Cipher;
 
@@ -15,10 +12,14 @@ public class FileOperations {
 	
 	private static Cipher cipher = new AESCipher();
 	
-	public static void encryptFile(File file, String fileName, Session session) {
+	/* Encrypts a given file and returns encrypted file and the generated iv
+	 * which is needed for decryption */
+	public static byte[][] encryptFile(File file, String fileName, byte[] key) {
 		
 		InputStream fileStream;
 		byte[] iv = cipher.generateIV();
+		
+		byte[][] encryptedFileInfo = new byte[2][];
 		
 		try {
 			
@@ -28,32 +29,24 @@ public class FileOperations {
 			fileStream.read(fileContents);
 			fileStream.close();
 				
-			byte[] key = ServerComms.getBytes();
-				
-			byte[] encrypted = cipher.encrypt(fileContents, key, iv);
-				
-			ByteArrayInputStream inputStream = new ByteArrayInputStream(encrypted);
-			Entry entry = DropboxOperations.uploadFile(fileName, inputStream, session, encrypted.length);
-				
-			/* Send iv */
-			ServerComms.sendBytes(iv, iv.length);
-			/* Send file id */
-			ServerComms.toServer(entry.rev);
+			byte[] encryptedFile = cipher.encrypt(fileContents, key, iv);
+			
+			encryptedFileInfo[0] = encryptedFile;
+			encryptedFileInfo[1] = iv;
 		    
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+		return encryptedFileInfo;
+		
 	}
 	
 	
 	/* The contents of the given file are extracted and decrypted. The file
 	 * is then overwritten with the plaintext. */
-	public static void decryptFile(File file, String rev) {
-		
-		byte[] iv = ServerComms.getBytes();
-		byte[] key = ServerComms.getBytes();
+	public static void decryptFile(File file, String rev, byte[] iv, byte[] key) {
 		
 		try {
 			InputStream fileStream = new java.io.FileInputStream(file);

@@ -43,22 +43,15 @@ public class DropboxOperations {
     	return session;
     	
     }
-    
-    /* Returns the stored session. */
-    public static Session getSession() {
-    	
-    	return session;
-    	
-    }
 
 	/* Uploads a file to the location dropboxPath for the current logged in user.
 	 * Will not overwrite existing file.
 	 * Pass in revision (rev - entry.rev) if you want to overwrite the file
 	 * with the same name. */
-	public static Entry uploadFile(String dropboxPath, InputStream inputStream,
-			                        Session sourceSession, int length) {
+	public static String uploadFile(String dropboxPath, InputStream inputStream,
+										int length) {
 		
-		DropboxAPI<Session> mDBApi = new DropboxAPI<Session>(sourceSession);
+		DropboxAPI<Session> mDBApi = new DropboxAPI<Session>(session);
 		Entry newEntry = null;
 		
 		try {
@@ -68,7 +61,7 @@ public class DropboxOperations {
 			e.printStackTrace();
 		}
 		
-		return newEntry;
+		return newEntry.rev;
 	}
 	
 	
@@ -120,7 +113,7 @@ public class DropboxOperations {
 	}
 	
 	
-	public static String downloadFile(Session session, String path, OutputStream stream) {
+	public static String downloadFile(String path, OutputStream stream) {
 		
 		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
 		
