@@ -20,6 +20,10 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
+import javax.swing.SwingConstants;
+import java.awt.Component;
+import javax.swing.Box;
+import java.awt.Font;
 
 public class RegisterFrame extends BaseFrame {
 	
@@ -41,6 +45,8 @@ public class RegisterFrame extends BaseFrame {
 	private JPanel buttonPanel;
 	private JButton btnRegister;
 	private JButton btnCancel;
+	private JLabel lblHeader;
+	private final Component verticalStrut = Box.createVerticalStrut(15);
 
 	/**
 	 * Create the frame.
@@ -54,11 +60,14 @@ public class RegisterFrame extends BaseFrame {
 		addWindowListener(this);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 450, 278);
 		contentPane = new JPanel();
+		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new FormLayout(new ColumnSpec[] {
+				FormFactory.RELATED_GAP_COLSPEC,
+				FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
@@ -85,48 +94,66 @@ public class RegisterFrame extends BaseFrame {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("default:grow"),}));
 		
+		lblHeader = new JLabel("Create a new account");
+		lblHeader.setHorizontalAlignment(SwingConstants.LEFT);
+		lblHeader.setFont(museosans_900_18p);
+		contentPane.add(lblHeader, "4, 2, 4, 6, default, top");
+		contentPane.add(verticalStrut, "2, 4");
+		
 		lblUsername = new JLabel("Username");
-		contentPane.add(lblUsername, "2, 4, right, default");
+		lblUsername.setFont(museosans_700_14p);
+		contentPane.add(lblUsername, "4, 8, left, default");
 		
 		usernameField = new JTextField();
-		contentPane.add(usernameField, "4, 4, left, default");
+		contentPane.add(usernameField, "6, 8, left, default");
 		usernameField.setColumns(10);
 		
 		lblUsernameError = new JLabel("Username already in use");
 		lblUsernameError.setForeground(Color.RED);
 		lblUsernameError.setVisible(false);
-		contentPane.add(lblUsernameError, "6, 4, left, default");
+		lblUsernameError.setFont(museosans_700_14p);
+		contentPane.add(lblUsernameError, "8, 8, left, default");
 		
 		lblPassword = new JLabel("Password");
-		contentPane.add(lblPassword, "2, 8, right, default");
+		lblPassword.setFont(museosans_700_14p);
+		contentPane.add(lblPassword, "4, 10, left, default");
 		
 		passwordField = new JPasswordField();
-		contentPane.add(passwordField, "4, 8, left, default");
+		contentPane.add(passwordField, "6, 10, left, default");
 		passwordField.setColumns(10);
 		
 		lblReenterPassword = new JLabel("Re-enter password");
-		contentPane.add(lblReenterPassword, "2, 12, right, default");
+		lblReenterPassword.setFont(museosans_700_14p);
+		contentPane.add(lblReenterPassword, "4, 12, left, default");
 		
 		reenterPasswordField = new JPasswordField();
-		contentPane.add(reenterPasswordField, "4, 12, left, default");
+		contentPane.add(reenterPasswordField, "6, 12, left, default");
 		reenterPasswordField.setColumns(10);
 		
 		lblPasswordError = new JLabel("Passwords do not match");
 		lblPasswordError.setForeground(Color.RED);
 		lblPasswordError.setVisible(false);
-		contentPane.add(lblPasswordError, "6, 12, left, default");
-		
-		buttonPanel = new JPanel();
-		contentPane.add(buttonPanel, "6, 16, fill, fill");
+		lblPasswordError.setFont(museosans_700_14p);
+		contentPane.add(lblPasswordError, "8, 12, left, default");
 		
 		Object[] objects = {this, usernameField, passwordField, reenterPasswordField};
+		
+		buttonPanel = new JPanel();
+		buttonPanel.setBackground(Color.WHITE);
+		contentPane.add(buttonPanel, "8, 16, fill, fill");
 		btnRegister = new JButton("Register");
+		btnRegister.setFont(new Font("Dialog", Font.BOLD, 12));
 		btnRegister.addActionListener(new GenericActionListener(new RegisterCommand(), objects));
 		buttonPanel.add(btnRegister);
 		
 		btnCancel = new JButton("Cancel");
+		btnCancel.setFont(new Font("Dialog", Font.BOLD, 12));
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cancel();

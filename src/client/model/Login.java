@@ -27,6 +27,7 @@ public class Login {
 		ServerComms.toServer(password);
 		
 		if (ServerComms.fromServer().equals(TRUE)) {
+			DropboxOperations.setUsername(username);
 			acquireConnection();
 			KeyStoreOperations.login(username, password);
 			return true;

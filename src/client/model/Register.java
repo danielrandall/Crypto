@@ -47,6 +47,9 @@ public class Register {
 		
 		KeyStoreOperations.setup(username, password);
 		
+		DropboxOperations.setUsername(username);
+		DropboxOperations.folderSetup();
+		
 		byte[][] keys = generateKeys();
 		
 		/* Send to the server to be stored */

@@ -29,6 +29,13 @@ public class DropboxOperations {
     private static final AppKeyPair KEY_PAIR = new AppKeyPair(APP_KEY, APP_SECRET);
 	private static final AccessType ACCESS_TYPE = AccessType.APP_FOLDER;
 	
+	/* The name of folder which houses the files this user uploads */
+	private static final String OWN_FILE_FOLDER = " My Files";
+	/* The name of folder which houses the files shared with this user */
+	private static final String FRIENDS_FILE_FOLDER = " Friends Files";
+	
+	private static String username;
+	
 	private static Session session;
 	
 	
@@ -47,15 +54,16 @@ public class DropboxOperations {
 	/* Uploads a file to the location dropboxPath for the current logged in user.
 	 * Will not overwrite existing file.
 	 * Pass in revision (rev - entry.rev) if you want to overwrite the file
-	 * with the same name. */
-	public static String uploadFile(String dropboxPath, InputStream inputStream,
+	 * with the same name.
+	 * Requires the username to be set beforehand. */
+	public static String uploadFile(String path, InputStream inputStream,
 										int length) {
 		
 		DropboxAPI<Session> mDBApi = new DropboxAPI<Session>(session);
 		Entry newEntry = null;
 		
 		try {
-			newEntry = mDBApi.putFile(dropboxPath, inputStream, length, null, null);
+			newEntry = mDBApi.putFile(username + OWN_FILE_FOLDER + "/" + path, inputStream, length, null, null);
 		} catch (DropboxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -111,6 +119,31 @@ public class DropboxOperations {
 		}
         
 		return authenticationInfo;
+		
+	}
+	
+	/* Sets username */
+	public static void setUsername(String name) {
+		
+		username = name;
+		
+	}
+	
+	
+	/* Sets up the app folders.
+	 * Errors if file/folder already exists in that location. */
+	public static void folderSetup() {
+		
+		DropboxAPI<Session> mDBApi = new DropboxAPI<Session>(session);
+		
+		try {
+			mDBApi.createFolder(username + OWN_FILE_FOLDER);
+			mDBApi.createFolder(username + FRIENDS_FILE_FOLDER);
+			//newEntry = mDBApi.putFile(dropboxPath, inputStream, length, null, null);
+		} catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	

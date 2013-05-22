@@ -4,7 +4,10 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.JTextField;
 import java.awt.GridLayout;
 import javax.swing.JLabel;
@@ -30,6 +33,10 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.factories.FormFactory;
 import java.awt.Color;
+import javax.swing.ImageIcon;
+
+
+/* TODO Make textfield borders rounded */
 
 public class MainFrame extends BaseFrame {
 	
@@ -40,7 +47,6 @@ public class MainFrame extends BaseFrame {
 
 	private JPanel contentPane;
 	private final JPanel mid = new JPanel();
-	private final JPanel footer = new JPanel();
 	private final JPanel header = new JPanel();
 	private final JPanel login = new JPanel();
 	private final JPanel register = new JPanel();
@@ -51,13 +57,17 @@ public class MainFrame extends BaseFrame {
 	private final JButton btnLogIn = new JButton("Log In");
 	private final JButton registerButton = new JButton("Register");
 	private JLabel lblRegisterQuestion;
-	private final Component verticalStrut = Box.createVerticalStrut(20);
+	private final Component verticalStrut = Box.createVerticalStrut(15);
 	private final Component rigidArea = Box.createRigidArea(new Dimension(0, 5));
-	private final JPanel panel = new JPanel();
-	private final JLabel lblFancyApplicationName = new JLabel("fancy application name");
+	private final JPanel logoPanel = new JPanel();
+	private final JLabel lblAppWelcome = new JLabel("Welcome to this app");
 	private final Component rigidArea_2 = Box.createRigidArea(new Dimension(20, 20));
 	private final Component horizontalStrut = Box.createHorizontalStrut(20);
-	private final JLabel lblLoginError = new JLabel("The username or password you entered is incorrect");
+	private final JLabel lblLoginError = new JLabel("Incorrect username or password");
+	private final JPanel welcomePanel = new JPanel();
+	private final JLabel lblDropboxLogo = new JLabel("");
+	private final Component rigidArea_1 = Box.createRigidArea(new Dimension(20, 20));
+	private final Component verticalStrut_1 = Box.createVerticalStrut(5);
 
 	/**
 	 * Launch the application.
@@ -79,6 +89,7 @@ public class MainFrame extends BaseFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					createFonts();
 					MainFrame frame = new MainFrame();
 					frame.start();
 				} catch (Exception e) {
@@ -109,25 +120,39 @@ public class MainFrame extends BaseFrame {
 		
 		Object[] objects1 = {this, usernameField, passwordField};
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 600, 400);
+		//setBounds(100, 100, 600, 400);
+		setBounds(100, 100, 450, 278);
 		contentPane = new JPanel();
+		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new GridLayout(0, 1, 0, 0));
+		contentPane.setLayout(new GridLayout(2, 1, 0, 0));
+		header.setBackground(Color.WHITE);
 		
 		contentPane.add(header);
 		header.setLayout(new GridLayout(0, 2, 0, 0));
+		logoPanel.setBackground(Color.WHITE);
 		
-		header.add(panel);
-		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		header.add(logoPanel);
+		logoPanel.setLayout(new BoxLayout(logoPanel, BoxLayout.X_AXIS));
 		
-		panel.add(rigidArea_2);
-		lblFancyApplicationName.setFont(new Font("Dialog", Font.BOLD, 14));
+		logoPanel.add(rigidArea_1);
+		lblDropboxLogo.setIcon(new ImageIcon(MainFrame.class.getResource("/client/view/DropboxLog.png")));
 		
-		panel.add(lblFancyApplicationName);
+		logoPanel.add(lblDropboxLogo);
+		welcomePanel.setBackground(Color.WHITE);
+		
+		header.add(welcomePanel);
+		welcomePanel.setLayout(new BoxLayout(welcomePanel, BoxLayout.X_AXIS));
+		welcomePanel.add(rigidArea_2);
+		lblAppWelcome.setHorizontalAlignment(SwingConstants.CENTER);
+		welcomePanel.add(lblAppWelcome);
+		lblAppWelcome.setFont(museosans_900_18p);
+		mid.setBackground(Color.WHITE);
 		
 		contentPane.add(mid);
 		mid.setLayout(new GridLayout(0, 2, 0, 0));
+		login.setBackground(Color.WHITE);
 		
 		mid.add(login);
 		login.setLayout(new FormLayout(new ColumnSpec[] {
@@ -140,6 +165,8 @@ public class MainFrame extends BaseFrame {
 			new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
 				RowSpec.decode("13px"),
 				RowSpec.decode("35px"),
 				RowSpec.decode("13px"),
@@ -147,36 +174,48 @@ public class MainFrame extends BaseFrame {
 				FormFactory.DEFAULT_ROWSPEC,
 				RowSpec.decode("35px"),
 				RowSpec.decode("23px"),}));
-		lblLoginError.setFont(new Font("DejaVu Sans", Font.PLAIN, 10));
+		lblLoginError.setFont(museosans_700_14p);
 		lblLoginError.setForeground(Color.RED);
 		lblLoginError.setVisible(false);
 		
 		login.add(lblLoginError, "2, 2, 5, 1");
-		login.add(lblUsername, "2, 3, left, center");
+		
+		login.add(verticalStrut_1, "1, 4");
+		login.add(lblUsername, "2, 5, left, center");
 		lblUsername.setVerticalAlignment(SwingConstants.BOTTOM);
-		lblUsername.setFont(new Font("Dialog", Font.PLAIN, 10));
-		login.add(lblPassword, "4, 3, left, center");
+		lblUsername.setFont(museosans_700_14p);
+		//lblUsername.setFont(new Font("Dialog", Font.BOLD, 12));
+		login.add(lblPassword, "4, 4, 1, 2, left, center");
 		lblPassword.setVerticalAlignment(SwingConstants.BOTTOM);
-		lblPassword.setFont(new Font("Dialog", Font.PLAIN, 10));
+		lblPassword.setFont(museosans_700_14p);
 		lblPassword.setLabelFor(passwordField);
 		
-		login.add(horizontalStrut, "1, 4");
-		
 		lblUsername.setLabelFor(usernameField);
-		login.add(usernameField, "2, 4, left, center");
+		login.add(usernameField, "2, 6, left, center");
+		
+		/*
+		Border rounded = new LineBorder(new Color(210,210,210), 1, true);
+		Border empty = new EmptyBorder(0, 3, 0, 0);
+		Border border = new CompoundBorder(rounded, empty);
+		*/
+		
 		usernameField.setAlignmentX(Component.LEFT_ALIGNMENT);
 		usernameField.setFont(new Font("Dialog", Font.PLAIN, 12));
 		usernameField.setHorizontalAlignment(SwingConstants.LEFT);
 		usernameField.setColumns(10);
-		login.add(passwordField, "4, 4, left, center");
+		
+		login.add(passwordField, "4, 6, left, center");
 		passwordField.setAlignmentX(0.15f);
 		passwordField.setHorizontalAlignment(SwingConstants.LEFT);
 		passwordField.setColumns(10);
+		
+		login.add(horizontalStrut, "1, 7, 1, 2");
 		btnLogIn.setHorizontalAlignment(SwingConstants.RIGHT);
-		login.add(btnLogIn, "4, 5, 1, 2, right, center");
+		login.add(btnLogIn, "4, 7, 1, 2, right, center");
 		btnLogIn.addActionListener(new GenericActionListener(new LogInCommand(), objects1));
 		
 		btnLogIn.setFont(new Font("Dialog", Font.BOLD, 10));
+		register.setBackground(Color.WHITE);
 		
 		mid.add(register);
 		register.setLayout(new BoxLayout(register, BoxLayout.Y_AXIS));
@@ -184,14 +223,13 @@ public class MainFrame extends BaseFrame {
 		register.add(verticalStrut);
 		
 		lblRegisterQuestion = new JLabel("Not already a member?");
+		lblRegisterQuestion.setFont(museosans_700_14p);
 		lblRegisterQuestion.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lblRegisterQuestion.setHorizontalAlignment(SwingConstants.CENTER);
 		register.add(lblRegisterQuestion);
 		
 		register.add(rigidArea);
 		register.add(registerButton);
-		
-		contentPane.add(footer);
 	}
 	
 	/* Initialises the application.
