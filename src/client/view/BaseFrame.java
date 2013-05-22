@@ -13,9 +13,11 @@ import client.controller.Controller;
 
 public abstract class BaseFrame extends JFrame implements WindowListener {
 	
-	protected static Font museosans_900_10p;
+	protected static Font museosans_500_12p;
 	protected static Font museosans_700_14p;
+	protected static Font museosans_900_10p;
 	protected static Font museosans_900_18p;
+	
 	
 	private void stop() {
 		
@@ -45,8 +47,9 @@ public abstract class BaseFrame extends JFrame implements WindowListener {
 			e.printStackTrace();
 		}
 		/* Set size of created font */
-		museosans_900_10p = museosans_900.deriveFont(10f);
+		museosans_500_12p = museosans_500.deriveFont(12f);
 		museosans_700_14p = museosans_700.deriveFont(14f);
+		museosans_900_10p = museosans_900.deriveFont(10f);
 		museosans_900_18p = museosans_700.deriveFont(18f);
 		
 	}

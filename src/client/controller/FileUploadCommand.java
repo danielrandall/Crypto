@@ -1,5 +1,6 @@
 package client.controller;
 
+import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
@@ -16,7 +17,7 @@ public class FileUploadCommand implements Command {
 		frame = (MenuFrame) objects[0];
 		
 		String fileLocation = ((JTextField) objects[1]).getText();
-		int securityLevel = (Integer) ((JSpinner) objects[2]).getValue();
+		int securityLevel = (Integer) ((JSlider) objects[2]).getValue();
 		
 		CentralAuthority.uploadFile(fileLocation, securityLevel);
 		

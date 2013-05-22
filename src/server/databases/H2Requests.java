@@ -1,12 +1,21 @@
 package server.databases;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class H2Requests extends H2Database {
+	
+	/* The tables has the elements
+	 * sourceUser, destUser, securityLevel
+	 * sourceUser and destUser are the primary keys
+	 */
 	
 	/* Table information */
 	private static final String TABLE_NAME = "requests";
@@ -47,13 +56,26 @@ public class H2Requests extends H2Database {
 		
 		H2Requests h = new H2Requests();
 		
-	//	h.dropFileTable();
-		//h.createFileTable();
+		h.dropFileTable();
+		h.createFileTable();
 		
+		/*
+	//	h.addRequest("mary", "jane", 1);
+	//	h.addRequest("fred", "jane", 5);
+	//	h.addRequest("marge", "jane", 3);
 		
+	//	h.removeRequest("mary", "jane");
+		
+		List<Map<String, Object>> l = h.getAllRequestsForUser("jane");
+		
+		for (int i = 0; i < l.size(); i++) {
+			System.out.println(l.get(i).get(SOURCE_USER));
+			System.out.println(l.get(i).get(SECURITY_LEVEL));
+			
+		}
+		*/
 	}
 	
-	/*
 	public void dropFileTable() throws SQLException {
 		
 		Connection conn = getConnection();
@@ -65,7 +87,8 @@ public class H2Requests extends H2Database {
 	}
 	
 	
-	
+	/* Create the table.
+	 * Uses source user and dest user as primary keys */
 	public void createFileTable() throws SQLException {
 
 		Connection conn = getConnection();
@@ -74,12 +97,7 @@ public class H2Requests extends H2Database {
 	    String command = "CREATE TABLE " + TABLE_NAME + "(";
 	    
 	    for (int i = 0; i < FILE_ATTRIBUTES.length; i++) {
-	    	/* IV is input as byte[] and so needs type binary. */
-	/*
-	    	if (FILE_ATTRIBUTES[i].equals(IV))
-	    		command = command + FILE_ATTRIBUTES[i] + " " + "binary("
-  	                  +  fileAttributes.get(FILE_ATTRIBUTES[i]) + ") NOT NULL,";
-	    	else if (FILE_ATTRIBUTES[i].equals(SECURITY_LEVEL))
+	    	if (FILE_ATTRIBUTES[i].equals(SECURITY_LEVEL))
 	    		command = command + FILE_ATTRIBUTES[i] + " " + "int("
 	  	                  +  fileAttributes.get(FILE_ATTRIBUTES[i]) + ") NOT NULL,";
 	    	else
@@ -87,14 +105,86 @@ public class H2Requests extends H2Database {
 	    				+  fileAttributes.get(FILE_ATTRIBUTES[i]) + ") NOT NULL,";
 	    }
 	    
-	    command = command + "PRIMARY KEY (" + FILE_ATTRIBUTES[0] + ")";
+	    command = command + "PRIMARY KEY (" + FILE_ATTRIBUTES[0] + ", " + FILE_ATTRIBUTES[1] + ")";
 	    command = command + ")";
 
 	    s.executeUpdate(command);
 	    
 	    conn.close();
 	}
-	*/
+	
+	
+	/* Pre: inputs are given in the correct order. */
+	public void addRequest(String sourceUser, String destUser, int securityLevel) {
+		
+		Connection conn = getConnection();
+		
+		try {
+			String command = "INSERT INTO " + TABLE_NAME + " VALUES (?,?,?)";
+			PreparedStatement statement = conn.prepareStatement(command);
+			statement.setString(1, sourceUser);
+			statement.setString(2, destUser);
+			statement.setInt(3, securityLevel);
+					
+            statement.executeUpdate();
+			
+			conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/* Removes the desired user */
+	public void removeRequest(String sourceUser, String destUser) {
+		
+		Connection conn = getConnection();
+		
+		try {
+			Statement s = conn.createStatement();
+			s.execute("DELETE FROM " + TABLE_NAME + " WHERE " + FILE_ATTRIBUTES[0] + " = '" + sourceUser + "'"
+					   + " AND " + FILE_ATTRIBUTES[1] + " = '" + destUser + "'");
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/* Returns all outstanding share requests made for the given user */
+	public List<Map<String, Object>> getAllRequestsForUser(String username) {
+		
+		Connection conn = getConnection();
+
+		List<Map<String, Object>> userData = new ArrayList<Map<String, Object>>();
+	    
+		try {
+			Statement s = conn.createStatement();	
+			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME +
+					" WHERE " + FILE_ATTRIBUTES[1] + " = '" + username + "'");
+		
+			while (r.next()) {
+				Map<String, Object> data = new HashMap<String, Object>(FILE_ATTRIBUTES.length - 2);
+				
+				String sourceUser = r.getString(1);
+				data.put(FILE_ATTRIBUTES[0], sourceUser);
+				
+				int i = r.getInt(3);
+				data.put(FILE_ATTRIBUTES[2], i);
+				
+				userData.add(data);
+			}
+
+			conn.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return userData;
+	}
 	
 
 }

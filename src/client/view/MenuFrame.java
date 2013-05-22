@@ -1,6 +1,7 @@
 package client.view;
 
 import java.awt.EventQueue;
+import java.awt.Frame;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -29,31 +30,27 @@ import javax.swing.JList;
 import client.controller.AddFriendCommand;
 import client.controller.FileDownloadCommand;
 import client.controller.FileUploadCommand;
+import javax.swing.JTabbedPane;
 
 public class MenuFrame extends BaseFrame {
+	
+	/* Frame to transfer to when the user wishes to upload a file */
+	Frame uploadFileFrame = new UploadFileFrame();
 
 	private JPanel contentPane;
 	private final JPanel actions = new JPanel();
-	private final JPanel files = new JPanel();
-	private final JTextField uploadFileTextField = new JTextField();
-	private final JButton uploadChooseButton = new JButton("Choose");
 	private final JButton btnUploadFile = new JButton("Upload file");
 	private final JTextField fileToDownTextField = new JTextField();
 	private final JLabel lblFileName = new JLabel("File name");
 	private final JLabel lblDownloadLocation = new JLabel("Download location");
 	private final JTextField downloadLocationTextField = new JTextField();
 	private final JButton downloadChooseButton = new JButton("Choose");
-	private final JLabel lblSecurityLevel = new JLabel("Security Level");
 	private final JButton btnDownloadFile = new JButton("Download file");
-	private final JLabel lblFileLocation = new JLabel("File location");
-	private final JSpinner securityLevelSpinner = new JSpinner();
 	private JTextField usernameToAddTextField;
 	private final JLabel MinSecurityLabel = new JLabel("Min Security Level");
 	private final JLabel MaxSecurityLabel = new JLabel("Max Security Level");
 	private final JSpinner maxSecuritySpinner = new JSpinner();
 	private final JSpinner minSecuritySpinner = new JSpinner();
-	private JLabel lblUploadedFiles;
-	private JList list;
 
 	/**
 	 * Launch the application.
@@ -89,21 +86,19 @@ public class MenuFrame extends BaseFrame {
 	public MenuFrame() {
 		MaxSecurityLabel.setFont(new Font("Dialog", Font.BOLD, 10));
 		MinSecurityLabel.setFont(new Font("Dialog", Font.BOLD, 10));
-		securityLevelSpinner.setModel(new SpinnerNumberModel(1, 1, 5, 1));
-		lblFileLocation.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblSecurityLevel.setFont(new Font("Dialog", Font.BOLD, 10));
 		downloadLocationTextField.setColumns(10);
 		lblDownloadLocation.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblFileName.setFont(new Font("Dialog", Font.BOLD, 10));
 		fileToDownTextField.setColumns(10);
+		btnUploadFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				uploadFileFrame.setVisible(true);
+			}
+		});
 		
-		Object[] objects = {this, uploadFileTextField, securityLevelSpinner};
-		btnUploadFile.addActionListener(new GenericActionListener(new FileUploadCommand(), objects));
+		
 		
 		btnUploadFile.setFont(new Font("Dialog", Font.BOLD, 12));
-		uploadChooseButton.addActionListener(new FileActionListener());
-		uploadChooseButton.setFont(new Font("Dialog", Font.BOLD, 10));
-		uploadFileTextField.setColumns(10);
 		initGUI();
 	}
 	
@@ -132,22 +127,18 @@ public class MenuFrame extends BaseFrame {
 		minSecuritySpinner.setModel(new SpinnerNumberModel(1, 1, 5, 1));
 		GroupLayout gl_actions = new GroupLayout(actions);
 		gl_actions.setHorizontalGroup(
-			gl_actions.createParallelGroup(Alignment.TRAILING)
+			gl_actions.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_actions.createSequentialGroup()
 					.addGroup(gl_actions.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_actions.createSequentialGroup()
 							.addContainerGap()
-							.addGroup(gl_actions.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_actions.createSequentialGroup()
-									.addComponent(uploadFileTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addGap(18)
-									.addComponent(uploadChooseButton))
-								.addComponent(fileToDownTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(fileToDownTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addGap(135))
 						.addGroup(gl_actions.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(downloadLocationTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(downloadChooseButton, GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE))
+							.addComponent(downloadChooseButton, GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE))
 						.addGroup(gl_actions.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(lblDownloadLocation))
@@ -155,18 +146,8 @@ public class MenuFrame extends BaseFrame {
 							.addContainerGap()
 							.addComponent(lblFileName))
 						.addGroup(gl_actions.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(lblFileLocation))
-						.addGroup(gl_actions.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_actions.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblSecurityLevel)
-								.addGroup(gl_actions.createSequentialGroup()
-									.addGap(24)
-									.addComponent(btnUploadFile, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE))))
-						.addGroup(gl_actions.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(securityLevelSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addGap(36)
+							.addComponent(btnUploadFile, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_actions.createSequentialGroup()
 							.addGap(34)
 							.addComponent(btnDownloadFile))
@@ -177,35 +158,26 @@ public class MenuFrame extends BaseFrame {
 								.addComponent(lblUsername))))
 					.addContainerGap())
 				.addGroup(gl_actions.createSequentialGroup()
-					.addContainerGap(18, Short.MAX_VALUE)
+					.addContainerGap(21, Short.MAX_VALUE)
 					.addComponent(MinSecurityLabel)
 					.addGap(18)
 					.addComponent(MaxSecurityLabel)
 					.addGap(26))
-				.addGroup(Alignment.LEADING, gl_actions.createSequentialGroup()
+				.addGroup(gl_actions.createSequentialGroup()
 					.addGap(43)
 					.addComponent(minSecuritySpinner, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
 					.addComponent(maxSecuritySpinner, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
 					.addGap(64))
 				.addGroup(gl_actions.createSequentialGroup()
 					.addGap(67)
 					.addComponent(btnAddFriend)
-					.addContainerGap(96, Short.MAX_VALUE))
+					.addContainerGap(99, Short.MAX_VALUE))
 		);
 		gl_actions.setVerticalGroup(
 			gl_actions.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_actions.createSequentialGroup()
-					.addComponent(lblFileLocation)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_actions.createParallelGroup(Alignment.BASELINE)
-						.addComponent(uploadFileTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(uploadChooseButton, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblSecurityLevel)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(securityLevelSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGap(93)
 					.addComponent(btnUploadFile, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 					.addGap(33)
 					.addComponent(lblFileName)
@@ -247,15 +219,6 @@ public class MenuFrame extends BaseFrame {
 		downloadChooseButton.addActionListener(new FileActionListener());
 		downloadChooseButton.setFont(new Font("Dialog", Font.BOLD, 10));
 		actions.setLayout(gl_actions);
-		
-		contentPane.add(files);
-		files.setLayout(new BoxLayout(files, BoxLayout.PAGE_AXIS));
-		
-		lblUploadedFiles = new JLabel("Uploaded files");
-		files.add(lblUploadedFiles);
-		
-		list = new JList();
-		files.add(list);
 	}
 	
 	private void run() {
@@ -282,11 +245,7 @@ public class MenuFrame extends BaseFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			
-			if (arg0.getSource().equals(uploadChooseButton)) {
-				
-				chooseFile(uploadFileTextField, false);
-			}
+
 			
 			if (arg0.getSource().equals(downloadChooseButton)) {
 				

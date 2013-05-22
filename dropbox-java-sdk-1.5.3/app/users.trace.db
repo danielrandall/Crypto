@@ -10,3 +10,12 @@ DROP TABLE users [42102-170]
 05-20 14:37:45 jdbc[2]: exception
 org.h2.jdbc.JdbcSQLException: Table "FILES" not found; SQL statement:
 DROP TABLE files [42102-170]
+05-22 16:29:51 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Invalid value "4" for parameter "parameterIndex" [90008-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.getInvalidValueException(DbException.java:215)
+	at org.h2.jdbc.JdbcPreparedStatement.setParameter(JdbcPreparedStatement.java:1284)
+	at org.h2.jdbc.JdbcPreparedStatement.setInt(JdbcPreparedStatement.java:321)
+	at server.databases.H2Requests.addRequest(H2Requests.java:116)
+	at server.databases.H2Requests.main(H2Requests.java:62)
