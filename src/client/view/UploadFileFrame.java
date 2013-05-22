@@ -26,6 +26,8 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.awt.Color;
 
+/* TODO: Override slider defaults such that it actually goes to the value you
+ * click and not just one value in that direction. */
 
 /* This frame does not implement the window listener of BaseFrame as we do not
  * wish for the application to exit when this window closes. */
@@ -126,6 +128,7 @@ public class UploadFileFrame extends BaseFrame {
 		contentPane.add(lblSecurityLevel, "3, 13, default, bottom");
 		
 		contentPane.add(horizontalStrut, "7, 13");
+		sliderSecurityLevel.setSnapToTicks(true);
 		sliderSecurityLevel.setMinimum(1);
 		sliderSecurityLevel.setMaximum(5);
 		sliderSecurityLevel.setMajorTickSpacing(1);
@@ -163,6 +166,15 @@ public class UploadFileFrame extends BaseFrame {
             String fileName = file.getPath();
             textField.setText(fileName);
 		}
+	}
+	
+	/* Called when a file successfully uploads */
+	public void fileUploaded() {
+		
+		fileNameTextField.setText("");
+		sliderSecurityLevel.setValue(sliderSecurityLevel.getMaximum());
+		setVisible(false);
+		
 	}
 
 }

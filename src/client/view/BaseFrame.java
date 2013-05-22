@@ -13,9 +13,13 @@ import client.controller.Controller;
 
 public abstract class BaseFrame extends JFrame implements WindowListener {
 	
+	/* Mainly used for miscellaneous stuff - slider ticks */
 	protected static Font museosans_500_12p;
+	/* Mainly used for field descriptors */
 	protected static Font museosans_700_14p;
+	/* Mainly used for buttons (bit crap) */
 	protected static Font museosans_900_10p;
+	/* Mainly used for headings */
 	protected static Font museosans_900_18p;
 	
 	
