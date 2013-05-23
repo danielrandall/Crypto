@@ -18,7 +18,7 @@ public class CentralAuthority {
 	
 	private static final String GET_SECURITY_LEVEL = "50";
 	
-	private static final int NUM_COLUMNS = 2;
+	private static final String DOWNLOAD_LOCATION = "/homes/dr1810/DownloadedAppFiles";	
 
 	public static boolean addFriend(String usernameToAdd, int lowerBound, int upperBound) {
 		
@@ -74,19 +74,59 @@ public class CentralAuthority {
 		
 	}
 	
-	public static void downloadFile(String fileDownloadName, String downloadLocation) {
+	/* Downloads and unencrypts the requested file to a pre-determined download
+	 * location.
+	 */
+	public static void downloadFile(String fileName) {
 		
-		/* Tell server a file is being downloaded */
+		/*
+		 fileDownloadName - name of file
+		 downloadLocation - directory and file name
+		 public static void downloadFile(String fileDownloadName, String downloadLocation) {
+		
 		ServerComms.toServer(DOWNLOAD_FILE);
 		
 		File file = new File(downloadLocation);
 		
-		/*
-		if (file.exists()) {
-			view.fileExists();
-			return;
+		
+		FileOutputStream outputStream = null;
+		
+		try {
+			
+			outputStream = new FileOutputStream(file);
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
+		String rev = DropboxOperations.downloadFile(fileDownloadName, outputStream);
+		
+		ServerComms.toServer(rev);
+		
+		byte[] iv = ServerComms.getBytes();
+		String securityLevel = ServerComms.fromServer();
+		
+		byte[] key = KeyStoreOperations.retrieveOwnKey(securityLevel);
+		
+		FileOperations.decryptFile(file, rev, iv, key);	
 		*/
+		
+		
+		File downloadFolder = new File(DOWNLOAD_LOCATION);
+		if (!downloadFolder.exists())
+			downloadFolder.mkdir();
+		
+		String downloadLocation = DOWNLOAD_LOCATION + "/" + fileName;
+		
+		File file = new File(downloadLocation);
+		
+		if (file.exists()) 
+			return;
+		
+		
+		/* Tell server a file is being downloaded */
+		ServerComms.toServer(DOWNLOAD_FILE);
 		
 		FileOutputStream outputStream = null;
 		
@@ -100,7 +140,7 @@ public class CentralAuthority {
 		}
 		
 		/* Returns info */
-		String rev = DropboxOperations.downloadFile(fileDownloadName, outputStream);
+		String rev = DropboxOperations.downloadFile(fileName, outputStream);
 		
 		/* Send file information to the server */
 		ServerComms.toServer(rev);

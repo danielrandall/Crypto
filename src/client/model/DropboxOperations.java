@@ -170,12 +170,13 @@ public class DropboxOperations {
 	}
 	
 	
-	public static String downloadFile(String path, OutputStream stream) {
+	public static String downloadFile(String fileName, OutputStream stream) {
 		
 		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
+		String filePath = "/" + username + OWN_FILE_FOLDER + "/" + fileName;
 		
 		try {
-			return client.getFile(path, null, stream, null).getMetadata().rev;
+			return client.getFile(filePath, null, stream, null).getMetadata().rev;
 		} catch (DropboxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

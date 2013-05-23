@@ -4,21 +4,25 @@ import javax.swing.JTextField;
 
 import client.model.CentralAuthority;
 import client.view.MenuFrame;
+import client.view.MyFilesPanel;
 
 
 public class FileDownloadCommand implements Command {
 	
 	private MenuFrame frame;
+	private MyFilesPanel panel;
 
 	@Override
 	public void execute(Object[] objects) {
 		
-		frame = (MenuFrame) objects[0];
+		panel = (MyFilesPanel) objects[0];
+		Object[] info = panel.getSelectedRowInfo();
 		
-		String fileToDownload = ((JTextField) objects[1]).getText();
-		String fileDownloadLocation = ((JTextField) objects[2]).getText();
-		
-		CentralAuthority.downloadFile(fileToDownload, fileDownloadLocation);
+		if (info != null) {
+			
+			String fileName = (String) info[0];
+			CentralAuthority.downloadFile(fileName);
+		}
 		
 	}
 

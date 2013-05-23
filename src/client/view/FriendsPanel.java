@@ -1,11 +1,5 @@
 package client.view;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.BoxLayout;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -13,58 +7,60 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import client.controller.DeleteFileCommand;
-import client.controller.FileDownloadCommand;
+import client.controller.DeleteFriendCommand;
 
-public class MyFilesPanel extends JPanel {
+public class FriendsPanel extends JPanel {
 	
-	/* Frame to transfer to when the user wishes to upload a file */
-	private Frame uploadFileFrame = new UploadFileFrame();
+	private Frame friendFrame = new AddNewFriendFrame();
 	
-	private final JButton btnUploadFile = new JButton("Upload file");
+	private final JButton btnAddFriend = new JButton("Add Friend");
 	private final JPanel buttonPanel = new JPanel();
-	private final JTable fileTable = new JTable();
-	private final JScrollPane tableScrollPane = new JScrollPane(fileTable);
+	private final JTable friendTable = new JTable();
+	private final JScrollPane tableScrollPane = new JScrollPane(friendTable);
 	
 	/* Table information */
-	private final String[] columnNames = {"File Name", "Security Level"};
-	private final JButton btnDeleteFile = new JButton("Delete file");
-	private final JButton btnDownloadFile = new JButton("Download file");
+	private final String[] columnNames = {"Friend", "Security Level"};
+	private final JButton btnDeleteFriend = new JButton("Delete friend");
 
 	/**
 	 * Create the panel.
 	 */
-	public MyFilesPanel() {
-
-		initGUI();
+	public FriendsPanel() {
 		
+		initGUI();
+
 	}
 	
-	private void initGUI() {
+private void initGUI() {
 		
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
 		setBackground(Color.WHITE);
 		
-		btnUploadFile.addActionListener(new ActionListener() {
+		btnAddFriend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				uploadFileFrame.setVisible(true);
+				friendFrame.setVisible(true);
 			}
 		});
 		
-		btnUploadFile.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnAddFriend.setFont(new Font("Dialog", Font.BOLD, 12));
 		
 		buttonPanel.setBackground(Color.WHITE);
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-		buttonPanel.add(btnUploadFile);
+		buttonPanel.add(btnAddFriend);
 		
 		tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
-		fileTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		fileTable.setModel(new DefaultTableModel(
+		friendTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		friendTable.setModel(new DefaultTableModel(
 				new Object[][] {
 						
 				},
@@ -81,15 +77,11 @@ public class MyFilesPanel extends JPanel {
 		add(tableScrollPane);
 		add(buttonPanel);
 		
-		Object[] objects = {this, fileTable};
-		btnDeleteFile.addActionListener(new GenericActionListener(new DeleteFileCommand(), objects));
+		Object[] objects = {this, friendTable};
 		
-		Object[] objects1 = {this, fileTable};
-		btnDownloadFile.addActionListener(new GenericActionListener(new FileDownloadCommand(), objects1));
+		btnDeleteFriend.addActionListener(new GenericActionListener(new DeleteFriendCommand(), objects));
 		
-		buttonPanel.add(btnDeleteFile);
-		
-		buttonPanel.add(btnDownloadFile);
+		buttonPanel.add(btnDeleteFriend);
 			
 		setVisible(true);
 		
@@ -99,7 +91,7 @@ public class MyFilesPanel extends JPanel {
 	 * PRE: Element has the correct number of columns. */
 	public void addElementToTable(Object[] element) {
 		
-		DefaultTableModel tableModel = (DefaultTableModel) fileTable.getModel();
+		DefaultTableModel tableModel = (DefaultTableModel) friendTable.getModel();
 		tableModel.addRow(element);
 		
 	}
@@ -107,8 +99,8 @@ public class MyFilesPanel extends JPanel {
 	/* Removes all of the selected rows in the table */
 	public void removeSelectedRowsFromTable() {
 		
-		DefaultTableModel tableModel = (DefaultTableModel) fileTable.getModel();
-		int[] selectedRows = fileTable.getSelectedRows();
+		DefaultTableModel tableModel = (DefaultTableModel) friendTable.getModel();
+		int[] selectedRows = friendTable.getSelectedRows();
 		if (selectedRows.length > 0) {
             for (int i = selectedRows.length - 1; i >= 0; i--) {
                 tableModel.removeRow(selectedRows[i]);
@@ -118,8 +110,8 @@ public class MyFilesPanel extends JPanel {
 	
 	public Object[] getSelectedRowInfo() {
 		
-		DefaultTableModel tableModel = (DefaultTableModel) fileTable.getModel();
-		int[] selectedRows = fileTable.getSelectedRows();
+		DefaultTableModel tableModel = (DefaultTableModel) friendTable.getModel();
+		int[] selectedRows = friendTable.getSelectedRows();
 		Object[] info = null;
 	
 		if (selectedRows.length == 1) {

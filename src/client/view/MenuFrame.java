@@ -23,26 +23,18 @@ import java.awt.Font;
 import java.io.File;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.BoxLayout;
-import javax.swing.JList;
-
-import client.controller.AddFriendCommand;
 import client.controller.FileDownloadCommand;
-import client.controller.FileUploadCommand;
 import javax.swing.JTabbedPane;
 import java.awt.Color;
-import javax.swing.SwingConstants;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-import java.awt.Component;
-import javax.swing.Box;
-import javax.swing.JScrollPane;
 
 public class MenuFrame extends BaseFrame {
 	
 	/* Frame to transfer to when the user wishes to upload a file */
 	Frame uploadFileFrame = new UploadFileFrame();
+	
+	/* Panels used for the tabs */
+	private final MyFilesPanel myFilesPanel = new MyFilesPanel();
+	private final FriendsPanel friendsPanel = new FriendsPanel();
 
 	private JPanel contentPane;
 	private final JPanel actions = new JPanel();
@@ -53,13 +45,8 @@ public class MenuFrame extends BaseFrame {
 	private final JTextField downloadLocationTextField = new JTextField();
 	private final JButton downloadChooseButton = new JButton("Choose");
 	private final JButton btnDownloadFile = new JButton("Download file");
-	private JTextField usernameToAddTextField;
-	private final JLabel MinSecurityLabel = new JLabel("Min Security Level");
-	private final JLabel MaxSecurityLabel = new JLabel("Max Security Level");
-	private final JSpinner maxSecuritySpinner = new JSpinner();
 	private final JSpinner minSecuritySpinner = new JSpinner();
 	private final JTabbedPane tabbedOptionsPane = new JTabbedPane(JTabbedPane.TOP);
-	private final MyFilesPanel myFilesPanel = new MyFilesPanel();
 
 	/**
 	 * Launch the application.
@@ -93,8 +80,6 @@ public class MenuFrame extends BaseFrame {
 	 * Create the frame.
 	 */
 	public MenuFrame() {
-		MaxSecurityLabel.setFont(new Font("Dialog", Font.BOLD, 10));
-		MinSecurityLabel.setFont(new Font("Dialog", Font.BOLD, 10));
 		downloadLocationTextField.setColumns(10);
 		lblDownloadLocation.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblFileName.setFont(new Font("Dialog", Font.BOLD, 10));
@@ -122,24 +107,12 @@ public class MenuFrame extends BaseFrame {
 		
 		contentPane.add(tabbedOptionsPane);
 		
-		tabbedOptionsPane.addTab("MyFiles", null, myFilesPanel, null);
+		tabbedOptionsPane.addTab("My Files", null, myFilesPanel, null);
+		tabbedOptionsPane.addTab("My Friends", null, friendsPanel, null);
 		
 		
 		contentPane.add(actions);
 		
-		usernameToAddTextField = new JTextField();
-		usernameToAddTextField.setColumns(10);
-		
-		JLabel lblUsername = new JLabel("Username");
-		lblUsername.setFont(new Font("Dialog", Font.BOLD, 10));
-		
-		JButton btnAddFriend = new JButton("Add friend");
-		
-		Object[] objects = {this, usernameToAddTextField, minSecuritySpinner, maxSecuritySpinner};
-		btnAddFriend.addActionListener(new GenericActionListener(new AddFriendCommand(), objects));
-		
-		JSpinner minSecuritySpinner = new JSpinner();
-		minSecuritySpinner.setModel(new SpinnerNumberModel(1, 1, 5, 1));
 		GroupLayout gl_actions = new GroupLayout(actions);
 		gl_actions.setHorizontalGroup(
 			gl_actions.createParallelGroup(Alignment.LEADING)
@@ -162,29 +135,8 @@ public class MenuFrame extends BaseFrame {
 							.addComponent(lblFileName))
 						.addGroup(gl_actions.createSequentialGroup()
 							.addGap(34)
-							.addComponent(btnDownloadFile))
-						.addGroup(gl_actions.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_actions.createParallelGroup(Alignment.LEADING)
-								.addComponent(usernameToAddTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblUsername))))
+							.addComponent(btnDownloadFile)))
 					.addContainerGap())
-				.addGroup(gl_actions.createSequentialGroup()
-					.addContainerGap(21, Short.MAX_VALUE)
-					.addComponent(MinSecurityLabel)
-					.addGap(18)
-					.addComponent(MaxSecurityLabel)
-					.addGap(26))
-				.addGroup(gl_actions.createSequentialGroup()
-					.addGap(43)
-					.addComponent(minSecuritySpinner, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
-					.addComponent(maxSecuritySpinner, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
-					.addGap(64))
-				.addGroup(gl_actions.createSequentialGroup()
-					.addGap(67)
-					.addComponent(btnAddFriend)
-					.addContainerGap(99, Short.MAX_VALUE))
 		);
 		gl_actions.setVerticalGroup(
 			gl_actions.createParallelGroup(Alignment.LEADING)
@@ -201,26 +153,8 @@ public class MenuFrame extends BaseFrame {
 						.addComponent(downloadChooseButton, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnDownloadFile)
-					.addPreferredGap(ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
-					.addComponent(lblUsername)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(usernameToAddTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_actions.createParallelGroup(Alignment.LEADING)
-						.addComponent(MaxSecurityLabel)
-						.addComponent(MinSecurityLabel))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_actions.createParallelGroup(Alignment.TRAILING)
-						.addGroup(gl_actions.createSequentialGroup()
-							.addComponent(minSecuritySpinner, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED))
-						.addGroup(gl_actions.createSequentialGroup()
-							.addComponent(maxSecuritySpinner, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-							.addGap(12)))
-					.addComponent(btnAddFriend)
-					.addGap(40))
+					.addContainerGap(223, Short.MAX_VALUE))
 		);
-		maxSecuritySpinner.setModel(new SpinnerNumberModel(1, 1, 5, 1));
 		btnDownloadFile.setFont(new Font("Dialog", Font.BOLD, 12));
 		
 		Object[] objects2 = {this, fileToDownTextField, downloadLocationTextField};
