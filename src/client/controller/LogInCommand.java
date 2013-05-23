@@ -17,8 +17,9 @@ public class LogInCommand implements Command {
 		assert(objects.length == 3);
 		
 		frame = (MainFrame)objects[0];
-		String username = ((JTextComponent) objects[1]).getText();
-		String password = ((JTextComponent) objects[2]).getText();
+		
+		String username = frame.getUsername();
+		String password = frame.getPassword();
 		
 		if (Login.userLogin(username, password)) {
 			Object[][] rows = Login.getUploadedFiles();

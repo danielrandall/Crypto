@@ -30,7 +30,6 @@ public class MyFilesPanel extends JPanel {
 	
 	/* Table information */
 	private final String[] columnNames = {"File Name", "Security Level"};
-	private final Object[][] tableContents = new Object[columnNames.length][];
 	private final JButton btnDeleteFile = new JButton("Delete file");
 
 	/**
@@ -65,7 +64,7 @@ public class MyFilesPanel extends JPanel {
 		fileTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		fileTable.setModel(new DefaultTableModel(
 				new Object[][] {
-						tableContents
+						
 				},
 				columnNames
 			) {
@@ -111,17 +110,18 @@ public class MyFilesPanel extends JPanel {
         }
 	}
 	
-	public Object[][] getSelectedRowInfo() {
+	public Object[] getSelectedRowInfo() {
 		
 		DefaultTableModel tableModel = (DefaultTableModel) fileTable.getModel();
 		int[] selectedRows = fileTable.getSelectedRows();
-		Object[][] info = null;
+		Object[] info = null;
 	
-		if (selectedRows.length > 0) {
-			info = new Object[selectedRows.length][tableModel.getColumnCount()];
-            for (int i = selectedRows.length - 1; i >= 0; i--)
-            	for (int j = tableModel.getColumnCount() - 1; j >= 0; j--)
-            		info[i][j] = tableModel.getValueAt(i, j);
+		if (selectedRows.length == 1) {
+			int row = selectedRows[0];
+			
+			info = new Object[tableModel.getColumnCount()];
+            for (int i = 0; i < tableModel.getColumnCount(); i++)
+            	info[i] = tableModel.getValueAt(row, i);
 		}
 		
 		return info;

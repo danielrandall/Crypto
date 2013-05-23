@@ -1,7 +1,5 @@
 package client.view;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -174,6 +172,20 @@ public class UploadFileFrame extends BaseFrame {
 		fileNameTextField.setText("");
 		sliderSecurityLevel.setValue(sliderSecurityLevel.getMaximum());
 		setVisible(false);
+		
+	}
+	
+	/* Returns the file location that the user has selected */
+	public String getFileLocation() {
+		
+		return fileNameTextField.getText();
+		
+	}
+	
+	/* Returns the slider value representing the security level */
+	public int getSecurityLevel() {
+		
+		return sliderSecurityLevel.getValue();
 		
 	}
 

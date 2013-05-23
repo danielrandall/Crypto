@@ -12,21 +12,18 @@ public class DeleteFileCommand implements Command {
 	public void execute(Object[] objects) {
 		
 		panel = (MyFilesPanel) objects[0];
-		Object[][] info = panel.getSelectedRowInfo();
+		Object[] info = panel.getSelectedRowInfo();
 		
 		if (info != null) {
 			
-			for (int i = 0; i < info.length; i ++) {
 				
-				String fileName = (String) info[i][0];
-				CentralAuthority.removeFile(fileName);
+			String fileName = (String) info[0];
+			CentralAuthority.removeFile(fileName);
 				
-			}
+		}
 			
 			/* Tell the panel to remove the selected rows from the GUI */
 			panel.removeSelectedRowsFromTable();
-			
-		}
 		
 	}
 

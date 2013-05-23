@@ -4,10 +4,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.JTextField;
 import java.awt.GridLayout;
 import javax.swing.JLabel;
@@ -272,6 +269,20 @@ public class MainFrame extends BaseFrame {
 	public void loginFail() {
 		
 		lblLoginError.setVisible(true);
+		
+	}
+	
+	
+	public String getUsername() {
+		
+		return usernameField.getText();
+		
+	}
+	
+	/* TODO do it properly */
+	public String getPassword() {
+		
+		return passwordField.getText();
 		
 	}
 	
