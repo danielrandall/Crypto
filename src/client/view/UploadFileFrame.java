@@ -12,9 +12,6 @@ import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.factories.FormFactory;
 import javax.swing.JLabel;
 import java.awt.Font;
-import java.awt.Frame;
-import java.awt.Panel;
-
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.JButton;

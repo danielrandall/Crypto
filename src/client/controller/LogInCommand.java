@@ -1,7 +1,6 @@
 package client.controller;
 
-import javax.swing.text.JTextComponent;
-
+import client.model.CentralAuthority;
 import client.model.Login;
 import client.view.MainFrame;
 
@@ -22,8 +21,9 @@ public class LogInCommand implements Command {
 		String password = frame.getPassword();
 		
 		if (Login.userLogin(username, password)) {
-			Object[][] rows = Login.getUploadedFiles();
-			frame.login(rows);
+			Object[][] rows = CentralAuthority.getUploadedFiles();
+			Object[][] friends = CentralAuthority.getFriends();
+			frame.login(rows, friends);
 			//Login.getRequests();
 		} else
 			frame.loginFail();

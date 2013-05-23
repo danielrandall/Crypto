@@ -186,5 +186,34 @@ public class H2Requests extends H2Database {
 		return userData;
 	}
 	
+	
+	public int getRequestLevel(String sourceUser, String destUser) {
+		
+		Connection conn = getConnection();
+		int level = 0;
+	    
+		try {
+			Statement s = conn.createStatement();	
+			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME +
+					" WHERE " + FILE_ATTRIBUTES[0] + " = '" + sourceUser + "'"
+					   + " AND " + FILE_ATTRIBUTES[1] + " = '" + destUser + "'");
+		
+			if (r.next()) {
+				
+				level = r.getInt(3);
+			}
+			
+			conn.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return level;
+		
+	}
+	
 
 }

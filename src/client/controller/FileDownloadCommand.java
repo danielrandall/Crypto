@@ -1,7 +1,5 @@
 package client.controller;
 
-import javax.swing.JTextField;
-
 import client.model.CentralAuthority;
 import client.view.MenuFrame;
 import client.view.MyFilesPanel;

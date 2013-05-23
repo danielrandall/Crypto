@@ -252,7 +252,7 @@ public class MainFrame extends BaseFrame {
 	}
 	
 	/* Called when username and password verification succeeds */
-	public void login(Object[][] uploadedFileRows) {
+	public void login(Object[][] uploadedFileRows, Object[][] friends) {
 		
 		usernameField.setText("");
 		passwordField.setText("");
@@ -260,6 +260,7 @@ public class MainFrame extends BaseFrame {
 		setVisible(false);
 		
 		mFrame.populateUploadedFiles(uploadedFileRows);
+		mFrame.populateFriends(friends);
 		mFrame.setVisible(true);
 	}
 	

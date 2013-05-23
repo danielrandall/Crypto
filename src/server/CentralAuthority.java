@@ -1,11 +1,11 @@
 package server;
+import com.dropbox.client2.session.Session;
+
 import server.operations.ServerDropboxOperations;
 import server.operations.ServerFileOperations;
 import server.operations.UserOperations;
 import server.users.Authentication;
 import server.users.User;
-
-import com.dropbox.client2.session.Session;
 
 /* TODO: update file list */
 
@@ -13,10 +13,12 @@ public class CentralAuthority {
 	
 	private static final String UPLOAD_FILE = "1";
 	private static final String DOWNLOAD_FILE = "2";
-	private static final String ADD_FRIEND = "3";
+	private static final String FRIEND_REQUEST = "3";
 	private static final String REMOVE_FILE = "4";
+	private static final String ACCEPT_FRIEND_REQUEST = "5";
 	
 	private static final String GET_SECURITY_LEVEL = "50";
+	private static final String GET_FRIENDS = "51";
 	
 	private static final String TRUE = "1";
 	private static final String FALSE = "0";
@@ -42,19 +44,25 @@ public class CentralAuthority {
 			if (decision.equals(DOWNLOAD_FILE))
 				downloadDecryptedFile(user.getUsername(), comms);
 		
-			if (decision.equals(ADD_FRIEND))
-				addFriend(user.getUsername(), user.getSession(), comms);
+			if (decision.equals(FRIEND_REQUEST))
+				friendRequest(user.getUsername(), comms);
 			
 			if (decision.equals(REMOVE_FILE))
 				removeFile(user.getUsername(), comms);
 			
 			if (decision.equals(GET_SECURITY_LEVEL))
 				getSecurityLevel(comms);
+			
+			if (decision.equals(GET_FRIENDS))
+				getFriends(user.getUsername(), comms);
+			
+			if (decision.equals(ACCEPT_FRIEND_REQUEST))
+				acceptFriendRequest(user.getUsername(), user.getSession(), comms);
 		}
 	
 	}
 	
-	private static void addFriend(String username, Session session, ClientComms comms) {
+	private static void friendRequest(String username, ClientComms comms) {
 		
 		boolean userExists = false;
 		String usernameToAdd = null;
@@ -73,16 +81,27 @@ public class CentralAuthority {
 		int lowerBound = Integer.parseInt(comms.fromClient());   // DEAL WITH NON INT ENTRY
 		int upperBound = Integer.parseInt(comms.fromClient());   // DEAL WITH NON INT ENTRY
 		
+		UserOperations.addRequest(username, usernameToAdd, lowerBound);
+		
+	}
+	
+	private static void acceptFriendRequest(String username, Session destSession, ClientComms comms) {
+		
+		String usernameToAccept = comms.fromClient();
+		
+		int securityLevel = UserOperations.getRequestLevel(usernameToAccept, username);
+		
 		/* Add user to friends list */
-		UserOperations.addUserToFriendsList(username, usernameToAdd, lowerBound, upperBound);
-		
-		User frienduser = Authentication.loadUser(usernameToAdd);
-		
-		/* Share files with user */
-		ServerDropboxOperations.shareFilesWithFriend(usernameToAdd,
-		            frienduser.getSession(), username,
-		                                      session);
-		
+		UserOperations.addUserToFriendsList(username, usernameToAccept, securityLevel, securityLevel);
+			
+		User frienduser = Authentication.loadUser(usernameToAccept);
+		Session sourceSession = frienduser.getSession();
+			
+			/* Share files with user */
+		ServerDropboxOperations.shareFilesWithFriend(usernameToAccept,
+											destSession, username,
+			                                      sourceSession);
+			
 		
 	}
 
@@ -131,6 +150,23 @@ public class CentralAuthority {
 		int securityLevel = ServerFileOperations.getSecurityLevel(fileRev);
 
 		comms.toClient(Integer.toString(securityLevel));
+		
+	}
+	
+	
+	public static void getFriends(String username, ClientComms comms) {
+		
+		String[][] friends = UserOperations.getFriends(username);
+		
+		int length = friends.length;
+		comms.toClient(Integer.toString(length));
+		
+		for (int i = 0; i < length; i++) {
+			
+			comms.toClient(friends[i][0]);
+			comms.toClient(friends[i][1]);
+			
+		}
 		
 	}
 

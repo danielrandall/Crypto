@@ -1,6 +1,9 @@
 package server.operations;
 
+import java.util.Map;
+
 import server.ClientComms;
+import server.databases.H2Requests;
 import server.databases.H2Users;
 import server.encryption.KeyDerivation;
 import server.users.Authentication;
@@ -18,6 +21,7 @@ public class UserOperations {
 	private static final String ALGORITHM = "AES";
 
 	private static H2Users database = new H2Users();
+	private static H2Requests requestDatabase = new H2Requests();
 	
 	
 	public static boolean checkUserExists(String username) {
@@ -75,6 +79,28 @@ public class UserOperations {
 		User user = Authentication.createUser(username, password, comms, key, secret, uid);
 		
 		return user;
+		
+	}
+	
+	
+	public static String[][] getFriends(String username) {
+		
+		Map<String, Object> data = database.getUser(username);
+		FriendsList friendsList = (FriendsList) data.get(H2Users.FRIENDS); 
+		
+		return friendsList.getAllFriends();
+		
+	}
+	
+	public static void addRequest(String sourceUser, String destUser, int securityLevel) {
+		
+		requestDatabase.addRequest(sourceUser, destUser, securityLevel);
+		
+	}
+	
+	public static int getRequestLevel(String sourceUser, String destUser) {
+		
+		return requestDatabase.getRequestLevel(sourceUser, destUser);
 		
 	}
 	

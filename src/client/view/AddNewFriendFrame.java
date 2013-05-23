@@ -1,14 +1,11 @@
 package client.view;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 
-import client.controller.AddFriendCommand;
+import client.controller.FriendRequestCommand;
 
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -22,6 +19,9 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 
 public class AddNewFriendFrame extends BaseFrame {
+	
+	/* Panel to pass along to update the friends list with the new friend */
+	private JPanel panel;
 
 	private JPanel contentPane;
 	private final JLabel lblUsername = new JLabel("Username");
@@ -29,30 +29,16 @@ public class AddNewFriendFrame extends BaseFrame {
 	private final JTextField usernameTextField = new JTextField();
 	private final JLabel lblSecurityLevel = new JLabel("Max Security Level");
 	private final JSlider sliderSecurityLevel = new JSlider();
-	private final JPanel panel = new JPanel();
+	private final JPanel btnPanel = new JPanel();
 	private final JButton btnAddFriend = new JButton("Add friend");
 	private final JButton button_1 = new JButton("Cancel");
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AddNewFriendFrame frame = new AddNewFriendFrame();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private final JLabel lblUsernameError = new JLabel("Username does not exist");
 
 	/**
 	 * Create the frame.
 	 */
-	public AddNewFriendFrame() {
+	public AddNewFriendFrame(JPanel friendPanel) {
+		panel = friendPanel;
 		initGUI();
 	}
 	private void initGUI() {
@@ -86,18 +72,24 @@ public class AddNewFriendFrame extends BaseFrame {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("default:grow"),}));
 		
 		contentPane.add(lblHeader, "4, 2");
+		lblUsernameError.setForeground(Color.RED);
+		lblUsernameError.setVisible(false);
+		
+		contentPane.add(lblUsernameError, "4, 6");
 		lblUsername.setFont(new Font("Dialog", Font.BOLD, 10));
 		
-		contentPane.add(lblUsername, "4, 6");
+		contentPane.add(lblUsername, "4, 8");
 		usernameTextField.setColumns(10);
 		
-		contentPane.add(usernameTextField, "4, 8, fill, default");
+		contentPane.add(usernameTextField, "4, 10, fill, default");
 		lblSecurityLevel.setFont(new Font("Dialog", Font.BOLD, 10));
 		
-		contentPane.add(lblSecurityLevel, "4, 10");
+		contentPane.add(lblSecurityLevel, "4, 12");
 		sliderSecurityLevel.setSnapToTicks(true);
 		sliderSecurityLevel.setPaintTicks(true);
 		sliderSecurityLevel.setPaintLabels(true);
@@ -106,20 +98,48 @@ public class AddNewFriendFrame extends BaseFrame {
 		sliderSecurityLevel.setMajorTickSpacing(1);
 		sliderSecurityLevel.setFont(null);
 		
-		contentPane.add(sliderSecurityLevel, "4, 12");
-		panel.setBackground(Color.WHITE);
+		contentPane.add(sliderSecurityLevel, "4, 14");
+		btnPanel.setBackground(Color.WHITE);
 		
-		contentPane.add(panel, "4, 16, right, fill");
+		contentPane.add(btnPanel, "4, 18, right, fill");
 		btnAddFriend.setHorizontalAlignment(SwingConstants.RIGHT);
 		btnAddFriend.setFont(new Font("Dialog", Font.BOLD, 12));
-		Object[] objects = {this, usernameTextField, sliderSecurityLevel};
-		btnAddFriend.addActionListener(new GenericActionListener(new AddFriendCommand(), objects));
+		Object[] objects = {this, panel};
+		btnAddFriend.addActionListener(new GenericActionListener(new FriendRequestCommand(), objects));
 		
-		panel.add(btnAddFriend);
+		btnPanel.add(btnAddFriend);
 		button_1.setHorizontalAlignment(SwingConstants.RIGHT);
 		button_1.setFont(new Font("Dialog", Font.BOLD, 12));
 		
-		panel.add(button_1);
+		btnPanel.add(button_1);
+	}
+	
+	
+	public String getUsername() {
+		
+		return usernameTextField.getText();
+		
+	}
+	
+	public int getSecurityLevel() {
+		
+		return sliderSecurityLevel.getValue();
+		
+	}
+	
+	public void friendAdded() {
+		
+		lblUsernameError.setVisible(false);
+		usernameTextField.setText("");
+		sliderSecurityLevel.setValue(sliderSecurityLevel.getMaximum());
+		setVisible(false);
+		
+	}
+	
+	public void userDoesNotExist() {
+		
+		lblUsernameError.setVisible(true);
+		
 	}
 
 }

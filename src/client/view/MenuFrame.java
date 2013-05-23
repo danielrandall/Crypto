@@ -1,14 +1,9 @@
 package client.view;
 
-import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.GridLayout;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-
-
 import javax.swing.JTabbedPane;
 import java.awt.Color;
 
@@ -54,6 +49,12 @@ public class MenuFrame extends BaseFrame {
 	public void populateUploadedFiles(Object[][] uploadedFileRows) {
 		
 		myFilesPanel.populateUploadedFiles(uploadedFileRows);
+		
+	}
+	
+	public void populateFriends(Object[][] friends) {
+		
+		friendsPanel.populateFriends(friends);
 		
 	}
 }	

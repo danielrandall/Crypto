@@ -13,19 +13,22 @@ public class CentralAuthority {
 	
 	private static final String UPLOAD_FILE = "1";
 	private static final String DOWNLOAD_FILE = "2";
-	private static final String ADD_FRIEND = "3";
+	private static final String FRIEND_REQUEST = "3";
 	private static final String DELETE_FILE = "4";
+	private static final String ACCEPT_FRIEND_REQUEST = "5";
 	
 	private static final String GET_SECURITY_LEVEL = "50";
+	private static final String GET_FRIENDS = "51";
 	
 	private static final String DOWNLOAD_LOCATION = "/homes/dr1810/DownloadedAppFiles";	
 
-	public static boolean addFriend(String usernameToAdd, int lowerBound, int upperBound) {
+	
+	public static boolean friendRequest(String usernameToAdd, int lowerBound, int upperBound) {
 		
 		String response = null;
 		
 		/* Tell server a user is to be added */
-		ServerComms.toServer(ADD_FRIEND);
+		ServerComms.toServer(FRIEND_REQUEST);
 	
 		/* Send username to server */
 		ServerComms.toServer(usernameToAdd);
@@ -41,6 +44,13 @@ public class CentralAuthority {
 		ServerComms.toServer(Integer.toString(upperBound));
 		
 		return true;
+		
+	}
+	
+	
+	public static void acceptFriendRequest(String username) {
+		
+		ServerComms.toServer(ACCEPT_FRIEND_REQUEST);
 		
 	}
 
@@ -191,6 +201,27 @@ public class CentralAuthority {
 		
 		return filesAndSecurityLevels;
 			
+	}
+	
+	
+	public static Object[][] getFriends() {
+		
+		ServerComms.toServer(GET_FRIENDS);
+		int size = Integer.parseInt(ServerComms.fromServer());
+		Object[][] friends = new Object[size][2];
+		
+		for (int i = 0; i < size; i++) {
+			
+			String username = ServerComms.fromServer();
+			int securityLevel = Integer.parseInt(ServerComms.fromServer());
+			
+			friends[i][0] = username;
+			friends[i][1] = securityLevel;
+			
+		}
+		
+		return friends;
+		
 	}
 
 }

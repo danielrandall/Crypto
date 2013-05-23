@@ -10,6 +10,8 @@ import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.session.Session;
 
 public class ServerDropboxOperations {
+	
+	private static final String FRIENDS_FILE_FOLDER = " Friends Files";
 
 	/* Uploads a file to the location dropboxPath for the current logged in user.
 	 * Will not overwrite existing file. Pass in revision (rev - entry.rev)
@@ -116,7 +118,7 @@ public class ServerDropboxOperations {
 			                        Session session) {
 		
 		DropboxAPI<Session> client = new DropboxAPI<Session>(friendSession);
-		String folderName = "/friends/" + username;
+		String folderName = username + FRIENDS_FILE_FOLDER;
 		try {
 			client.createFolder(folderName);
 		} catch (DropboxException e) {
