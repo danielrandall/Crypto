@@ -17,6 +17,8 @@ import javax.swing.JSlider;
 import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class AddNewFriendFrame extends BaseFrame {
 	
@@ -31,7 +33,7 @@ public class AddNewFriendFrame extends BaseFrame {
 	private final JSlider sliderSecurityLevel = new JSlider();
 	private final JPanel btnPanel = new JPanel();
 	private final JButton btnAddFriend = new JButton("Add friend");
-	private final JButton button_1 = new JButton("Cancel");
+	private final JButton btnCancel = new JButton("Cancel");
 	private final JLabel lblUsernameError = new JLabel("Username does not exist");
 
 	/**
@@ -108,10 +110,15 @@ public class AddNewFriendFrame extends BaseFrame {
 		btnAddFriend.addActionListener(new GenericActionListener(new FriendRequestCommand(), objects));
 		
 		btnPanel.add(btnAddFriend);
-		button_1.setHorizontalAlignment(SwingConstants.RIGHT);
-		button_1.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setVisible(false);
+			}
+		});
+		btnCancel.setHorizontalAlignment(SwingConstants.RIGHT);
+		btnCancel.setFont(new Font("Dialog", Font.BOLD, 12));
 		
-		btnPanel.add(button_1);
+		btnPanel.add(btnCancel);
 	}
 	
 	

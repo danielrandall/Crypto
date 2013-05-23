@@ -19,6 +19,7 @@ public class CentralAuthority {
 	private static final String FRIEND_REQUEST = "3";
 	private static final String REMOVE_FILE = "4";
 	private static final String ACCEPT_FRIEND_REQUEST = "5";
+	private static final String IGNORE_FRIEND_REQUEST = "6";
 	
 	private static final String GET_SECURITY_LEVEL = "50";
 	private static final String GET_FRIENDS = "51";
@@ -65,6 +66,9 @@ public class CentralAuthority {
 			
 			if (decision.equals(ACCEPT_FRIEND_REQUEST))
 				acceptFriendRequest(user.getUsername(), user.getSession(), comms);
+			
+			if (decision.equals(IGNORE_FRIEND_REQUEST))
+				ignoreFriendRequest(user.getUsername(), comms);
 		}
 	
 	}
@@ -118,6 +122,15 @@ public class CentralAuthority {
 			/* Share files with user */
 		ServerDropboxOperations.shareFilesWithFriend(sourceUsername, sourceSession, destUsername, destSession, permittedFiles);
 			
+		UserOperations.removeRequest(sourceUsername, destUsername);
+	}
+	
+	
+	public static void ignoreFriendRequest(String destUsername, ClientComms comms) {
+		
+		String sourceUsername = comms.fromClient();
+		
+		UserOperations.removeRequest(sourceUsername, destUsername);
 		
 	}
 

@@ -14,6 +14,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 import client.controller.AddFriendCommand;
+import client.controller.IgnoreFriendRequestCommand;
+
+import java.awt.event.ActionEvent;
 
 public class FriendRequestsPanel extends JPanel {
 	
@@ -25,6 +28,7 @@ public class FriendRequestsPanel extends JPanel {
 	private final String[] columnNames = {"Username", "Security Level"};
 	private final JButton btnAcceptFriend = new JButton("Accept request");
 	private final JButton btnRejectFriend = new JButton("Reject request");
+	private final JButton btnIgnoreFriend = new JButton("Ignore request");
 
 	/**
 	 * Create the panel.
@@ -69,6 +73,11 @@ public class FriendRequestsPanel extends JPanel {
 		btnAcceptFriend.addActionListener(new GenericActionListener(new AddFriendCommand(), objects));
 		
 		buttonPanel.add(btnAcceptFriend);
+		
+		Object[] ignoreObjects = {this};
+		btnIgnoreFriend.addActionListener(new GenericActionListener(new IgnoreFriendRequestCommand(), ignoreObjects));
+		
+		buttonPanel.add(btnIgnoreFriend);
 			
 		setVisible(true);
 		
@@ -118,6 +127,18 @@ public class FriendRequestsPanel extends JPanel {
 		
 		for (int i = 0; i < uploadedFileRows.length; i++)
 			addElementToTable(uploadedFileRows[i]);
+		
+	}
+
+	public void friendAdded() {
+		
+		removeSelectedRowsFromTable();
+		
+	}
+
+	public void friendIgnored() {
+		
+		removeSelectedRowsFromTable();
 		
 	}
 

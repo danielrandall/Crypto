@@ -16,6 +16,7 @@ public class CentralAuthority {
 	private static final String FRIEND_REQUEST = "3";
 	private static final String DELETE_FILE = "4";
 	private static final String ACCEPT_FRIEND_REQUEST = "5";
+	private static final String IGNORE_FRIEND_REQUEST = "6";
 	
 	private static final String GET_SECURITY_LEVEL = "50";
 	private static final String GET_FRIENDS = "51";
@@ -52,6 +53,15 @@ public class CentralAuthority {
 	public static void acceptFriendRequest(String username) {
 		
 		ServerComms.toServer(ACCEPT_FRIEND_REQUEST);
+		
+		ServerComms.toServer(username);
+		
+	}
+	
+	
+	public static void ignoreFriendRequest(String username) {
+		
+		ServerComms.toServer(IGNORE_FRIEND_REQUEST);
 		
 		ServerComms.toServer(username);
 		

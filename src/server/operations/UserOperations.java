@@ -114,10 +114,18 @@ public class UserOperations {
 		
 	}
 	
+
+	public static void removeRequest(String sourceUser, String destUser) {
+		
+		requestDatabase.removeRequest(sourceUser, destUser);
+		
+	}
+	
 	public static int getRequestLevel(String sourceUser, String destUser) {
 		
 		return requestDatabase.getRequestLevel(sourceUser, destUser);
 		
 	}
+	
 	
 }

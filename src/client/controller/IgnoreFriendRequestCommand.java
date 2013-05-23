@@ -1,30 +1,27 @@
 package client.controller;
 
 import client.model.CentralAuthority;
-import client.view.AddNewFriendFrame;
 import client.view.FriendRequestsPanel;
 
-public class AddFriendCommand implements Command {
-	
-	private FriendRequestsPanel panel;
+public class IgnoreFriendRequestCommand implements Command {
 
 	@Override
 	public void execute(Object[] objects) {
 		
-		panel = (FriendRequestsPanel) objects[0];
+		FriendRequestsPanel panel = (FriendRequestsPanel) objects[0];
 		
 		Object[] info = panel.getSelectedRowInfo();
 		
 		if (info != null) {
 			
 			String username = (String) info[0];
-			CentralAuthority.acceptFriendRequest(username);
+			CentralAuthority.ignoreFriendRequest(username);
 			
-			panel.friendAdded();
+			panel.friendIgnored();
 		}
-	
-			
+		
+		
+		
 	}
-	
 
 }
