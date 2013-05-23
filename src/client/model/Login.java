@@ -35,6 +35,12 @@ public class Login {
 			return false;
 			
 	}
+	
+	public static Object[][] getUploadedFiles() {
+		
+		return CentralAuthority.getUploadedFiles();
+		
+	}
 
 	/* Method to acquire the necessary information to authenticate with the
 	 * Dropbox servers.

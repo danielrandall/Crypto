@@ -8,20 +8,23 @@ import client.view.MainFrame;
 
 public class LogInCommand implements Command {
 
-
+	MainFrame frame;
+	
 	/* Needs to be two in length */
 	@Override
 	public void execute(Object[] objects) {
 		
 		assert(objects.length == 3);
 		
-		MainFrame frame = (MainFrame)objects[0];
+		frame = (MainFrame)objects[0];
 		String username = ((JTextComponent) objects[1]).getText();
 		String password = ((JTextComponent) objects[2]).getText();
 		
-		if (Login.userLogin(username, password))
-			frame.login();
-		else
+		if (Login.userLogin(username, password)) {
+			Object[][] rows = Login.getUploadedFiles();
+			frame.login(rows);
+			//Login.getRequests();
+		} else
 			frame.loginFail();
 		
 	}

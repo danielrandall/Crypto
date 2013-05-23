@@ -17,6 +17,7 @@ public class FileUploadCommand implements Command {
 		
 		String fileLocation = ((JTextField) objects[1]).getText();
 		int securityLevel = (Integer) ((JSlider) objects[2]).getValue();
+		System.out.println(securityLevel);
 		
 		CentralAuthority.uploadFile(fileLocation, securityLevel);
 		

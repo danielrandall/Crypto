@@ -14,6 +14,9 @@ public class CentralAuthority {
 	private static final String UPLOAD_FILE = "1";
 	private static final String DOWNLOAD_FILE = "2";
 	private static final String ADD_FRIEND = "3";
+	private static final String REMOVE_FILE = "4";
+	
+	private static final String GET_SECURITY_LEVEL = "50";
 	
 	private static final String TRUE = "1";
 	private static final String FALSE = "0";
@@ -41,6 +44,12 @@ public class CentralAuthority {
 		
 			if (decision.equals(ADD_FRIEND))
 				addFriend(user.getUsername(), user.getSession(), comms);
+			
+			if (decision.equals(REMOVE_FILE))
+				removeFile(user.getUsername(), comms);
+			
+			if (decision.equals(GET_SECURITY_LEVEL))
+				getSecurityLevel(comms);
 		}
 	
 	}
@@ -83,7 +92,7 @@ public class CentralAuthority {
 		
 		int securityLevel = Integer.parseInt(comms.fromClient());
 		
-		ServerFileOperations.encryptFile(securityLevel, username, comms);
+		ServerFileOperations.addFile(securityLevel, username, comms);
 		
 	}
 	
@@ -103,6 +112,27 @@ public class CentralAuthority {
 		
 	}
 	
+	
+	/* Removes the deleted file from the server database */
+	private static void removeFile(String username,  ClientComms comms) {
+		
+		/* Receive unique file identifier from client */
+		String fileRev = comms.fromClient();
+		
+		ServerFileOperations.removeFile(fileRev);
+		
+	}
+	
+	
+	private static void getSecurityLevel(ClientComms comms) {
+		
+		String fileRev = comms.fromClient();
+		
+		int securityLevel = ServerFileOperations.getSecurityLevel(fileRev);
+
+		comms.toClient(Integer.toString(securityLevel));
+		
+	}
 
 	
 }

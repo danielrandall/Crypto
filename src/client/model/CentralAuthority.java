@@ -14,6 +14,11 @@ public class CentralAuthority {
 	private static final String UPLOAD_FILE = "1";
 	private static final String DOWNLOAD_FILE = "2";
 	private static final String ADD_FRIEND = "3";
+	private static final String DELETE_FILE = "4";
+	
+	private static final String GET_SECURITY_LEVEL = "50";
+	
+	private static final int NUM_COLUMNS = 2;
 
 	public static boolean addFriend(String usernameToAdd, int lowerBound, int upperBound) {
 		
@@ -108,6 +113,44 @@ public class CentralAuthority {
 		
 		FileOperations.decryptFile(file, rev, iv, key);	
 		
+	}
+	
+	
+	public static void removeFile(String fileName) {
+		
+		/* Tell server a file is being removed. */
+		ServerComms.toServer(DELETE_FILE);
+		
+		String rev = DropboxOperations.removeFile(fileName);
+		
+		ServerComms.toServer(rev);
+		
+	}
+	
+	/* Retrieves uploaded file names and their security level */
+	public static Object[][] getUploadedFiles() {
+		
+		String[][] uploadedFiles = DropboxOperations.getUploadedFiles();
+		int size = uploadedFiles.length;
+
+		Object[][] filesAndSecurityLevels = new Object[size][2];
+		
+		
+		for (int i = 0; i < size; i++) {
+			
+			ServerComms.toServer(GET_SECURITY_LEVEL);
+			System.out.println(uploadedFiles[i][0]);
+			ServerComms.toServer(uploadedFiles[i][1]);
+			
+			int securityLevel = Integer.parseInt(ServerComms.fromServer());
+		
+			filesAndSecurityLevels[i][0] = uploadedFiles[i][0];
+			filesAndSecurityLevels[i][1] = securityLevel;
+			
+		}
+		
+		return filesAndSecurityLevels;
+			
 	}
 
 }

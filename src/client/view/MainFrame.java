@@ -255,13 +255,14 @@ public class MainFrame extends BaseFrame {
 	}
 	
 	/* Called when username and password verification succeeds */
-	public void login() {
+	public void login(Object[][] uploadedFileRows) {
 		
 		usernameField.setText("");
 		passwordField.setText("");
 		lblLoginError.setVisible(false);
 		setVisible(false);
 		
+		mFrame.populateUploadedFiles(uploadedFileRows);
 		mFrame.setVisible(true);
 	}
 	

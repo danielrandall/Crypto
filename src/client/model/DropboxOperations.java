@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -147,6 +148,26 @@ public class DropboxOperations {
 		
 	}
 	
+	public static String removeFile(String path) {
+		
+		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
+		String filePath = username + OWN_FILE_FOLDER + "/" + path;
+		String rev = null;
+		
+		try {
+			Entry entry = client.metadata(filePath, 1, null, false, null);
+			client.delete(filePath);
+			
+			rev = entry.rev;
+		} catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return rev;
+		
+	}
+	
 	
 	public static String downloadFile(String path, OutputStream stream) {
 		
@@ -182,6 +203,36 @@ public class DropboxOperations {
 		}
         
         return entry;
+	}
+	
+	/* TODO: Find out how to apply delta call to just the desired folder or
+	 * find out how to use delta properly. */
+	/* Returns an array containing a all uploaded files names and their revs */
+	public static String[][] getUploadedFiles() {
+		
+		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
+		String[][] files = null;
+		
+		try {
+			Entry entry = client.metadata("/" + username + OWN_FILE_FOLDER, 0, null, true, null);
+			List<Entry> allFiles = entry.contents;
+			
+			int size = allFiles.size();
+			files = new String[size][2];
+			
+			for (int i = 0; i < size; i++) {
+				Entry e = allFiles.get(i);
+				files[i][0] = e.fileName();
+				files[i][1] = e.rev;
+			}
+			
+		} catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return files;
+		
 	}
 	
 	/* Initially pass in a null cursor and then pass in the returned cursor in future calls.

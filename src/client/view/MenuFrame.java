@@ -31,6 +31,13 @@ import client.controller.AddFriendCommand;
 import client.controller.FileDownloadCommand;
 import client.controller.FileUploadCommand;
 import javax.swing.JTabbedPane;
+import java.awt.Color;
+import javax.swing.SwingConstants;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import java.awt.Component;
+import javax.swing.Box;
+import javax.swing.JScrollPane;
 
 public class MenuFrame extends BaseFrame {
 	
@@ -51,6 +58,8 @@ public class MenuFrame extends BaseFrame {
 	private final JLabel MaxSecurityLabel = new JLabel("Max Security Level");
 	private final JSpinner maxSecuritySpinner = new JSpinner();
 	private final JSpinner minSecuritySpinner = new JSpinner();
+	private final JTabbedPane tabbedOptionsPane = new JTabbedPane(JTabbedPane.TOP);
+	private final MyFilesPanel myFilesPanel = new MyFilesPanel();
 
 	/**
 	 * Launch the application.
@@ -106,9 +115,15 @@ public class MenuFrame extends BaseFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 552, 498);
 		contentPane = new JPanel();
+		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new GridLayout(1, 2, 0, 0));
+		
+		contentPane.add(tabbedOptionsPane);
+		
+		tabbedOptionsPane.addTab("MyFiles", null, myFilesPanel, null);
+		
 		
 		contentPane.add(actions);
 		
@@ -146,9 +161,6 @@ public class MenuFrame extends BaseFrame {
 							.addContainerGap()
 							.addComponent(lblFileName))
 						.addGroup(gl_actions.createSequentialGroup()
-							.addGap(36)
-							.addComponent(btnUploadFile, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_actions.createSequentialGroup()
 							.addGap(34)
 							.addComponent(btnDownloadFile))
 						.addGroup(gl_actions.createSequentialGroup()
@@ -177,9 +189,7 @@ public class MenuFrame extends BaseFrame {
 		gl_actions.setVerticalGroup(
 			gl_actions.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_actions.createSequentialGroup()
-					.addGap(93)
-					.addComponent(btnUploadFile, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-					.addGap(33)
+					.addGap(151)
 					.addComponent(lblFileName)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(fileToDownTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -191,7 +201,7 @@ public class MenuFrame extends BaseFrame {
 						.addComponent(downloadChooseButton, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnDownloadFile)
-					.addPreferredGap(ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
 					.addComponent(lblUsername)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(usernameToAddTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -252,6 +262,13 @@ public class MenuFrame extends BaseFrame {
 				chooseFile(downloadLocationTextField, true);
 			}
 		}
+		
+	}
+	
+	/* Pass rows to the myFiles panel to put into the table */
+	public void populateUploadedFiles(Object[][] uploadedFileRows) {
+		
+		myFilesPanel.populateUploadedFiles(uploadedFileRows);
 		
 	}
 }	

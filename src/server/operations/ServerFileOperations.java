@@ -16,17 +16,21 @@ public class ServerFileOperations {
 	
 	private static Cipher cipher = new AESCipher();
 	
-	public static void encryptFile(int securityLevel, String username, ClientComms comms) {
-		
-		//byte[] key = KeyDerivation.retrieveKey(username, Integer.toString(securityLevel), cipher);
-
-		//comms.sendBytes(key, key.length);
+	public static void addFile(int securityLevel, String username, ClientComms comms) {
 				
 		byte[] iv = comms.getBytes();
 		String rev = comms.fromClient();
 		
 		/* Add to database */
 		database.addFile(rev, username, iv, securityLevel);
+	}
+	
+	
+	/* Removes the given file from the server database */
+	public static void removeFile(String fileRev) {
+		
+		database.removeFile(fileRev);
+		
 	}
 	
 	
@@ -43,7 +47,13 @@ public class ServerFileOperations {
 		fileInfo[0] = iv;
 		fileInfo[1] = level;
 		
-		return fileInfo;	
+		return fileInfo;
+		
+	}
+	
+	public static int getSecurityLevel(String fileRev) {
+		
+		return (Integer) getFileInfo(fileRev)[1];
 		
 	}
 	
