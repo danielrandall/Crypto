@@ -19,6 +19,7 @@ public class CentralAuthority {
 	
 	private static final String GET_SECURITY_LEVEL = "50";
 	private static final String GET_FRIENDS = "51";
+	private static final String GET_FRIEND_REQUESTS = "52";
 	
 	private static final String TRUE = "1";
 	private static final String FALSE = "0";
@@ -55,6 +56,9 @@ public class CentralAuthority {
 			
 			if (decision.equals(GET_FRIENDS))
 				getFriends(user.getUsername(), comms);
+			
+			if (decision.equals(GET_FRIEND_REQUESTS))
+				getFriendRequests(user.getUsername(), comms);
 			
 			if (decision.equals(ACCEPT_FRIEND_REQUEST))
 				acceptFriendRequest(user.getUsername(), user.getSession(), comms);
@@ -165,6 +169,23 @@ public class CentralAuthority {
 			
 			comms.toClient(friends[i][0]);
 			comms.toClient(friends[i][1]);
+			
+		}
+		
+	}
+	
+	
+	public static void getFriendRequests(String username, ClientComms comms) {
+		
+		String[][] friendRequests = UserOperations.getFriendRequests(username);
+		
+		int size = friendRequests.length;
+		comms.toClient(Integer.toString(size));
+		
+		for (int i = 0; i < size; i++) {
+			
+			comms.toClient(friendRequests[i][0]);
+			comms.toClient(friendRequests[i][1]);
 			
 		}
 		

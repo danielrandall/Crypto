@@ -23,8 +23,8 @@ public class FriendRequestsPanel extends JPanel {
 	
 	/* Table information */
 	private final String[] columnNames = {"Username", "Security Level"};
-	private final JButton btnAcceptFriend = new JButton("Accept Request");
-	private final JButton btnRejectFriend = new JButton("Reject Request");
+	private final JButton btnAcceptFriend = new JButton("Accept request");
+	private final JButton btnRejectFriend = new JButton("Reject request");
 
 	/**
 	 * Create the panel.

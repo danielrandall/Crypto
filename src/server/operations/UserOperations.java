@@ -1,5 +1,6 @@
 package server.operations;
 
+import java.util.List;
 import java.util.Map;
 
 import server.ClientComms;
@@ -89,6 +90,21 @@ public class UserOperations {
 		FriendsList friendsList = (FriendsList) data.get(H2Users.FRIENDS); 
 		
 		return friendsList.getAllFriends();
+		
+	}
+	
+	public static String[][] getFriendRequests(String username) {
+		
+		List<Map<String, Object>> requests = requestDatabase.getAllRequestsForUser(username);
+		int size = requests.size();
+		
+		String[][] friendRequests = new String[size][2];
+		for (int i = 0; i < size; i++) {
+			friendRequests[i][0] = (String) requests.get(i).get(H2Requests.SOURCE_USER);
+			friendRequests[i][1] = Integer.toString((Integer) requests.get(i).get(H2Requests.SECURITY_LEVEL));
+		}
+		
+		return friendRequests;
 		
 	}
 	

@@ -23,7 +23,8 @@ public class LogInCommand implements Command {
 		if (Login.userLogin(username, password)) {
 			Object[][] rows = CentralAuthority.getUploadedFiles();
 			Object[][] friends = CentralAuthority.getFriends();
-			frame.login(rows, friends);
+			Object[][] friendRequests = CentralAuthority.getFriendRequests();
+			frame.login(rows, friends, friendRequests);
 			//Login.getRequests();
 		} else
 			frame.loginFail();

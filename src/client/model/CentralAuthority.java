@@ -19,6 +19,7 @@ public class CentralAuthority {
 	
 	private static final String GET_SECURITY_LEVEL = "50";
 	private static final String GET_FRIENDS = "51";
+	private static final String GET_FRIEND_REQUESTS = "52";
 	
 	private static final String DOWNLOAD_LOCATION = "/homes/dr1810/DownloadedAppFiles";	
 
@@ -189,10 +190,12 @@ public class CentralAuthority {
 		for (int i = 0; i < size; i++) {
 			
 			ServerComms.toServer(GET_SECURITY_LEVEL);
-			System.out.println(uploadedFiles[i][0]);
+
 			ServerComms.toServer(uploadedFiles[i][1]);
 			
-			int securityLevel = Integer.parseInt(ServerComms.fromServer());
+			String s = ServerComms.fromServer();
+			System.out.println(s);
+			int securityLevel = Integer.parseInt(s);
 		
 			filesAndSecurityLevels[i][0] = uploadedFiles[i][0];
 			filesAndSecurityLevels[i][1] = securityLevel;
@@ -221,6 +224,28 @@ public class CentralAuthority {
 		}
 		
 		return friends;
+		
+	}
+	
+	
+	public static Object[][] getFriendRequests() {
+		
+		ServerComms.toServer(GET_FRIEND_REQUESTS);
+		
+		int size = Integer.parseInt(ServerComms.fromServer());
+		Object[][] friendRequests = new Object[size][2];
+		
+		for (int i = 0; i < size; i++) {
+			
+			String username = ServerComms.fromServer();
+			int securityLevel = Integer.parseInt(ServerComms.fromServer());
+			
+			friendRequests[i][0] = username;
+			friendRequests[i][1] = securityLevel;
+			
+		}
+		
+		return friendRequests;
 		
 	}
 
