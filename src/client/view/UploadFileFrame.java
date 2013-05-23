@@ -12,6 +12,8 @@ import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.factories.FormFactory;
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Panel;
 
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
@@ -30,6 +32,9 @@ import java.awt.Color;
 /* This frame does not implement the window listener of BaseFrame as we do not
  * wish for the application to exit when this window closes. */
 public class UploadFileFrame extends BaseFrame {
+	
+	/* Frame to send for updates if a file is uploaded */
+	private JPanel updatePanel;
 
 	private JPanel contentPane;
 	private final JLabel lblFileToUpload = new JLabel("File to upload");
@@ -49,12 +54,13 @@ public class UploadFileFrame extends BaseFrame {
 	/**
 	 * Create the frame.
 	 */
-	public UploadFileFrame() {
+	public UploadFileFrame(JPanel panel) {
+		updatePanel = panel;
 		initGUI();
 	}
 	private void initGUI() {
 		
-		Object[] objects = {this, fileNameTextField, sliderSecurityLevel};
+		Object[] objects = {this, updatePanel};
 		btnUploadFile.addActionListener(new GenericActionListener(new FileUploadCommand(), objects));		
 		
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);

@@ -22,7 +22,7 @@ import client.controller.FileDownloadCommand;
 public class MyFilesPanel extends JPanel {
 	
 	/* Frame to transfer to when the user wishes to upload a file */
-	private Frame uploadFileFrame = new UploadFileFrame();
+	private Frame uploadFileFrame = new UploadFileFrame(this);
 	
 	private final JButton btnUploadFile = new JButton("Upload file");
 	private final JPanel buttonPanel = new JPanel();
