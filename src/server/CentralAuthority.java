@@ -1,4 +1,7 @@
 package server;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.dropbox.client2.session.Session;
 
 import server.operations.ServerDropboxOperations;
@@ -89,22 +92,31 @@ public class CentralAuthority {
 		
 	}
 	
-	private static void acceptFriendRequest(String username, Session destSession, ClientComms comms) {
+	/* sourceUsername is the user who made the request 
+	 * destUsername is the user who has accepted the request. */
+	private static void acceptFriendRequest(String destUsername, Session destSession, ClientComms comms) {
 		
-		String usernameToAccept = comms.fromClient();
+		String sourceUsername = comms.fromClient();
 		
-		int securityLevel = UserOperations.getRequestLevel(usernameToAccept, username);
+		int securityLevel = UserOperations.getRequestLevel(sourceUsername, destUsername);
 		
 		/* Add user to friends list */
-		UserOperations.addUserToFriendsList(username, usernameToAccept, securityLevel, securityLevel);
+		UserOperations.addUserToFriendsList(sourceUsername, destUsername, securityLevel, securityLevel);
 			
-		User frienduser = Authentication.loadUser(usernameToAccept);
-		Session sourceSession = frienduser.getSession();
+		User sourceUser = Authentication.loadUser(sourceUsername);
+		Session sourceSession = sourceUser.getSession();
+		
+		String[][] userUploads = ServerDropboxOperations.getUserUploads(sourceUsername, sourceSession);
+		List<String> permittedFiles = new ArrayList<String>();
+		
+		for (int i = 0; i < userUploads.length; i++) {
+			int fileSecurityLevel = ServerFileOperations.getSecurityLevel(userUploads[i][1]);
+			if (fileSecurityLevel >= securityLevel)
+				permittedFiles.add(userUploads[i][0]);
+		}
 			
 			/* Share files with user */
-		ServerDropboxOperations.shareFilesWithFriend(usernameToAccept,
-											destSession, username,
-			                                      sourceSession);
+		ServerDropboxOperations.shareFilesWithFriend(sourceUsername, sourceSession, destUsername, destSession, permittedFiles);
 			
 		
 	}

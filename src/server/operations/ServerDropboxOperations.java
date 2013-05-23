@@ -2,6 +2,7 @@ package server.operations;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.DeltaEntry;
@@ -12,6 +13,9 @@ import com.dropbox.client2.session.Session;
 public class ServerDropboxOperations {
 	
 	private static final String FRIENDS_FILE_FOLDER = " Friends Files";
+	
+	/* The name of folder which houses the files this user uploads */
+	private static final String OWN_FILE_FOLDER = " My Files";
 
 	/* Uploads a file to the location dropboxPath for the current logged in user.
 	 * Will not overwrite existing file. Pass in revision (rev - entry.rev)
@@ -111,22 +115,50 @@ public class ServerDropboxOperations {
 		return cursor;
 	}
 	
-
-	/* Get updated list of files and then share them with desired user. */
-	public static void shareFilesWithFriend(String usernameToAdd,
-			            Session friendSession, String username,
-			                        Session session) {
+	
+	public static String[][] getUserUploads(String username, Session session) {
 		
-		DropboxAPI<Session> client = new DropboxAPI<Session>(friendSession);
-		String folderName = username + FRIENDS_FILE_FOLDER;
+		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
+		String[][] files = null;
+			
 		try {
-			client.createFolder(folderName);
+			Entry entry = client.metadata("/" + username + OWN_FILE_FOLDER, 0, null, true, null);
+			List<Entry> allFiles = entry.contents;
+			
+			int size = allFiles.size();
+			files = new String[size][2];
+			
+			for (int i = 0; i < size; i++) {
+				Entry e = allFiles.get(i);
+				files[i][0] = e.fileName();
+				files[i][1] = e.rev;
+			}
+			
 		} catch (DropboxException e) {
 			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
 		
-		updateCache(session, null, -1, friendSession, folderName);
+		return files;
+			
+		}
+		
+
+	/* Get updated list of files and then share them with desired user. */
+	public static void shareFilesWithFriend(String sourceUsername, Session sourceSession, String destUsername,
+			            Session destSession, List<String> permittedFiles) {
+		
+		DropboxAPI<Session> client = new DropboxAPI<Session>(sourceSession);
+		
+		for (int i = 0; i < permittedFiles.size(); i++) {
+			String fileName = permittedFiles.get(i);
+		
+			String sourcePath = "/" + sourceUsername + OWN_FILE_FOLDER + "/" + fileName;
+			String destPath = "/" + destUsername + FRIENDS_FILE_FOLDER + "/" + sourceUsername + "/" + fileName;
+			
+			copyBetweenAccounts(sourceSession, destSession, sourcePath, destPath);
+		}
+		//updateCache(destSession, null, -1, sourceSession, folderName);
 		
 	}
 	

@@ -53,6 +53,8 @@ public class CentralAuthority {
 		
 		ServerComms.toServer(ACCEPT_FRIEND_REQUEST);
 		
+		ServerComms.toServer(username);
+		
 	}
 
 

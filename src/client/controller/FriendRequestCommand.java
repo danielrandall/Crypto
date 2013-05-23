@@ -22,7 +22,7 @@ public class FriendRequestCommand implements Command {
 		if (CentralAuthority.friendRequest(username, securityLevel, securityLevel)) {
 			Object[] friendInfo = {username, securityLevel};
 			panel.addElementToTable(friendInfo);
-			frame.friendAdded();
+			//frame.friendAdded();
 		} else {
 			frame.userDoesNotExist();
 		}
