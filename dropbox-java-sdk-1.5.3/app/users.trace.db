@@ -79,3 +79,6 @@ SELECT ID FROM INFORMATION_SCHEMA.LOBS WHERE TABLE = ? [90098-170]
 	at org.h2.jdbc.JdbcPreparedStatement.executeQuery(JdbcPreparedStatement.java:109)
 	at org.h2.store.LobStorage.removeAllForTable(LobStorage.java:174)
 	... 2 more
+05-24 17:43:41 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "KEYS" already exists; SQL statement:
+CREATE TABLE keys(owner varchar(25) NOT NULL,securityLevel int(25) NOT NULL,key binary(256) NOT NULL,PRIMARY KEY (owner, securityLevel)) [42101-170]

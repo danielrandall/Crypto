@@ -1,12 +1,26 @@
 package server.databases;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class H2Keys extends H2Database {
+	
+	
+	/* This class holds keys for each user encrypted with the key one level
+	 * above it.
+	 * The primary key is 'owner' and 'securityLevel'. */
+	
 	
 	/* Table information */
 	private static final String TABLE_NAME = "keys";
@@ -46,17 +60,12 @@ public class H2Keys extends H2Database {
 		
 		H2Keys h = new H2Keys();
 		
-		h.dropFileTable();
-		h.createFileTable();
-		
-	//	String [] inputs = {"0123", "9876", s};
-	//	h.addFile(inputs);
-		
-	//	h.removeFile("file1");
+		h.dropKeyTable();
+		h.createKeyTable();
 		
 	}
 
-	public void dropFileTable() throws SQLException {
+	public void dropKeyTable() throws SQLException {
 		
 		Connection conn = getConnection();
 		
@@ -68,7 +77,7 @@ public class H2Keys extends H2Database {
 	
 	
 	
-	public void createFileTable() throws SQLException {
+	public void createKeyTable() throws SQLException {
 
 		Connection conn = getConnection();
 		
@@ -94,6 +103,91 @@ public class H2Keys extends H2Database {
 	    s.executeUpdate(command);
 	    
 	    conn.close();
+	}
+	
+
+	public void addKey(String owner, int securityLevel, byte[] key) {
+		
+		Connection conn = getConnection();
+		
+		try {
+			String command = "INSERT INTO " + TABLE_NAME + " VALUES (?,?,?)";
+			PreparedStatement statement = conn.prepareStatement(command);
+			statement.setString(1, owner);
+			statement.setInt(2, securityLevel);
+			statement.setBinaryStream(3, new ByteArrayInputStream(key),
+					                  key.length);
+					
+            statement.executeUpdate();
+			
+			conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/* Removes the desired key */
+	public void removeKey(String owner, int securityLevel) {
+		
+		Connection conn = getConnection();
+		
+		try {
+			Statement s = conn.createStatement();
+			s.execute("DELETE FROM " + TABLE_NAME + " WHERE " +
+			          FILE_ATTRIBUTES[0] + " = '" + owner + "'" + " AND " +
+					  FILE_ATTRIBUTES[1] + " = '" + securityLevel + "'");
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/* Returns all of the encrypted keys and their respective security level
+	 * for a given user that are under the influence of a specific security
+	 * level. */
+	public List<Map<String, Object>> getKeys(String username, int securityLevel) {
+		
+		Connection conn = getConnection();
+
+		List<Map<String, Object>> userData = new ArrayList<Map<String, Object>>();
+	    
+		try {
+			Statement s = conn.createStatement();	
+			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME +
+					" WHERE " + FILE_ATTRIBUTES[0] + " = '" + username + "'"
+					+ " AND " + SECURITY_LEVEL + " > " + securityLevel);
+		
+			while (r.next()) {
+				Map<String, Object> data = new HashMap<String, Object>(FILE_ATTRIBUTES.length - 2);
+				
+				int i = r.getInt(2);
+				data.put(FILE_ATTRIBUTES[1], i);
+			
+				InputStream in = r.getBinaryStream(3);
+				byte[] b = new byte[in.available()];
+				in.read(b);
+				data.put(FILE_ATTRIBUTES[2], b);
+				
+				userData.add(data);
+			
+			}
+
+			conn.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return userData;
 	}
 
 }
