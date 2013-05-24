@@ -1,8 +1,13 @@
 package client.model;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
+import server.password.BCryptEncryptor;
+import server.password.PasswordEncryptor;
+
 import client.model.linking.keystore.KeyStoreOperations;
-import client.model.linking.password.BCryptEncryptor;
-import client.model.linking.password.PasswordEncryptor;
 
 public class Login {
 
@@ -19,17 +24,34 @@ public class Login {
 	 *       Possible ways to do that are:
 	 *       - SSL
 	 *       - Public/private keys */
-	public static boolean userLogin(String username, String password) {
-		
+	public static boolean userLogin(String username, char[] password) {
+
 		ServerComms.toServer(LOGIN);
+		
+		byte[] passwordBytes = charArraytoByteArray(password);
+
 
 		ServerComms.toServer(username);
-		ServerComms.toServer(password);
 		
+		/* Needs to wait for the server to catch up here.
+		 * I don't know why...
+		 * Hangs indefinitely without the sleep. */
+		try {
+			Thread.sleep(1);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		ServerComms.sendBytes(passwordBytes, passwordBytes.length);
+
 		if (ServerComms.fromServer().equals(TRUE)) {
 			DropboxOperations.setUsername(username);
 			acquireConnection();
 			KeyStoreOperations.login(username, password);
+			
+			password = "".toCharArray();
+			passwordBytes = "".getBytes();
 			return true;
 		} else
 			return false;
@@ -50,5 +72,32 @@ public class Login {
 		DropboxOperations.makeSession(key, secret);
 		
 	}
+	
+	
+	/* Converts a char array to a byte array without creating intermediate
+	 * strings.
+	 * This method is designed for converting passwords into a format which can
+	 * be easily encrypted. Strings are not preferred in this scenario as they
+	 * are immutable.
+	 *
+		Alternative method:
+		
+		byte[] passwordBytes2 = new byte[chars.length*2];
+		for(int i=0; i<chars.length; i++) {
+		    passwordBytes2[2*i] = (byte) ((chars[i]&0xFF00)>>8); 
+		    passwordBytes2[2*i+1] = (byte) (chars[i]&0x00FF); 
+		}
+	*/
+	public static byte[] charArraytoByteArray(char[] chars) {
+		
+		byte[] bytes = new byte[chars.length * 2];
+		for (int i = 0; i < chars.length; i++) {
+		   bytes[i * 2] = (byte) (chars[i] >> 8);
+		   bytes[i * 2 + 1] = (byte) chars[i];
+		}
+		
+		return bytes;
+	}
+	
 
 }

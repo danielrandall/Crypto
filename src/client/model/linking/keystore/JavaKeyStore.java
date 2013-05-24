@@ -115,9 +115,7 @@ public class JavaKeyStore implements KeyStores {
 	
   
 	public void storeKey(String id, byte[] key, String algorithm) {
-		
-		System.out.println(new String(key));
-		System.out.println(algorithm);
+
 		SecretKeySpec skSpec = new SecretKeySpec(key, algorithm);
 		
 		SecretKeyEntry skEntry = new KeyStore.SecretKeyEntry(skSpec);

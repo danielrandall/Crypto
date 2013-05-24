@@ -3,8 +3,6 @@ package client.view;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.event.ActionListener;
-
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -13,10 +11,8 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import client.controller.AddFriendCommand;
 import client.controller.IgnoreFriendRequestCommand;
-
-import java.awt.event.ActionEvent;
+import client.controller.SendFriendRequestCommand;
 
 public class FriendRequestsPanel extends JPanel {
 	
@@ -70,7 +66,7 @@ public class FriendRequestsPanel extends JPanel {
 		
 		Object[] objects = {this, RequestTable};
 		
-		btnAcceptFriend.addActionListener(new GenericActionListener(new AddFriendCommand(), objects));
+		btnAcceptFriend.addActionListener(new GenericActionListener(new SendFriendRequestCommand(), objects));
 		
 		btnAcceptFriend.setFont(new Font("Dialog", Font.BOLD, 12));
 		buttonPanel.add(btnAcceptFriend);

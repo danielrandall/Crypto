@@ -1,8 +1,11 @@
 package client.model;
 
+import java.util.Arrays;
+
+import server.password.BCryptEncryptor;
+import server.password.PasswordEncryptor;
+
 import client.model.linking.keystore.KeyStoreOperations;
-import client.model.linking.password.BCryptEncryptor;
-import client.model.linking.password.PasswordEncryptor;
 import Ciphers.SecurityVariables;
 
 public class Register {
@@ -17,7 +20,7 @@ public class Register {
 	
 	private static final PasswordEncryptor passwordEncryptor = new BCryptEncryptor();
 
-	public static boolean userRegister(String username, String password) {
+	public static boolean userRegister(String username, char[] password) {
 		
 		/* Tell the server a user wishes to register */
 		ServerComms.toServer(REGISTER);
@@ -30,8 +33,13 @@ public class Register {
 			return false;
 			
 		/* Hash the password */
-		String hashedPassword = passwordEncryptor.hashPassword(password);
-		ServerComms.toServer(hashedPassword);
+		//String hashedPassword = passwordEncryptor.hashPassword(password);
+		
+		//ServerComms.toServer(hashedPassword);
+		
+		byte[] passwordBytes = Login.charArraytoByteArray(password);
+		
+		ServerComms.sendBytes(passwordBytes, passwordBytes.length);
 		
 		String[] authenticationInfo = null;
 		while (authenticationInfo == null)
@@ -62,9 +70,9 @@ public class Register {
 	}
 	
 	/* Returns true if the passwords match, false otherwise */
-	public static boolean passwordCheck(String password, String reenterPassword) {
+	public static boolean passwordCheck(char[] password, char[] reenterPassword) {
 		
-		return password.equals(reenterPassword);
+		return Arrays.equals(password, reenterPassword);
 		
 	}
 	

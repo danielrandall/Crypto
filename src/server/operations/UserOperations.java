@@ -71,13 +71,15 @@ public class UserOperations {
 	 * Store. */
 	private static User register(ClientComms comms, String username) {
 		
-		String password = comms.fromClient();
+		//String password = comms.fromClient();
+		
+		byte[] passwordBytes = comms.getBytes();
 		
 		String key = comms.fromClient();
 		String secret = comms.fromClient();
 		String uid = comms.fromClient();
 
-		User user = Authentication.createUser(username, password, comms, key, secret, uid);
+		User user = Authentication.createUser(username, passwordBytes, comms, key, secret, uid);
 		
 		return user;
 		

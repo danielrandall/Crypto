@@ -36,7 +36,12 @@ public class AddNewFriendFrame extends BaseFrame {
 	private final JPanel btnPanel = new JPanel();
 	private final JButton btnAddFriend = new JButton("Add friend");
 	private final JButton btnCancel = new JButton("Cancel");
+	
+	
 	private final JLabel lblUsernameError = new JLabel("Username does not exist");
+	private static final String USERNAME_DOES_NOT_EXIST = "Username does not exist";
+	private static final String CANNOT_ADD_YOURSELF = "You can not add youself";
+	
 	private final Component verticalStrut = Box.createVerticalStrut(20);
 	private final Component verticalStrut_1 = Box.createVerticalStrut(5);
 
@@ -149,6 +154,7 @@ public class AddNewFriendFrame extends BaseFrame {
 		
 	}
 	
+	/* Called when a friend request has been successfully sent */
 	public void friendAdded() {
 		
 		lblUsernameError.setVisible(false);
@@ -158,8 +164,18 @@ public class AddNewFriendFrame extends BaseFrame {
 		
 	}
 	
+	/* Called when the user attempts to add a non-existent user */
 	public void userDoesNotExist() {
 		
+		lblUsernameError.setText(USERNAME_DOES_NOT_EXIST);
+		lblUsernameError.setVisible(true);
+		
+	}
+	
+	/* Called when the user attempts to add themselves */
+	public void canNotAddYourself() {
+		
+		lblUsernameError.setText(CANNOT_ADD_YOURSELF);
 		lblUsernameError.setVisible(true);
 		
 	}

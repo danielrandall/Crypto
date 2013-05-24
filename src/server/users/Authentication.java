@@ -2,9 +2,9 @@ package server.users;
 
 import server.ClientComms;
 import server.operations.UserOperations;
+import server.password.BCryptEncryptor;
+import server.password.PasswordEncryptor;
 
-import client.model.linking.password.BCryptEncryptor;
-import client.model.linking.password.PasswordEncryptor;
 
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
@@ -26,13 +26,17 @@ public final class Authentication {
     	
     	boolean accepted = false;
 		String username = null;
-		String password = null;
+		byte[] passwordBytes = null;
 			
 		username = comms.fromClient();
-		password = comms.fromClient();
+		passwordBytes = comms.getBytes();
+		
+		char[] passwordChars = byteArraytoCharArray(passwordBytes);
 			
-    	accepted = checkUserPass(username, password);
-			
+    	accepted = checkUserPass(username, passwordChars);
+    	
+    	passwordBytes = "".getBytes();
+		passwordChars = "".toCharArray();	
     	/* Tell client the user/pass was incorrect */
     	if (!accepted) {
     		comms.toClient(FALSE);
@@ -60,13 +64,16 @@ public final class Authentication {
     
     /* Creates a session and User. Returns the Users.
      * Used for newly register users */
-    public static User createUser(String username, String password,
+    public static User createUser(String username, byte[] passwordBytes,
     		                          ClientComms comms, String key,
     		                          String secret, String uid) {
     		
     		WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE, new AccessTokenPair(key, secret));
     		
-			User user = User.save(username, password, uid, key, secret);
+    		char[] passwordChars = Authentication.byteArraytoCharArray(passwordBytes);
+    		String hashedPassword = passwordEncryptor.hashPassword(new String(passwordChars));
+    		
+			User user = User.save(username, hashedPassword, uid, key, secret);
 			user.setSession(session);
         
         return user;
@@ -74,14 +81,30 @@ public final class Authentication {
     }
     
     /* Checks that the given password matches the stored password for that user */
-    private static boolean checkUserPass(String username, String password) {
+    private static boolean checkUserPass(String username, char[] password) {
     	
     	if (UserOperations.checkUserExists(username)) {
-    		return passwordEncryptor.checkPassword(password, User.getPassword(username));
+    		return passwordEncryptor.checkPassword(new String(password), User.getPassword(username));
     	} else
     		return false;
     		
     }
+    
+    
+    /* Converts a byte array to a char array without creating intermediate
+	 * strings.
+	 * This method is designed for converting passwords back into their
+	 * original format.
+	 * Strings are not preferred in this scenario as they
+	 * are immutable. */
+	private static char[] byteArraytoCharArray(byte[] bytes) {
+		
+		char[] chars2 = new char[bytes.length / 2];
+		for (int i = 0; i < chars2.length; i++) 
+		   chars2[i] = (char) ((bytes[i * 2] << 8) + bytes[i * 2 + 1]);
+		
+		return chars2;
+	}
     
 
 }

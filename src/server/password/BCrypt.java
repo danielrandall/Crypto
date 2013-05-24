@@ -1,4 +1,4 @@
-package client.model.linking.password;
+package server.password;
 
 //Copyright (c) 2006 Damien Miller <djm@mindrot.org>
 //

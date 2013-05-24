@@ -28,15 +28,15 @@ public class KeyStoreOperations {
 		
 	}
 	
-	public static void setup(String username, String password) {
+	public static void setup(String username, char[] password) {
 		
-		keystore.createKeystore(username, password.toCharArray());
+		keystore.createKeystore(username, password);
 		
 	}
 	
-	public static void login(String username, String password) {
+	public static void login(String username, char[] password) {
 		
-		keystore.checkPassword(username, password.toCharArray());
+		keystore.checkPassword(username, password);
 		
 	}
 

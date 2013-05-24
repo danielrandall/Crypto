@@ -282,9 +282,9 @@ public class MainFrame extends BaseFrame {
 	}
 	
 	/* TODO do it properly */
-	public String getPassword() {
+	public char[] getPassword() {
 		
-		return passwordField.getText();
+		return passwordField.getPassword();
 		
 	}
 	

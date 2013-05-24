@@ -74,7 +74,6 @@ public class ServerComms {
 		try {
 			
 			int length = dis.readInt();
-			System.out.println(length);
 			data = new byte[length];
 			dis.readFully(data);
 			

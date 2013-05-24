@@ -1,4 +1,4 @@
-package client.model.linking.password;
+package server.password;
 
 public class BCryptEncryptor implements PasswordEncryptor {
 	

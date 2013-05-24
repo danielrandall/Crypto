@@ -4,7 +4,7 @@ import client.model.CentralAuthority;
 import client.view.AddNewFriendFrame;
 import client.view.FriendRequestsPanel;
 
-public class AddFriendCommand implements Command {
+public class SendFriendRequestCommand implements Command {
 	
 	private FriendRequestsPanel panel;
 

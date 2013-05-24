@@ -216,4 +216,22 @@ public class RegisterFrame extends BaseFrame {
 		
 	}
 
+	public String getUsername() {
+		
+		return usernameField.getText();
+		
+	}
+	
+	public char[] getPassword() {
+		
+		return passwordField.getPassword();
+		
+	}
+	
+	public char[] getReenterPassword() {
+		
+		return reenterPasswordField.getPassword();
+		
+	}
+
 }

@@ -15,9 +15,9 @@ public class RegisterCommand implements Command {
 		
 		frame = (RegisterFrame) objects[0];
 		
-		String username = ((JTextComponent) objects[1]).getText();
-		String password = ((JTextComponent) objects[2]).getText();
-		String reenterPassword = ((JTextComponent) objects[3]).getText();
+		String username = frame.getUsername();
+		char[] password = frame.getPassword();
+		char[] reenterPassword = frame.getReenterPassword();
 		
 		if (!Register.passwordCheck(password, reenterPassword))
 			frame.passwordError();

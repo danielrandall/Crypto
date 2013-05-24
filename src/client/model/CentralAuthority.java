@@ -206,7 +206,7 @@ public class CentralAuthority {
 			ServerComms.toServer(uploadedFiles[i][1]);
 			
 			String s = ServerComms.fromServer();
-			System.out.println(s);
+
 			int securityLevel = Integer.parseInt(s);
 		
 			filesAndSecurityLevels[i][0] = uploadedFiles[i][0];
