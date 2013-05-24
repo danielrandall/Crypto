@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -238,6 +239,62 @@ public class DropboxOperations {
 		
 	}
 	
+	/* Returns the names of files and their owners.
+	 * Ignores non-directory entries in the 'Friend' folder - they should not
+	 * be there.
+	 * While the app will not put non-directory entries in there, it is trivial
+	 * for the user to manipulate it themselves. */
+	public static String[][] getFriendFiles() {
+		
+		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
+		String[][] files = null;
+		
+		try {
+			Entry usersFriendFolder = client.metadata("/" + username + FRIENDS_FILE_FOLDER, 0, null, true, null);
+			List<Entry> allFriendsFolders = usersFriendFolder.contents;
+
+			int size = allFriendsFolders.size();
+
+			List<String[]> fileList = new ArrayList<String[]>();
+			
+			for (int i = 0; i < size; i++) {
+				Entry friendDir = allFriendsFolders.get(i);
+				if (!friendDir.isDir)
+					continue;
+				else {
+					/* User the directory name as the owners name */
+					String owner = friendDir.fileName();
+					
+					String path =  "/" + username + FRIENDS_FILE_FOLDER + "/"
+					                   + owner;
+					
+					List<Entry> friendFiles = client.metadata(path, 0, null,
+							                            true, null).contents;
+					
+					/* For each file in the friend folder add it to the
+					 * array */
+					for (int j = 0; j < friendFiles.size(); j++) {
+						Entry friendFile = friendFiles.get(j);
+						
+						String[] file = new String[2];
+						file[0] = friendFile.fileName();
+						file[1] = owner;
+						
+						fileList.add(file);
+					}
+				}
+				
+				files = (String[][]) fileList.toArray(new String[0][0]);
+			}
+		} catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return files;
+		
+	}
+	
 	/* Initially pass in a null cursor and then pass in the returned cursor in future calls.
 	 * Page limit of -1 means no limit. */
 	public static String updateCache(Session session, String cursor, int pageLimit,
@@ -276,16 +333,5 @@ public class DropboxOperations {
 		
 		return cursor;
 	}
-	
-
-	/* Get updated list of files and then share them with desired user. */
-	public static void shareFilesWithFriend(String usernameToAdd,
-			            Session friendSession, String username,
-			                        Session session) {
-		
-		updateCache(session, null, -1, friendSession);
-		
-	}
-	
 	
 }

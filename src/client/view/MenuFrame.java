@@ -14,6 +14,7 @@ public class MenuFrame extends BaseFrame {
 	private final FriendsPanel friendsPanel = new FriendsPanel();
 	private final FriendRequestsPanel friendRequestsPanel =
 											  new FriendRequestsPanel();
+	private final FriendFilesPanel friendFilesPanel = new FriendFilesPanel();
 
 	private JPanel contentPane;
 	private final JTabbedPane tabbedOptionsPane = new JTabbedPane(JTabbedPane.TOP);
@@ -37,14 +38,11 @@ public class MenuFrame extends BaseFrame {
 		
 		contentPane.add(tabbedOptionsPane);
 		
-		tabbedOptionsPane.addTab("My Files", null, myFilesPanel, null);
-		tabbedOptionsPane.addTab("My Friends", null, friendsPanel, null);
+		tabbedOptionsPane.addTab("My files", null, myFilesPanel, null);
+		tabbedOptionsPane.addTab("My friends", null, friendsPanel, null);
 		tabbedOptionsPane.addTab("Friend requests", null, friendRequestsPanel, null);
+		tabbedOptionsPane.addTab("Friend's files", null, friendFilesPanel, null);
 		
-	}
-	
-	private void run() {
-		setVisible(true);		
 	}
 	
 	
@@ -64,6 +62,12 @@ public class MenuFrame extends BaseFrame {
 	public void populateFriendRequests(Object[][] friendRequests) {
 		
 		friendRequestsPanel.populateFriendRequests(friendRequests);
+		
+	}
+	
+	public void populateFriendFiles(Object[][] friendFiles) {
+		
+		friendFilesPanel.populateFriendFiles(friendFiles);
 		
 	}
 }	

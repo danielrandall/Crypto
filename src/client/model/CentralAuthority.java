@@ -260,5 +260,12 @@ public class CentralAuthority {
 		return friendRequests;
 		
 	}
+	
+	
+	public static Object[][] getFriendFiles() {
+		
+		return DropboxOperations.getFriendFiles();
+		
+	}
 
 }

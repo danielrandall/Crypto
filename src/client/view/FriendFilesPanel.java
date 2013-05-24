@@ -17,21 +17,21 @@ import javax.swing.table.DefaultTableModel;
 import client.controller.DeleteFileCommand;
 import client.controller.FileDownloadCommand;
 
-public class FriendsFilesPanel extends JPanel {
+public class FriendFilesPanel extends JPanel {
 	
 	private final JPanel buttonPanel = new JPanel();
 	private final JTable fileTable = new JTable();
 	private final JScrollPane tableScrollPane = new JScrollPane(fileTable);
 	
 	/* Table information */
-	private final String[] columnNames = {"File Name", "Owner", "Security Level"};
+	private final String[] columnNames = {"File Name", "Owner"};
 	private final JButton btnDeleteFile = new JButton("Delete file");
 	private final JButton btnDownloadFile = new JButton("Download file");
 
 	/**
 	 * Create the panel.
 	 */
-	public FriendsFilesPanel() {
+	public FriendFilesPanel() {
 		
 		initGUI();
 
@@ -123,10 +123,13 @@ public class FriendsFilesPanel extends JPanel {
 	
 	/* Initalise the uploaded files table */
 	public void populateFriendFiles(Object[][] uploadedFileRows) {
-		
-		for (int i = 0; i < uploadedFileRows.length; i++)
-			addElementToTable(uploadedFileRows[i]);
-		
+
+		for (int i = 0; i < uploadedFileRows.length; i++) {
+			if (uploadedFileRows[i][0] == null)
+				continue;
+			else
+				addElementToTable(uploadedFileRows[i]);
+		}
 	}
 
 }
