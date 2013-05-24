@@ -83,9 +83,11 @@ public class MyFilesPanel extends JPanel {
 		
 		Object[] objects = {this, fileTable};
 		btnDeleteFile.addActionListener(new GenericActionListener(new DeleteFileCommand(), objects));
+		btnDeleteFile.setFont(new Font("Dialog", Font.BOLD, 12));
 		
 		Object[] objects1 = {this, fileTable};
 		btnDownloadFile.addActionListener(new GenericActionListener(new FileDownloadCommand(), objects1));
+		btnDownloadFile.setFont(new Font("Dialog", Font.BOLD, 12));
 		
 		buttonPanel.add(btnDeleteFile);
 		

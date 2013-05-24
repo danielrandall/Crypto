@@ -81,6 +81,7 @@ public class FriendsPanel extends JPanel {
 		
 		btnDeleteFriend.addActionListener(new GenericActionListener(new DeleteFriendCommand(), objects));
 		
+		btnDeleteFriend.setFont(new Font("Dialog", Font.BOLD, 12));
 		buttonPanel.add(btnDeleteFriend);
 			
 		setVisible(true);

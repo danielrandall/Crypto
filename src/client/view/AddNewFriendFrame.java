@@ -19,6 +19,8 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Component;
+import javax.swing.Box;
 
 public class AddNewFriendFrame extends BaseFrame {
 	
@@ -35,6 +37,8 @@ public class AddNewFriendFrame extends BaseFrame {
 	private final JButton btnAddFriend = new JButton("Add friend");
 	private final JButton btnCancel = new JButton("Cancel");
 	private final JLabel lblUsernameError = new JLabel("Username does not exist");
+	private final Component verticalStrut = Box.createVerticalStrut(20);
+	private final Component verticalStrut_1 = Box.createVerticalStrut(5);
 
 	/**
 	 * Create the frame.
@@ -76,34 +80,45 @@ public class AddNewFriendFrame extends BaseFrame {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("default:grow"),}));
 		
+		contentPane.add(verticalStrut, "2, 2");
+		
+		lblHeader.setFont(museosans_900_18p);
 		contentPane.add(lblHeader, "4, 2");
+		
+		lblUsernameError.setFont(museosans_700_14p);
 		lblUsernameError.setForeground(Color.RED);
 		lblUsernameError.setVisible(false);
 		
 		contentPane.add(lblUsernameError, "4, 6");
-		lblUsername.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblUsername.setFont(museosans_700_14p);
 		
 		contentPane.add(lblUsername, "4, 8");
 		usernameTextField.setColumns(10);
 		
 		contentPane.add(usernameTextField, "4, 10, fill, default");
-		lblSecurityLevel.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblSecurityLevel.setFont(museosans_700_14p);
 		
-		contentPane.add(lblSecurityLevel, "4, 12");
+		contentPane.add(lblSecurityLevel, "4, 14");
+		
+		contentPane.add(verticalStrut_1, "4, 16");
 		sliderSecurityLevel.setSnapToTicks(true);
 		sliderSecurityLevel.setPaintTicks(true);
 		sliderSecurityLevel.setPaintLabels(true);
 		sliderSecurityLevel.setMinimum(1);
 		sliderSecurityLevel.setMaximum(5);
 		sliderSecurityLevel.setMajorTickSpacing(1);
-		sliderSecurityLevel.setFont(null);
+		sliderSecurityLevel.setFont(museosans_500_12p);
 		
-		contentPane.add(sliderSecurityLevel, "4, 14");
+		contentPane.add(sliderSecurityLevel, "4, 18");
 		btnPanel.setBackground(Color.WHITE);
 		
-		contentPane.add(btnPanel, "4, 18, right, fill");
+		contentPane.add(btnPanel, "4, 22, right, fill");
 		btnAddFriend.setHorizontalAlignment(SwingConstants.RIGHT);
 		btnAddFriend.setFont(new Font("Dialog", Font.BOLD, 12));
 		Object[] objects = {this, panel};
