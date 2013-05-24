@@ -78,8 +78,20 @@ public class UserOperations {
 		String key = comms.fromClient();
 		String secret = comms.fromClient();
 		String uid = comms.fromClient();
+		
+		byte[][] encryptedKeys = new byte[NUMBER_SECURITY_LEVELS - 1][];
+		byte[][] ivs = new byte[NUMBER_SECURITY_LEVELS - 1][];
+		int[] securityLevels = new int[NUMBER_SECURITY_LEVELS - 1];
+		
+		for (int i = 0; i < NUMBER_SECURITY_LEVELS - 1; i++) {
+			encryptedKeys[i] = comms.getBytes();
+			ivs[i] = comms.getBytes();
+			securityLevels[i] = i + 2;
+		}
 
 		User user = Authentication.createUser(username, passwordBytes, comms, key, secret, uid);
+		
+		KeyOperations.storeKeys(username, encryptedKeys, securityLevels, ivs);
 		
 		return user;
 		

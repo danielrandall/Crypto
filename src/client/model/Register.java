@@ -31,11 +31,6 @@ public class Register {
 		/* If the server accepts the username */
 		if (!ServerComms.fromServer().equals(TRUE))
 			return false;
-			
-		/* Hash the password */
-		//String hashedPassword = passwordEncryptor.hashPassword(password);
-		
-		//ServerComms.toServer(hashedPassword);
 		
 		byte[] passwordBytes = Login.charArraytoByteArray(password);
 		
@@ -60,10 +55,20 @@ public class Register {
 		
 		byte[][] keys = generateKeys();
 		
-		/* Send to the server to be stored */
+		/* Store the keys in the key store */
 		for (int i = 0; i < NUMBER_SECURITY_LEVELS; i++)
-			//ServerComms.sendBytes(keys[i], keys[i].length);
 			KeyStoreOperations.storeOwnKey(Integer.toString(i + 1), keys[i]);
+		
+		byte[][] ivs = generateIVs();
+		
+		byte[][] encryptedKeys = FileOperations.encryptKeys(keys, ivs);
+		
+		for (int i = 0; i < encryptedKeys.length; i++) {
+			ServerComms.sendBytes(encryptedKeys[i], encryptedKeys[i].length);
+			ServerComms.sendBytes(ivs[i], ivs[i].length);
+		}
+		
+		keys = null;
 		
 		return true;
 		
@@ -78,8 +83,7 @@ public class Register {
 	
 	/* The users keys are generated.
 	 * keys[0] holds the highest level key. ie. security level 1.
-	 * keys[NUMBER_SECURITY_LEVELS] holds the lowest.
-	 */
+	 * keys[NUMBER_SECURITY_LEVELS] holds the lowest. */
 	private static byte[][] generateKeys() {
 		
 		byte[][] keys = new byte[NUMBER_SECURITY_LEVELS][];
@@ -91,7 +95,17 @@ public class Register {
 		
 	}
 	
+	private static byte[][] generateIVs() {
+		
+		byte[][] ivs = new byte[NUMBER_SECURITY_LEVELS - 1][];
+		
+		/* Generate ivs to be used in encrypting the keys */
+		for (int i = 0; i < NUMBER_SECURITY_LEVELS - 1; i++)
+			ivs[i] = SecurityVariables.generateIV();
+		
+		return ivs;
+		
+	}
 	
-
 
 }
