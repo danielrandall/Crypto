@@ -148,7 +148,7 @@ public class RegisterFrame extends BaseFrame {
 		buttonPanel.setBackground(Color.WHITE);
 		contentPane.add(buttonPanel, "8, 16, fill, fill");
 		btnRegister = new JButton("Register");
-		btnRegister.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnRegister.setFont(new Font("Dialog", Font.BOLD, 11));
 		btnRegister.addActionListener(new GenericActionListener(new RegisterCommand(), objects));
 		buttonPanel.add(btnRegister);
 		

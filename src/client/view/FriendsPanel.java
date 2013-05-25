@@ -51,7 +51,7 @@ public class FriendsPanel extends JPanel {
 			}
 		});
 		
-		btnAddFriend.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnAddFriend.setFont(new Font("Dialog", Font.BOLD, 11));
 		
 		buttonPanel.setBackground(Color.WHITE);
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
@@ -81,7 +81,7 @@ public class FriendsPanel extends JPanel {
 		
 		btnDeleteFriend.addActionListener(new GenericActionListener(new DeleteFriendCommand(), objects));
 		
-		btnDeleteFriend.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnDeleteFriend.setFont(new Font("Dialog", Font.BOLD, 11));
 		buttonPanel.add(btnDeleteFriend);
 			
 		setVisible(true);

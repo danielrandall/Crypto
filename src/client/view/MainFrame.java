@@ -113,7 +113,7 @@ public class MainFrame extends BaseFrame {
 			}
 		});
 		registerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		registerButton.setFont(new Font("Dialog", Font.BOLD, 10));
+		registerButton.setFont(new Font("Dialog", Font.BOLD, 11));
 		
 		Object[] objects1 = {this, usernameField, passwordField};
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -211,7 +211,7 @@ public class MainFrame extends BaseFrame {
 		login.add(btnLogIn, "4, 7, 1, 2, right, center");
 		btnLogIn.addActionListener(new GenericActionListener(new LogInCommand(), objects1));
 		
-		btnLogIn.setFont(new Font("Dialog", Font.BOLD, 10));
+		btnLogIn.setFont(new Font("Dialog", Font.BOLD, 11));
 		register.setBackground(Color.WHITE);
 		
 		mid.add(register);

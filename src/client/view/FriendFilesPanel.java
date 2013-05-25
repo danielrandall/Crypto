@@ -68,11 +68,11 @@ public class FriendFilesPanel extends JPanel {
 		
 		Object[] objects = {this, fileTable};
 		btnDeleteFile.addActionListener(new GenericActionListener(new DeleteFileCommand(), objects));
-		btnDeleteFile.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnDeleteFile.setFont(new Font("Dialog", Font.BOLD, 11));
 		
 		Object[] objects1 = {this, fileTable};
 		btnDownloadFile.addActionListener(new GenericActionListener(new FileDownloadCommand(), objects1));
-		btnDownloadFile.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnDownloadFile.setFont(new Font("Dialog", Font.BOLD, 11));
 		
 		buttonPanel.add(btnDeleteFile);
 		
@@ -123,6 +123,9 @@ public class FriendFilesPanel extends JPanel {
 	
 	/* Initalise the uploaded files table */
 	public void populateFriendFiles(Object[][] uploadedFileRows) {
+		
+		if (uploadedFileRows == null)
+			return;
 
 		for (int i = 0; i < uploadedFileRows.length; i++) {
 			if (uploadedFileRows[i][0] == null)

@@ -68,13 +68,13 @@ public class FriendRequestsPanel extends JPanel {
 		
 		btnAcceptFriend.addActionListener(new GenericActionListener(new SendFriendRequestCommand(), objects));
 		
-		btnAcceptFriend.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnAcceptFriend.setFont(new Font("Dialog", Font.BOLD, 11));
 		buttonPanel.add(btnAcceptFriend);
 		
 		Object[] ignoreObjects = {this};
 		btnIgnoreFriend.addActionListener(new GenericActionListener(new IgnoreFriendRequestCommand(), ignoreObjects));
 		
-		btnIgnoreFriend.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnIgnoreFriend.setFont(new Font("Dialog", Font.BOLD, 11));
 		buttonPanel.add(btnIgnoreFriend);
 			
 		setVisible(true);

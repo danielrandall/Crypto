@@ -142,13 +142,13 @@ public class UploadFileFrame extends BaseFrame {
 		
 		contentPane.add(buttonPanel, "3, 21, 3, 1, right, fill");
 		buttonPanel.add(btnUploadFile);
-		btnUploadFile.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnUploadFile.setFont(new Font("Dialog", Font.BOLD, 11));
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
 			}
 		});
-		btnCancel.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnCancel.setFont(new Font("Dialog", Font.BOLD, 11));
 		
 		buttonPanel.add(btnCancel);
 	}

@@ -55,7 +55,7 @@ public class MyFilesPanel extends JPanel {
 			}
 		});
 		
-		btnUploadFile.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnUploadFile.setFont(new Font("Dialog", Font.BOLD, 11));
 		
 		buttonPanel.setBackground(Color.WHITE);
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
@@ -83,11 +83,11 @@ public class MyFilesPanel extends JPanel {
 		
 		Object[] objects = {this, fileTable};
 		btnDeleteFile.addActionListener(new GenericActionListener(new DeleteFileCommand(), objects));
-		btnDeleteFile.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnDeleteFile.setFont(new Font("Dialog", Font.BOLD, 11));
 		
 		Object[] objects1 = {this, fileTable};
 		btnDownloadFile.addActionListener(new GenericActionListener(new FileDownloadCommand(), objects1));
-		btnDownloadFile.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnDownloadFile.setFont(new Font("Dialog", Font.BOLD, 11));
 		
 		buttonPanel.add(btnDeleteFile);
 		

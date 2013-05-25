@@ -125,7 +125,7 @@ public class AddNewFriendFrame extends BaseFrame {
 		
 		contentPane.add(btnPanel, "4, 22, right, fill");
 		btnAddFriend.setHorizontalAlignment(SwingConstants.RIGHT);
-		btnAddFriend.setFont(new Font("Dialog", Font.BOLD, 12));
+		btnAddFriend.setFont(new Font("Dialog", Font.BOLD, 11));
 		Object[] objects = {this, panel};
 		btnAddFriend.addActionListener(new GenericActionListener(new FriendRequestCommand(), objects));
 		
