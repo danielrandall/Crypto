@@ -23,9 +23,6 @@ import java.awt.Component;
 import javax.swing.Box;
 
 public class AddNewFriendFrame extends BaseFrame {
-	
-	/* Panel to pass along to update the friends list with the new friend */
-	private JPanel panel;
 
 	private JPanel contentPane;
 	private final JLabel lblUsername = new JLabel("Username");
@@ -48,8 +45,7 @@ public class AddNewFriendFrame extends BaseFrame {
 	/**
 	 * Create the frame.
 	 */
-	public AddNewFriendFrame(JPanel friendPanel) {
-		panel = friendPanel;
+	public AddNewFriendFrame() {
 		initGUI();
 	}
 	private void initGUI() {
@@ -126,7 +122,7 @@ public class AddNewFriendFrame extends BaseFrame {
 		contentPane.add(btnPanel, "4, 22, right, fill");
 		btnAddFriend.setHorizontalAlignment(SwingConstants.RIGHT);
 		btnAddFriend.setFont(new Font("Dialog", Font.BOLD, 11));
-		Object[] objects = {this, panel};
+		Object[] objects = {this};
 		btnAddFriend.addActionListener(new GenericActionListener(new FriendRequestCommand(), objects));
 		
 		btnPanel.add(btnAddFriend);

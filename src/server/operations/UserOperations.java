@@ -6,7 +6,6 @@ import java.util.Map;
 import server.ClientComms;
 import server.databases.H2Requests;
 import server.databases.H2Users;
-import server.encryption.KeyDerivation;
 import server.users.Authentication;
 import server.users.User;
 import server.users.friends.FriendsList;
@@ -19,7 +18,6 @@ public class UserOperations {
 	private static final String FALSE = "0";
 	
 	private static final int NUMBER_SECURITY_LEVELS = 5;
-	private static final String ALGORITHM = "AES";
 
 	private static H2Users database = new H2Users();
 	private static H2Requests requestDatabase = new H2Requests();
@@ -36,7 +34,7 @@ public class UserOperations {
 			             String usernameToAdd, int lowerBound,
 			             					int upperBound) {
 		
-		FriendsList friends = (FriendsList)database.getUser(username).get("friends");
+		FriendsList friends = (FriendsList)database.getUser(username).get(H2Users.FRIENDS);
 		Permissions p = new Interval(lowerBound, upperBound);
 		friends.addFriend(usernameToAdd, p);
 		
@@ -107,6 +105,8 @@ public class UserOperations {
 		
 	}
 	
+	/* Returns each username of the given user's friends along with their
+	 * their respective allocated security level. */
 	public static String[][] getFriendRequests(String username) {
 		
 		List<Map<String, Object>> requests = requestDatabase.getAllRequestsForUser(username);

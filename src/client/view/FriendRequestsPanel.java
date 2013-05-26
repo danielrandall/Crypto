@@ -13,6 +13,11 @@ import javax.swing.table.DefaultTableModel;
 
 import client.controller.IgnoreFriendRequestCommand;
 import client.controller.SendFriendRequestCommand;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import javax.swing.Box;
+import java.awt.Dimension;
 
 public class FriendRequestsPanel extends JPanel {
 	
@@ -25,6 +30,7 @@ public class FriendRequestsPanel extends JPanel {
 	private final JButton btnAcceptFriend = new JButton("Accept request");
 	private final JButton btnRejectFriend = new JButton("Reject request");
 	private final JButton btnIgnoreFriend = new JButton("Ignore request");
+	private final Component rigidArea = Box.createRigidArea(new Dimension(0, 50));
 
 	/**
 	 * Create the panel.
@@ -42,7 +48,6 @@ public class FriendRequestsPanel extends JPanel {
 		setBackground(Color.WHITE);
 		
 		buttonPanel.setBackground(Color.WHITE);
-		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 		
 		tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
@@ -64,18 +69,41 @@ public class FriendRequestsPanel extends JPanel {
 		add(tableScrollPane);
 		add(buttonPanel);
 		
-		Object[] objects = {this, RequestTable};
+		Object[] objects = {this};
+		Object[] ignoreObjects = {this};
+		
+		GridBagLayout gbl_buttonPanel = new GridBagLayout();
+		gbl_buttonPanel.columnWidths = new int[]{130, 0};
+		gbl_buttonPanel.rowHeights = new int[]{24, 24, 0, 0, 0, 0, 0};
+		gbl_buttonPanel.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_buttonPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		buttonPanel.setLayout(gbl_buttonPanel);
+		btnIgnoreFriend.addActionListener(new GenericActionListener(new IgnoreFriendRequestCommand(), ignoreObjects));
 		
 		btnAcceptFriend.addActionListener(new GenericActionListener(new SendFriendRequestCommand(), objects));
 		
-		btnAcceptFriend.setFont(new Font("Dialog", Font.BOLD, 11));
-		buttonPanel.add(btnAcceptFriend);
+		GridBagConstraints gbc_rigidArea = new GridBagConstraints();
+		gbc_rigidArea.insets = new Insets(0, 0, 5, 0);
+		gbc_rigidArea.gridx = 0;
+		gbc_rigidArea.gridy = 0;
+		buttonPanel.add(rigidArea, gbc_rigidArea);
 		
-		Object[] ignoreObjects = {this};
-		btnIgnoreFriend.addActionListener(new GenericActionListener(new IgnoreFriendRequestCommand(), ignoreObjects));
+		btnAcceptFriend.setFont(new Font("Dialog", Font.BOLD, 11));
+		GridBagConstraints gbc_btnAcceptFriend = new GridBagConstraints();
+		gbc_btnAcceptFriend.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnAcceptFriend.anchor = GridBagConstraints.WEST;
+		gbc_btnAcceptFriend.insets = new Insets(0, 0, 5, 0);
+		gbc_btnAcceptFriend.gridx = 0;
+		gbc_btnAcceptFriend.gridy = 4;
+		buttonPanel.add(btnAcceptFriend, gbc_btnAcceptFriend);
 		
 		btnIgnoreFriend.setFont(new Font("Dialog", Font.BOLD, 11));
-		buttonPanel.add(btnIgnoreFriend);
+		GridBagConstraints gbc_btnIgnoreFriend = new GridBagConstraints();
+		gbc_btnIgnoreFriend.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnIgnoreFriend.anchor = GridBagConstraints.WEST;
+		gbc_btnIgnoreFriend.gridx = 0;
+		gbc_btnIgnoreFriend.gridy = 5;
+		buttonPanel.add(btnIgnoreFriend, gbc_btnIgnoreFriend);
 			
 		setVisible(true);
 		

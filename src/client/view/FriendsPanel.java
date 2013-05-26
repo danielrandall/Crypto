@@ -16,10 +16,15 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 import client.controller.DeleteFriendCommand;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import javax.swing.Box;
+import java.awt.Dimension;
 
 public class FriendsPanel extends JPanel {
 	
-	private Frame friendFrame = new AddNewFriendFrame(this);
+	private Frame friendFrame = new AddNewFriendFrame();
 	
 	private final JButton btnAddFriend = new JButton("Add Friend");
 	private final JPanel buttonPanel = new JPanel();
@@ -29,6 +34,7 @@ public class FriendsPanel extends JPanel {
 	/* Table information */
 	private final String[] columnNames = {"Friend", "Security Level"};
 	private final JButton btnDeleteFriend = new JButton("Delete friend");
+	private final Component rigidArea = Box.createRigidArea(new Dimension(0, 50));
 
 	/**
 	 * Create the panel.
@@ -45,17 +51,13 @@ public class FriendsPanel extends JPanel {
 		
 		setBackground(Color.WHITE);
 		
-		btnAddFriend.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				friendFrame.setVisible(true);
-			}
-		});
-		
-		btnAddFriend.setFont(new Font("Dialog", Font.BOLD, 11));
-		
 		buttonPanel.setBackground(Color.WHITE);
-		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-		buttonPanel.add(btnAddFriend);
+		GridBagLayout gbl_buttonPanel = new GridBagLayout();
+		gbl_buttonPanel.columnWidths = new int[]{118, 0};
+		gbl_buttonPanel.rowHeights = new int[]{24, 24, 0, 0, 0, 0, 0, 0};
+		gbl_buttonPanel.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_buttonPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		buttonPanel.setLayout(gbl_buttonPanel);
 		
 		tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
@@ -77,12 +79,37 @@ public class FriendsPanel extends JPanel {
 		add(tableScrollPane);
 		add(buttonPanel);
 		
-		Object[] objects = {this, friendTable};
-		
+		Object[] objects = {this};
 		btnDeleteFriend.addActionListener(new GenericActionListener(new DeleteFriendCommand(), objects));
 		
+		btnAddFriend.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				friendFrame.setVisible(true);
+			}
+		});
+		
+		GridBagConstraints gbc_rigidArea = new GridBagConstraints();
+		gbc_rigidArea.insets = new Insets(0, 0, 5, 0);
+		gbc_rigidArea.gridx = 0;
+		gbc_rigidArea.gridy = 1;
+		buttonPanel.add(rigidArea, gbc_rigidArea);
+		
+		btnAddFriend.setFont(new Font("Dialog", Font.BOLD, 11));
+		GridBagConstraints gbc_btnAddFriend = new GridBagConstraints();
+		gbc_btnAddFriend.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnAddFriend.anchor = GridBagConstraints.WEST;
+		gbc_btnAddFriend.insets = new Insets(0, 0, 5, 0);
+		gbc_btnAddFriend.gridx = 0;
+		gbc_btnAddFriend.gridy = 5;
+		buttonPanel.add(btnAddFriend, gbc_btnAddFriend);
+		
 		btnDeleteFriend.setFont(new Font("Dialog", Font.BOLD, 11));
-		buttonPanel.add(btnDeleteFriend);
+		GridBagConstraints gbc_btnDeleteFriend = new GridBagConstraints();
+		gbc_btnDeleteFriend.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnDeleteFriend.anchor = GridBagConstraints.WEST;
+		gbc_btnDeleteFriend.gridx = 0;
+		gbc_btnDeleteFriend.gridy = 6;
+		buttonPanel.add(btnDeleteFriend, gbc_btnDeleteFriend);
 			
 		setVisible(true);
 		

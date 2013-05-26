@@ -16,6 +16,11 @@ import javax.swing.table.DefaultTableModel;
 
 import client.controller.DeleteFileCommand;
 import client.controller.FileDownloadCommand;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import javax.swing.Box;
+import java.awt.Dimension;
 
 public class FriendFilesPanel extends JPanel {
 	
@@ -27,6 +32,7 @@ public class FriendFilesPanel extends JPanel {
 	private final String[] columnNames = {"File Name", "Owner"};
 	private final JButton btnDeleteFile = new JButton("Delete file");
 	private final JButton btnDownloadFile = new JButton("Download file");
+	private final Component rigidArea = Box.createRigidArea(new Dimension(0, 50));
 
 	/**
 	 * Create the panel.
@@ -44,7 +50,6 @@ public class FriendFilesPanel extends JPanel {
 		setBackground(Color.WHITE);
 		
 		buttonPanel.setBackground(Color.WHITE);
-		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 		
 		tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
@@ -67,16 +72,39 @@ public class FriendFilesPanel extends JPanel {
 		add(buttonPanel);
 		
 		Object[] objects = {this, fileTable};
-		btnDeleteFile.addActionListener(new GenericActionListener(new DeleteFileCommand(), objects));
-		btnDeleteFile.setFont(new Font("Dialog", Font.BOLD, 11));
 		
 		Object[] objects1 = {this, fileTable};
+		GridBagLayout gbl_buttonPanel = new GridBagLayout();
+		gbl_buttonPanel.columnWidths = new int[]{123, 0};
+		gbl_buttonPanel.rowHeights = new int[]{24, 24, 0, 0, 0, 0, 0};
+		gbl_buttonPanel.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_buttonPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		buttonPanel.setLayout(gbl_buttonPanel);
 		btnDownloadFile.addActionListener(new GenericActionListener(new FileDownloadCommand(), objects1));
+		btnDeleteFile.addActionListener(new GenericActionListener(new DeleteFileCommand(), objects));
+		
+		GridBagConstraints gbc_rigidArea = new GridBagConstraints();
+		gbc_rigidArea.insets = new Insets(0, 0, 5, 0);
+		gbc_rigidArea.gridx = 0;
+		gbc_rigidArea.gridy = 1;
+		buttonPanel.add(rigidArea, gbc_rigidArea);
+		btnDeleteFile.setFont(new Font("Dialog", Font.BOLD, 11));
+		
+		GridBagConstraints gbc_btnDeleteFile = new GridBagConstraints();
+		gbc_btnDeleteFile.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnDeleteFile.anchor = GridBagConstraints.WEST;
+		gbc_btnDeleteFile.insets = new Insets(0, 0, 5, 0);
+		gbc_btnDeleteFile.gridx = 0;
+		gbc_btnDeleteFile.gridy = 4;
+		buttonPanel.add(btnDeleteFile, gbc_btnDeleteFile);
 		btnDownloadFile.setFont(new Font("Dialog", Font.BOLD, 11));
 		
-		buttonPanel.add(btnDeleteFile);
-		
-		buttonPanel.add(btnDownloadFile);
+		GridBagConstraints gbc_btnDownloadFile = new GridBagConstraints();
+		gbc_btnDownloadFile.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnDownloadFile.anchor = GridBagConstraints.WEST;
+		gbc_btnDownloadFile.gridx = 0;
+		gbc_btnDownloadFile.gridy = 5;
+		buttonPanel.add(btnDownloadFile, gbc_btnDownloadFile);
 			
 		setVisible(true);
 		

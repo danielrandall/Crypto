@@ -30,7 +30,7 @@ public class Protocol {
 		
 		}
 		
-		CentralAuthority.options(user, comms);
+		ServerCentralAuthority.options(user, comms);
 		
 	}
 	

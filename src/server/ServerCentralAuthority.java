@@ -12,7 +12,7 @@ import server.users.User;
 
 /* TODO: update file list */
 
-public class CentralAuthority {
+public class ServerCentralAuthority {
 	
 	private static final String UPLOAD_FILE = "1";
 	private static final String DOWNLOAD_FILE = "2";
@@ -44,7 +44,7 @@ public class CentralAuthority {
 				return;
 		
 			if (decision.equals(UPLOAD_FILE))
-				uploadEncryptedFile(user.getUsername(), comms);
+				uploadEncryptedFile(user.getUsername(), user.getSession(), comms);
 			
 			if (decision.equals(DOWNLOAD_FILE))
 				downloadDecryptedFile(user.getUsername(), comms);
@@ -136,14 +136,20 @@ public class CentralAuthority {
 
 	/* The user is request for the address of the local file to be uploaded.
 	 * If the file exists then it is encrypted and uploaded to Dropbox. */
-	private static void uploadEncryptedFile(String username, ClientComms comms) {
+	private static void uploadEncryptedFile(String username,
+			Session session, ClientComms comms) {
 		
 		int securityLevel = Integer.parseInt(comms.fromClient());
+		byte[] iv = comms.getBytes();
+		String rev = comms.fromClient();
+		String fileName = comms.fromClient();
 		
-		ServerFileOperations.addFile(securityLevel, username, comms);
+		ServerFileOperations.addFile(securityLevel, username, comms, iv, rev);
+		
+		sendFiletoFriends(username, rev, securityLevel, session, comms);
 		
 	}
-	
+
 	/* The user is requested for the file to be downloaded and the location for
 	 * it to be downloaded to. The file is downloaded and then decrypted. */
 	private static void downloadDecryptedFile(String username, ClientComms comms) {
@@ -192,6 +198,9 @@ public class CentralAuthority {
 		
 		for (int i = 0; i < length; i++) {
 			
+			System.out.println(friends[i][0]);
+			System.out.println(friends[i][1]);
+			
 			comms.toClient(friends[i][0]);
 			comms.toClient(friends[i][1]);
 			
@@ -212,6 +221,29 @@ public class CentralAuthority {
 			comms.toClient(friendRequests[i][0]);
 			comms.toClient(friendRequests[i][1]);
 			
+		}
+		
+	}
+	
+	
+	private static void sendFiletoFriends(String sourceUsername, String fileName,
+			int securityLevel, Session sourceSession, ClientComms comms) {
+		
+		String[][] friends = UserOperations.getFriends(sourceUsername);
+		List<String> permittedFiles = new ArrayList<String>();
+		permittedFiles.add(fileName);
+		
+		List<String> permittedUsers = new ArrayList<String>();
+		for (int i = 0; i < friends.length; i++)
+			if (Integer.parseInt(friends[i][1]) <= securityLevel)
+				permittedUsers.add(friends[i][0]);
+			
+		for (String destUsername : permittedUsers) {
+			User destUser = Authentication.loadUser(destUsername);
+			Session destSession = destUser.getSession();
+			
+			ServerDropboxOperations.shareFilesWithFriend(sourceUsername,
+					sourceSession, destUsername, destSession, permittedFiles);
 		}
 		
 	}

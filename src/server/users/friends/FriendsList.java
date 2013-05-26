@@ -53,6 +53,7 @@ public class FriendsList implements Serializable {
 	public String[][] getAllFriends() {
 		
 		String[][] pairs = new String[list.size()][2]; 
+		
 		Iterator<Entry<String, Permissions>> it = list.entrySet().iterator();
 		int i = 0;
 		
@@ -62,6 +63,7 @@ public class FriendsList implements Serializable {
 			pairs[i][0] = entry.getKey();
 			pairs[i][1] = Integer.toString(entry.getValue().getLowerBound());
 			
+			i++;
 		}
 		
 		return pairs;

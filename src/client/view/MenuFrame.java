@@ -46,6 +46,9 @@ public class MenuFrame extends BaseFrame {
 	}
 	
 	private void initGUI() {
+		
+		addWindowListener(this);
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 552, 498);
 		contentPane = new JPanel();
@@ -92,10 +95,14 @@ public class MenuFrame extends BaseFrame {
 		
 		contentPane.add(tabbedOptionsPane);
 		
-		tabbedOptionsPane.addTab("My files", null, myFilesPanel, null);
-		tabbedOptionsPane.addTab("My friends", null, friendsPanel, null);
-		tabbedOptionsPane.addTab("Friend requests", null, friendRequestsPanel, null);
-		tabbedOptionsPane.addTab("Friend's files", null, friendFilesPanel, null);
+		tabbedOptionsPane.addTab("My files", null, myFilesPanel, "Files" +
+				"which you have uploaded to share");
+		tabbedOptionsPane.addTab("My friends", null, friendsPanel, "Friends" +
+				"who you have allowed access");
+		tabbedOptionsPane.addTab("Friend requests", null, friendRequestsPanel,
+				"People who wish to share their files with you");
+		tabbedOptionsPane.addTab("Friend's files", null, friendFilesPanel,
+				"Files which people have shared with you");
 		
 	}
 	

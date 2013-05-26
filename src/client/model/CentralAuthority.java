@@ -94,6 +94,8 @@ public class CentralAuthority {
 		ServerComms.sendBytes(iv, iv.length);
 		/* Send file id to the server for file identification. */
 		ServerComms.toServer(rev);
+		/* Send file name to the server for file transfer to friends. */
+		ServerComms.toServer(fileName);
 		
 	}
 	
@@ -226,9 +228,11 @@ public class CentralAuthority {
 		Object[][] friends = new Object[size][2];
 		
 		for (int i = 0; i < size; i++) {
-			
+
 			String username = ServerComms.fromServer();
+			System.out.println(username);
 			int securityLevel = Integer.parseInt(ServerComms.fromServer());
+			System.out.println(securityLevel);
 			
 			friends[i][0] = username;
 			friends[i][1] = securityLevel;

@@ -16,10 +16,8 @@ public class ServerFileOperations {
 	
 	private static Cipher cipher = new AESCipher();
 	
-	public static void addFile(int securityLevel, String username, ClientComms comms) {
-				
-		byte[] iv = comms.getBytes();
-		String rev = comms.fromClient();
+	public static void addFile(int securityLevel, String username,
+			ClientComms comms, byte[] iv, String rev) {
 		
 		/* Add to database */
 		database.addFile(rev, username, iv, securityLevel);

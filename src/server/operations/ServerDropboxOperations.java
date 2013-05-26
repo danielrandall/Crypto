@@ -158,7 +158,6 @@ public class ServerDropboxOperations {
 			
 			copyBetweenAccounts(sourceSession, destSession, sourcePath, destPath);
 		}
-		//updateCache(destSession, null, -1, sourceSession, folderName);
 		
 	}
 	
