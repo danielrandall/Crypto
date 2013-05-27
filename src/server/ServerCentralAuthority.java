@@ -1,9 +1,12 @@
 package server;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.dropbox.client2.session.Session;
+import com.dropbox.client2.session.WebAuthSession;
 
+import server.operations.KeyOperations;
 import server.operations.ServerDropboxOperations;
 import server.operations.ServerFileOperations;
 import server.operations.UserOperations;
@@ -14,12 +17,14 @@ import server.users.User;
 
 public class ServerCentralAuthority {
 	
+	/* Communication constants */
 	private static final String UPLOAD_FILE = "1";
 	private static final String DOWNLOAD_FILE = "2";
 	private static final String FRIEND_REQUEST = "3";
 	private static final String REMOVE_FILE = "4";
 	private static final String ACCEPT_FRIEND_REQUEST = "5";
 	private static final String IGNORE_FRIEND_REQUEST = "6";
+	private static final String DOWNLOAD_FRIEND_FILE = "7";
 	
 	private static final String GET_SECURITY_LEVEL = "50";
 	private static final String GET_FRIENDS = "51";
@@ -69,10 +74,13 @@ public class ServerCentralAuthority {
 			
 			if (decision.equals(IGNORE_FRIEND_REQUEST))
 				ignoreFriendRequest(user.getUsername(), comms);
+			
+			if (decision.equals(DOWNLOAD_FRIEND_FILE))
+				downloadFriendFile(user.getUsername(), user.getSession(), comms);
 		}
 	
 	}
-	
+
 	private static void friendRequest(String username, ClientComms comms) {
 		
 		boolean userExists = false;
@@ -92,7 +100,9 @@ public class ServerCentralAuthority {
 		int lowerBound = Integer.parseInt(comms.fromClient());   // DEAL WITH NON INT ENTRY
 		int upperBound = Integer.parseInt(comms.fromClient());   // DEAL WITH NON INT ENTRY
 		
-		UserOperations.addRequest(username, usernameToAdd, lowerBound);
+		byte[] key = comms.getBytes();		
+		
+		UserOperations.addRequest(username, usernameToAdd, lowerBound, key);
 		
 	}
 	
@@ -102,7 +112,13 @@ public class ServerCentralAuthority {
 		
 		String sourceUsername = comms.fromClient();
 		
-		int securityLevel = UserOperations.getRequestLevel(sourceUsername, destUsername);
+		/* Extract the request information */
+		Object[] requestInfo = UserOperations.getRequestInfo(sourceUsername, destUsername);
+		int securityLevel = (Integer) requestInfo[0];
+		byte[] key = (byte[]) requestInfo[1];
+		
+		/* Send security level the user */
+		comms.toClient(Integer.toString(securityLevel));
 		
 		/* Add user to friends list */
 		UserOperations.addUserToFriendsList(sourceUsername, destUsername, securityLevel, securityLevel);
@@ -110,6 +126,15 @@ public class ServerCentralAuthority {
 		User sourceUser = Authentication.loadUser(sourceUsername);
 		Session sourceSession = sourceUser.getSession();
 		
+		/* Send key to the user. This line needs to be placed away from the
+		 * send of the security level as the client needs time to process
+		 * the messages. */
+		comms.sendBytes(key, key.length);
+		
+		/* Send the encrypted lower keys to the user to derive */
+		sendLowerEncryptedKeys(sourceUsername, securityLevel, comms);
+		
+		/* Send only relevant files to the user */
 		String[][] userUploads = ServerDropboxOperations.getUserUploads(sourceUsername, sourceSession);
 		List<String> permittedFiles = new ArrayList<String>();
 		
@@ -119,13 +144,48 @@ public class ServerCentralAuthority {
 				permittedFiles.add(userUploads[i][0]);
 		}
 			
-			/* Share files with user */
+		/* Share relevant files with user */
 		ServerDropboxOperations.shareFilesWithFriend(sourceUsername, sourceSession, destUsername, destSession, permittedFiles);
 			
 		UserOperations.removeRequest(sourceUsername, destUsername);
 	}
 	
 	
+	/* Retrieves all keys which the user is able to derive with the given
+	 * security level and sends them one-by-one to the user. */
+	private static void sendLowerEncryptedKeys(String sourceUsername,
+			int securityLevel, ClientComms comms) {
+		
+		Map<Integer, Object[]> keys = KeyOperations.getDerivableKeys(sourceUsername, securityLevel);
+		
+		int numberOfWeakerKeys = keys.size();
+		
+		/* Tell the user how many weaker keys are being sent */
+		comms.toClient(Integer.toString(numberOfWeakerKeys));
+		
+		for (int i = securityLevel + 1; i <= (securityLevel + keys.size()); i++) {
+			
+			/* Give the client time to process each key */
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			Object[] keyAndIV = keys.get(i);
+			
+			byte[] key = (byte[]) keyAndIV[0];
+			comms.sendBytes(key, key.length);
+			
+			byte[] iv = (byte[]) keyAndIV[1];
+			comms.sendBytes(iv, iv.length);
+			
+		}
+		
+		
+	}
+
 	public static void ignoreFriendRequest(String destUsername, ClientComms comms) {
 		
 		String sourceUsername = comms.fromClient();
@@ -146,7 +206,7 @@ public class ServerCentralAuthority {
 		
 		ServerFileOperations.addFile(securityLevel, username, comms, iv, rev);
 		
-		sendFiletoFriends(username, rev, securityLevel, session, comms);
+		sendFiletoFriends(username, fileName, securityLevel, session, comms);
 		
 	}
 
@@ -198,9 +258,6 @@ public class ServerCentralAuthority {
 		
 		for (int i = 0; i < length; i++) {
 			
-			System.out.println(friends[i][0]);
-			System.out.println(friends[i][1]);
-			
 			comms.toClient(friends[i][0]);
 			comms.toClient(friends[i][1]);
 			
@@ -245,6 +302,13 @@ public class ServerCentralAuthority {
 			ServerDropboxOperations.shareFilesWithFriend(sourceUsername,
 					sourceSession, destUsername, destSession, permittedFiles);
 		}
+		
+	}
+	
+	
+	private static void downloadFriendFile(String username,
+			WebAuthSession session, ClientComms comms) {
+		// TODO Auto-generated method stub
 		
 	}
 

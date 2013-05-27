@@ -1,10 +1,9 @@
 package client.controller;
 
 import client.model.CentralAuthority;
-import client.view.AddNewFriendFrame;
 import client.view.FriendRequestsPanel;
 
-public class SendFriendRequestCommand implements Command {
+public class AcceptFriendRequestCommand implements Command {
 	
 	private FriendRequestsPanel panel;
 

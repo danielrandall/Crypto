@@ -1,7 +1,5 @@
 package client.controller;
 
-import javax.swing.text.JTextComponent;
-
 import client.model.Register;
 import client.view.RegisterFrame;
 

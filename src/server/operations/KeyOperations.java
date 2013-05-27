@@ -1,5 +1,6 @@
 package server.operations;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,10 +20,25 @@ public class KeyOperations {
 
 	}
 	
-	
-	public List<Map<String, Object>> getKeysforUser(String username, int maxSecurityLevel) {
+	/* Retrieves all of the keys under the authority of the given security
+	 * level (ie. all the the keys with a lower level) from the database and
+	 * and converts the list received into a more friendly format. */
+	public static Map<Integer, Object[]> getDerivableKeys(String username,
+			int maxSecurityLevel) {
 		
-		return keyDatabase.getKeys(username, maxSecurityLevel);
+		List<Map<String, Object>> keyList = keyDatabase.getKeys(username, maxSecurityLevel);
+		Map<Integer, Object[]> keyMap = new HashMap<Integer, Object[]>();
+		
+		for (int i = 0; i < keyList.size(); i++) {
+			Map<String, Object> key = keyList.get(i);
+			Object[] keyAndIV = new Object[2];
+			
+			keyAndIV[0] = key.get(H2Keys.KEY);
+			keyAndIV[1] = key.get(H2Keys.IV);
+			keyMap.put((Integer) key.get(H2Keys.SECURITY_LEVEL), keyAndIV);
+		}
+		
+		return keyMap;
 		
 	}
 

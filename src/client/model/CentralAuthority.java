@@ -17,6 +17,7 @@ public class CentralAuthority {
 	private static final String DELETE_FILE = "4";
 	private static final String ACCEPT_FRIEND_REQUEST = "5";
 	private static final String IGNORE_FRIEND_REQUEST = "6";
+	private static final String DOWNLOAD_FRIEND_FILE = "7";
 	
 	private static final String GET_SECURITY_LEVEL = "50";
 	private static final String GET_FRIENDS = "51";
@@ -45,6 +46,13 @@ public class CentralAuthority {
 		ServerComms.toServer(Integer.toString(lowerBound));
 		ServerComms.toServer(Integer.toString(upperBound));
 		
+		/* Get the highest level key to send to the user */
+		byte[] key = KeyStoreOperations.retrieveOwnKey(
+				Integer.toString(lowerBound));
+		
+		/* Send key to the server */
+		ServerComms.sendBytes(key, key.length);
+		
 		return true;
 		
 	}
@@ -53,12 +61,43 @@ public class CentralAuthority {
 	public static void acceptFriendRequest(String username) {
 		
 		ServerComms.toServer(ACCEPT_FRIEND_REQUEST);
-		
 		ServerComms.toServer(username);
+		
+		/* Retrieve the most influential key (ie. the highest security level
+		 * you have access to) and its security level from the server */
+		String securityLevel = ServerComms.fromServer();
+		byte[] highestKey = ServerComms.getBytes();
+		
+		/* Store the key */
+		KeyStoreOperations.storeFriendKey(username, securityLevel, highestKey);
+		
+		int securityLevelInt = Integer.parseInt(securityLevel);
+		
+		byte[] previousKey = highestKey;
+		
+		/* Receive from the server the number of keys to decrypt and use */
+		int numberOfWeakerKeys = Integer.parseInt(ServerComms.fromServer());
+		
+		/* Retrieve the following, encrypted, keys from the server in order.
+		 * Decrypt them with their previous key and store them with their
+		 * associated security levels. */
+		for (int i = securityLevelInt + 1; i <= securityLevelInt + numberOfWeakerKeys; i++) {
+			
+			byte[] encryptedKey = ServerComms.getBytes();
+			byte[] iv = ServerComms.getBytes();
+			
+			byte[] decryptedKey = FileOperations.decryptKey(encryptedKey, previousKey, iv);
+			
+			KeyStoreOperations.storeFriendKey(username, Integer.toString(i), decryptedKey);
+			
+			previousKey = decryptedKey;
+			
+		}
 		
 	}
 	
 	
+	/* TODO implement on server side */
 	public static void ignoreFriendRequest(String username) {
 		
 		ServerComms.toServer(IGNORE_FRIEND_REQUEST);
@@ -230,9 +269,8 @@ public class CentralAuthority {
 		for (int i = 0; i < size; i++) {
 
 			String username = ServerComms.fromServer();
-			System.out.println(username);
+
 			int securityLevel = Integer.parseInt(ServerComms.fromServer());
-			System.out.println(securityLevel);
 			
 			friends[i][0] = username;
 			friends[i][1] = securityLevel;
@@ -269,6 +307,12 @@ public class CentralAuthority {
 	public static Object[][] getFriendFiles() {
 		
 		return DropboxOperations.getFriendFiles();
+		
+	}
+
+
+	public static void downloadFriendFile(String fileName, String owner) {
+		// TODO Auto-generated method stub
 		
 	}
 

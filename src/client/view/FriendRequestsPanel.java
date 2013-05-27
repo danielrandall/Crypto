@@ -12,7 +12,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 import client.controller.IgnoreFriendRequestCommand;
-import client.controller.SendFriendRequestCommand;
+import client.controller.AcceptFriendRequestCommand;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -80,7 +80,7 @@ public class FriendRequestsPanel extends JPanel {
 		buttonPanel.setLayout(gbl_buttonPanel);
 		btnIgnoreFriend.addActionListener(new GenericActionListener(new IgnoreFriendRequestCommand(), ignoreObjects));
 		
-		btnAcceptFriend.addActionListener(new GenericActionListener(new SendFriendRequestCommand(), objects));
+		btnAcceptFriend.addActionListener(new GenericActionListener(new AcceptFriendRequestCommand(), objects));
 		
 		GridBagConstraints gbc_rigidArea = new GridBagConstraints();
 		gbc_rigidArea.insets = new Insets(0, 0, 5, 0);

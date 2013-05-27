@@ -17,7 +17,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import client.controller.DeleteFileCommand;
-import client.controller.FileDownloadCommand;
+import client.controller.OwnFileDownloadCommand;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -117,7 +117,7 @@ public class MyFilesPanel extends JPanel {
 		gbc_btnDeleteFile.gridy = 3;
 		buttonPanel.add(btnDeleteFile, gbc_btnDeleteFile);
 		
-		btnDownloadFile.addActionListener(new GenericActionListener(new FileDownloadCommand(), objects1));
+		btnDownloadFile.addActionListener(new GenericActionListener(new OwnFileDownloadCommand(), objects1));
 		btnDownloadFile.setFont(new Font("Dialog", Font.BOLD, 11));
 		
 		GridBagConstraints gbc_btnDownloadFile = new GridBagConstraints();

@@ -15,7 +15,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 import client.controller.DeleteFileCommand;
-import client.controller.FileDownloadCommand;
+import client.controller.OwnFileDownloadCommand;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -80,7 +80,7 @@ public class FriendFilesPanel extends JPanel {
 		gbl_buttonPanel.columnWeights = new double[]{0.0, Double.MIN_VALUE};
 		gbl_buttonPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		buttonPanel.setLayout(gbl_buttonPanel);
-		btnDownloadFile.addActionListener(new GenericActionListener(new FileDownloadCommand(), objects1));
+		btnDownloadFile.addActionListener(new GenericActionListener(new OwnFileDownloadCommand(), objects1));
 		btnDeleteFile.addActionListener(new GenericActionListener(new DeleteFileCommand(), objects));
 		
 		GridBagConstraints gbc_rigidArea = new GridBagConstraints();

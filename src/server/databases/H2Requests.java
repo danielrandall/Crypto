@@ -1,5 +1,8 @@
 package server.databases;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,17 +27,22 @@ public class H2Requests extends H2Database {
 	public static final String SOURCE_USER = "sourceUser";
 	public static final String DEST_USER = "destUser";
 	public static final String SECURITY_LEVEL = "securityLevel";
+	public static final String KEY = "key";
 	/* Attributes in table. Must be changed if the attributes change. */
 	/* The first element of the array is to be the primary key */
-	private static final String[] FILE_ATTRIBUTES = {SOURCE_USER, DEST_USER, SECURITY_LEVEL};
+	private static final String[] FILE_ATTRIBUTES = {SOURCE_USER, DEST_USER,
+		SECURITY_LEVEL, KEY};
 	
 	/* User table element lengths */
 	private static final String SOURCE_USER_LENGTH = "25";
 	private static final String DEST_USER_LENGTH = "25";
 	private static final String SECURITY_LEVEL_LENGTH = "25";
-	private static final String[] FILE_ATTRIBUTES_LENGTH = {SOURCE_USER_LENGTH, DEST_USER_LENGTH, SECURITY_LEVEL_LENGTH};
+	private static final String KEY_LENGTH = "256";
+	private static final String[] FILE_ATTRIBUTES_LENGTH = {SOURCE_USER_LENGTH,
+		DEST_USER_LENGTH, SECURITY_LEVEL_LENGTH, KEY_LENGTH};
 	
-	/* Maps attributes to their length. Assumes they are both ordered in the same way */
+	/* Maps attributes to their length. Assumes they are both ordered in the
+	 * same way */
 	private static Map<String, String> fileAttributes;
 	
 	
@@ -43,7 +51,8 @@ public class H2Requests extends H2Database {
 		
 		/* Construct the map if it has not been constructed before */
 		if (fileAttributes == null) {
-			assert FILE_ATTRIBUTES.length <= FILE_ATTRIBUTES_LENGTH.length : "Every attribute needs a length";
+			assert FILE_ATTRIBUTES.length <= FILE_ATTRIBUTES_LENGTH.length :
+				"Every attribute needs a length";
 		
 			fileAttributes = new HashMap<String, String>(FILE_ATTRIBUTES.length);
 			for (int i = 0; i < FILE_ATTRIBUTES.length; i++)
@@ -100,6 +109,9 @@ public class H2Requests extends H2Database {
 	    	if (FILE_ATTRIBUTES[i].equals(SECURITY_LEVEL))
 	    		command = command + FILE_ATTRIBUTES[i] + " " + "int("
 	  	                  +  fileAttributes.get(FILE_ATTRIBUTES[i]) + ") NOT NULL,";
+	    	else if (FILE_ATTRIBUTES[i].equals(KEY))
+	    		command = command + FILE_ATTRIBUTES[i] + " " + "binary("
+	  	                  +  fileAttributes.get(FILE_ATTRIBUTES[i]) + ") NOT NULL,";
 	    	else
 	    		command = command + FILE_ATTRIBUTES[i] + " " + "varchar("
 	    				+  fileAttributes.get(FILE_ATTRIBUTES[i]) + ") NOT NULL,";
@@ -115,16 +127,19 @@ public class H2Requests extends H2Database {
 	
 	
 	/* Pre: inputs are given in the correct order. */
-	public void addRequest(String sourceUser, String destUser, int securityLevel) {
+	public void addRequest(String sourceUser, String destUser, int securityLevel,
+			byte[] key) {
 		
 		Connection conn = getConnection();
 		
 		try {
-			String command = "INSERT INTO " + TABLE_NAME + " VALUES (?,?,?)";
+			String command = "INSERT INTO " + TABLE_NAME + " VALUES (?,?,?,?)";
 			PreparedStatement statement = conn.prepareStatement(command);
 			statement.setString(1, sourceUser);
 			statement.setString(2, destUser);
 			statement.setInt(3, securityLevel);
+			statement.setBinaryStream(4, new ByteArrayInputStream(key),
+	                  key.length);
 					
             statement.executeUpdate();
 			
@@ -173,6 +188,11 @@ public class H2Requests extends H2Database {
 				int i = r.getInt(3);
 				data.put(FILE_ATTRIBUTES[2], i);
 				
+				InputStream in = r.getBinaryStream(4);
+				byte[] b = new byte[in.available()];
+				in.read(b);
+				data.put(FILE_ATTRIBUTES[3], b);
+				
 				userData.add(data);
 			}
 
@@ -181,16 +201,19 @@ public class H2Requests extends H2Database {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		return userData;
 	}
 	
 	
-	public int getRequestLevel(String sourceUser, String destUser) {
+	public Map<String, Object> getRequestInfo(String sourceUser, String destUser) {
 		
 		Connection conn = getConnection();
-		int level = 0;
+		Map<String, Object> data = new HashMap<String, Object>(FILE_ATTRIBUTES.length - 2);
 	    
 		try {
 			Statement s = conn.createStatement();	
@@ -200,7 +223,14 @@ public class H2Requests extends H2Database {
 		
 			if (r.next()) {
 				
-				level = r.getInt(3);
+				int i = r.getInt(3);
+				data.put(FILE_ATTRIBUTES[2], i);
+				
+				InputStream in = r.getBinaryStream(4);
+				byte[] b = new byte[in.available()];
+				in.read(b);
+				data.put(FILE_ATTRIBUTES[3], b);
+				
 			}
 			
 			conn.close();
@@ -208,10 +238,13 @@ public class H2Requests extends H2Database {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		
-		return level;
+		return data;
 		
 	}
 	

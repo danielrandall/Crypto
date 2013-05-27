@@ -23,6 +23,16 @@ public class UserOperations {
 	private static H2Requests requestDatabase = new H2Requests();
 	
 	
+	public static void main (String[] args) {
+		
+		FriendsList fl = (FriendsList) database.getUser("username").get(H2Users.FRIENDS);
+		fl.removeFriend("daniel");
+		
+		database.updateFriends("username", fl);
+		
+	}
+	
+	
 	public static boolean checkUserExists(String username) {
 		
 		return database.checkUserExists(username);
@@ -65,7 +75,7 @@ public class UserOperations {
 
 	/* Receive the username and password.
 	 * Store the information.
-	 * Receive the generated keys for user's security levels.
+	 * Receive the generated keys for user's security levels.UserOperations.getRequestLevel(sourceUsername, destUsername);
 	 * Store. */
 	private static User register(ClientComms comms, String username) {
 		
@@ -122,9 +132,10 @@ public class UserOperations {
 		
 	}
 	
-	public static void addRequest(String sourceUser, String destUser, int securityLevel) {
+	public static void addRequest(String sourceUser, String destUser,
+			int securityLevel, byte[] key) {
 		
-		requestDatabase.addRequest(sourceUser, destUser, securityLevel);
+		requestDatabase.addRequest(sourceUser, destUser, securityLevel, key);
 		
 	}
 	
@@ -135,10 +146,23 @@ public class UserOperations {
 		
 	}
 	
+	/*
 	public static int getRequestLevel(String sourceUser, String destUser) {
 		
 		return requestDatabase.getRequestLevel(sourceUser, destUser);
 		
+	}
+	*/
+	
+	public static Object[] getRequestInfo(String sourceUser, String destUser) {
+
+		Map<String, Object> data = requestDatabase.getRequestInfo(sourceUser, destUser);
+		Object[] info = new Object[data.size()];
+		
+		info[0] = data.get(H2Requests.SECURITY_LEVEL);
+		info[1] = data.get(H2Requests.KEY);
+		
+		return info;
 	}
 	
 	

@@ -1,13 +1,11 @@
 package client.controller;
 
 import client.model.CentralAuthority;
-import client.view.MenuFrame;
 import client.view.MyFilesPanel;
 
 
-public class FileDownloadCommand implements Command {
+public class OwnFileDownloadCommand implements Command {
 	
-	private MenuFrame frame;
 	private MyFilesPanel panel;
 
 	@Override

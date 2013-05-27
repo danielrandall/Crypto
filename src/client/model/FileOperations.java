@@ -84,5 +84,12 @@ public class FileOperations {
 		return encryptedKeys;
 		
 	}
+	
+	
+	public static byte[] decryptKey (byte[] keyToDecrpyt, byte[] previousKey, byte[] iv) {
+		
+		return cipher.decrypt(keyToDecrpyt, previousKey, iv);
+		
+	}
 
 }
