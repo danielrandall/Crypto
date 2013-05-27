@@ -23,7 +23,8 @@ public class CentralAuthority {
 	private static final String GET_FRIENDS = "51";
 	private static final String GET_FRIEND_REQUESTS = "52";
 	
-	private static final String DOWNLOAD_LOCATION = "/homes/dr1810/DownloadedAppFiles";	
+	private static final String DOWNLOAD_LOCATION = "DownloadedAppFiles";	
+	private static final String FRIEND_FILE_DOWNLOAD_LOCATION = "DownloadedAppFiles/FriendFiles";
 
 	
 	public static boolean friendRequest(String usernameToAdd, int lowerBound, int upperBound) {
@@ -215,7 +216,56 @@ public class CentralAuthority {
 		
 		byte[] key = KeyStoreOperations.retrieveOwnKey(securityLevel);
 		
-		FileOperations.decryptFile(file, rev, iv, key);	
+		FileOperations.decryptFile(file, iv, key);	
+		
+	}
+	
+	
+	public static void downloadFriendFile(String fileName, String owner) {
+		
+		/* Tell server a file belonging to a friend is being downloaded */
+		ServerComms.toServer(DOWNLOAD_FRIEND_FILE);
+		
+		/* Send file information to the server */
+		ServerComms.toServer(owner);
+		ServerComms.toServer(fileName);
+		
+		/* Receive back the IV and security level needed for decryption */
+		byte[] iv = ServerComms.getBytes();
+		String securityLevel  = ServerComms.fromServer();
+		
+		//System.out.println(securityLevel);
+		
+		String downloadFolderLocation = FRIEND_FILE_DOWNLOAD_LOCATION + "/" + owner;
+		
+		File downloadFolder = new File(downloadFolderLocation);
+		if (!downloadFolder.exists())
+			downloadFolder.mkdirs();
+		
+		String downloadFileLocation = downloadFolderLocation + "/" + fileName;
+		
+		File file = new File(downloadFileLocation);
+		
+		if (file.exists()) 
+			return;
+		
+		FileOutputStream outputStream = null;
+		
+		try {
+			
+			outputStream = new FileOutputStream(file);
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		/* Returns info */
+		DropboxOperations.downloadFriendFile(fileName, owner, outputStream);
+		
+		byte[] key = KeyStoreOperations.retrieveFriendKey(owner, securityLevel);
+		
+		FileOperations.decryptFile(file, iv, key);
 		
 	}
 	
@@ -307,12 +357,6 @@ public class CentralAuthority {
 	public static Object[][] getFriendFiles() {
 		
 		return DropboxOperations.getFriendFiles();
-		
-	}
-
-
-	public static void downloadFriendFile(String fileName, String owner) {
-		// TODO Auto-generated method stub
 		
 	}
 

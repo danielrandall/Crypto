@@ -186,6 +186,22 @@ public class DropboxOperations {
 		return null;
 	}
 	
+	
+	public static String downloadFriendFile(String fileName, String friendName, OutputStream stream) {
+		
+		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
+		String filePath = "/" + username + FRIENDS_FILE_FOLDER + "/" + friendName + "/" + fileName;
+		
+		try {
+			return client.getFile(filePath, null, stream, null).getMetadata().rev;
+		} catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 	/* Copies a file from the sourcePath to the targetPath. This method will primarily be used
 	 * to transfer files between accounts.
 	 * The a file/folder at the target path can not already exist. */

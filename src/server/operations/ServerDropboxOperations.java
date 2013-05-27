@@ -160,6 +160,25 @@ public class ServerDropboxOperations {
 		}
 		
 	}
+
+
+	public static String getFileRev(String username, String fileName, Session session) {
+		
+		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
+		
+		String path = "/" + username + OWN_FILE_FOLDER + "/" + fileName;
+		Entry fileInfo = null;
+		
+		try {
+			fileInfo = client.metadata(path, 0, null, false, null);
+		} catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return fileInfo.rev;
+		
+	}
 	
 	
 }

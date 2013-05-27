@@ -47,7 +47,7 @@ public class FileOperations {
 	
 	/* The contents of the given file are extracted and decrypted. The file
 	 * is then overwritten with the plaintext. */
-	public static void decryptFile(File file, String rev, byte[] iv, byte[] key) {
+	public static void decryptFile(File file, byte[] iv, byte[] key) {
 		
 		try {
 			InputStream fileStream = new java.io.FileInputStream(file);

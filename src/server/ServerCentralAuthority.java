@@ -76,7 +76,7 @@ public class ServerCentralAuthority {
 				ignoreFriendRequest(user.getUsername(), comms);
 			
 			if (decision.equals(DOWNLOAD_FRIEND_FILE))
-				downloadFriendFile(user.getUsername(), user.getSession(), comms);
+				downloadFriendFile(user.getUsername(), comms);
 		}
 	
 	}
@@ -210,8 +210,6 @@ public class ServerCentralAuthority {
 		
 	}
 
-	/* The user is requested for the file to be downloaded and the location for
-	 * it to be downloaded to. The file is downloaded and then decrypted. */
 	private static void downloadDecryptedFile(String username, ClientComms comms) {
 		
 		String rev = comms.fromClient();
@@ -307,8 +305,23 @@ public class ServerCentralAuthority {
 	
 	
 	private static void downloadFriendFile(String username,
-			WebAuthSession session, ClientComms comms) {
-		// TODO Auto-generated method stub
+			ClientComms comms) {
+
+		String owner = comms.fromClient();
+		String fileName = comms.fromClient();
+		
+		User user = Authentication.loadUser(owner);
+		Session ownerSession = user.getSession();
+		
+		String rev = ServerDropboxOperations.getFileRev(owner, fileName, ownerSession);
+		
+		Object[] fileInfo = ServerFileOperations.getFileInfo(rev);
+		
+		byte[] iv = (byte[]) fileInfo[0];
+		int securityLevel = (Integer) fileInfo[1];
+		
+		comms.sendBytes(iv, iv.length);
+		comms.toClient(Integer.toString(securityLevel));
 		
 	}
 
