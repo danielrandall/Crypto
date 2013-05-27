@@ -4,11 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import ciphers.SymmetricCipher;
+import ciphers.SecurityVariables;
 import client.model.linking.keystore.JavaKeyStore;
 import client.model.linking.keystore.KeyStores;
 
-import Ciphers.Cipher;
-import Ciphers.SecurityVariables;
 
 public class KeyDerivation {
 	
@@ -16,7 +16,7 @@ public class KeyDerivation {
 	private static KeyStores keystore = new JavaKeyStore();
 	
 	
-	public static byte[] retrieveKey(String user, String level, Cipher cipher) {
+	public static byte[] retrieveKey(String user, String level, SymmetricCipher cipher) {
 	
 	//	keystore.removeKey(user + level);
 		

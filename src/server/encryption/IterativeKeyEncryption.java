@@ -1,7 +1,7 @@
 package server.encryption;
 
-import Ciphers.Cipher;
-import Ciphers.SecurityVariables;
+import ciphers.SymmetricCipher;
+import ciphers.SecurityVariables;
 
 public class IterativeKeyEncryption implements KeyAssignmentScheme {
 	
@@ -24,7 +24,7 @@ public class IterativeKeyEncryption implements KeyAssignmentScheme {
 	 * The number of keys passed in must match the number of security levels stated in this class.
 	 * The constructor encrypts each key with the one above it and stores it.
 	 */
-	public IterativeKeyEncryption(byte[][] rawKeys, Cipher cipher, String user) {
+	public IterativeKeyEncryption(byte[][] rawKeys, SymmetricCipher cipher, String user) {
 		
 		keys = new byte[USED_SECURITY_LEVELS][];
 		ivs = new byte[USED_SECURITY_LEVELS][];
@@ -45,7 +45,7 @@ public class IterativeKeyEncryption implements KeyAssignmentScheme {
 	/* Iteratively derives the desired key given a source key and the desired key location
 	 * Returns null if the key is unobtainable.
 	 */
-	public byte[] getKey(byte[] key, int sourceKeyPosition, int desiredKey, Cipher cipher) {
+	public byte[] getKey(byte[] key, int sourceKeyPosition, int desiredKey, SymmetricCipher cipher) {
 		
 		assert(sourceKeyPosition < desiredKey);
 		

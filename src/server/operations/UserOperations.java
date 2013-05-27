@@ -96,10 +96,13 @@ public class UserOperations {
 			ivs[i] = comms.getBytes();
 			securityLevels[i] = i + 2;
 		}
-
-		User user = Authentication.createUser(username, passwordBytes, comms, key, secret, uid);
 		
 		KeyOperations.storeKeys(username, encryptedKeys, securityLevels, ivs);
+		
+		/* Receive the user's public key */
+		byte[] publicKey = comms.getBytes();
+
+		User user = Authentication.createUser(username, passwordBytes, comms, key, secret, uid, publicKey);
 		
 		return user;
 		
@@ -129,6 +132,16 @@ public class UserOperations {
 		}
 		
 		return friendRequests;
+		
+	}
+	
+	/* Returns a user's public key */
+	public static byte[] getPublicKey(String username) {
+		
+		Map<String, Object> data = database.getUser(username);
+		byte[] publicKey = (byte[]) data.get(H2Users.PUBLIC_KEY); 
+		
+		return publicKey;
 		
 	}
 	

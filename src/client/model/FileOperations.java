@@ -5,13 +5,18 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import Ciphers.AESCipher;
-import Ciphers.Cipher;
-import Ciphers.SecurityVariables;
+import java.security.Key;
+import java.security.PublicKey;
+
+import ciphers.AESGNUCipher;
+import ciphers.RSACipher;
+import ciphers.SymmetricCipher;
+import ciphers.SecurityVariables;
 
 public class FileOperations {
 	
-	private static Cipher cipher = new AESCipher();
+	private static SymmetricCipher cipher = new AESGNUCipher();
+	private static RSACipher asymmetricCipher = new RSACipher();
 	
 	/* Encrypts a given file and returns encrypted file and the generated iv
 	 * which is needed for decryption */
@@ -90,6 +95,22 @@ public class FileOperations {
 		
 		return cipher.decrypt(keyToDecrpyt, previousKey, iv);
 		
+	}
+
+
+	public static byte[] asymmetricEncrypt(byte[] content,
+			Key publicKey) {
+	
+		return asymmetricCipher.encrypt(content, publicKey);
+				
+	}
+	
+	
+	public static byte[] asymmetricDecrypt(byte[] content,
+			Key privateKey) {
+	
+		return asymmetricCipher.decrypt(content, privateKey);
+				
 	}
 
 }

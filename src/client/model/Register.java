@@ -1,12 +1,15 @@
 package client.model;
 
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Arrays;
 
 import server.password.BCryptEncryptor;
 import server.password.PasswordEncryptor;
 
+import ciphers.SecurityVariables;
 import client.model.linking.keystore.KeyStoreOperations;
-import Ciphers.SecurityVariables;
 
 public class Register {
 	
@@ -68,7 +71,24 @@ public class Register {
 			ServerComms.sendBytes(ivs[i], ivs[i].length);
 		}
 		
+		/* Generate public key pair */
+		KeyPair keyPair = SecurityVariables.GenerateAsymmetricKeyPair();
+		
+		PublicKey publicKey = keyPair.getPublic();
+		byte[] publicKeyBytes = publicKey.getEncoded();
+		
+		PrivateKey privateKey = keyPair.getPrivate();
+		byte[] privateKeyBytes = privateKey.getEncoded();
+		
+		/* Store the asymmetric keys in the key store */
+		KeyStoreOperations.storeOwnKey("public", publicKeyBytes);
+		KeyStoreOperations.storeOwnKey("private", privateKeyBytes);
+		
+		/* Send the public to the server to store */
+		ServerComms.sendBytes(publicKeyBytes, publicKeyBytes.length);
+		
 		keys = null;
+		privateKeyBytes = null;
 		
 		return true;
 		

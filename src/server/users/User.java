@@ -32,9 +32,9 @@ public final class User {
     }
     
     public static User save(String username, String password, String uid, String accessKey,
-    		            String accessSecret) {
+    		            String accessSecret, byte[] publicKey) {
     	
-        database.addUser(username, password, uid, accessKey, accessSecret, new FriendsList());
+        database.addUser(username, password, uid, accessKey, accessSecret, publicKey, new FriendsList());
         return new User(username, uid, new AccessTokenPair(accessKey, accessSecret));
         
     }

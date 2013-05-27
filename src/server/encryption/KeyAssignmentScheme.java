@@ -1,9 +1,9 @@
 package server.encryption;
 
-import Ciphers.Cipher;
+import ciphers.SymmetricCipher;
 
 public interface KeyAssignmentScheme {
 
-	public byte[] getKey(byte[] key, int sourceKeyPosition, int desiredKey, Cipher cipher);
+	public byte[] getKey(byte[] key, int sourceKeyPosition, int desiredKey, SymmetricCipher cipher);
 	
 }

@@ -100,6 +100,12 @@ public class ServerCentralAuthority {
 		int lowerBound = Integer.parseInt(comms.fromClient());   // DEAL WITH NON INT ENTRY
 		int upperBound = Integer.parseInt(comms.fromClient());   // DEAL WITH NON INT ENTRY
 		
+		byte[] publicKey = UserOperations.getPublicKey(usernameToAdd);
+		
+		/* Send the user to add's public key */
+		comms.sendBytes(publicKey, publicKey.length);
+		
+		/* Receive the encrypted key to send with the request */
 		byte[] key = comms.getBytes();		
 		
 		UserOperations.addRequest(username, usernameToAdd, lowerBound, key);

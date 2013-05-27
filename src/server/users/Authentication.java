@@ -66,14 +66,14 @@ public final class Authentication {
      * Used for newly register users */
     public static User createUser(String username, byte[] passwordBytes,
     		                          ClientComms comms, String key,
-    		                          String secret, String uid) {
+    		                          String secret, String uid, byte[] publicKey) {
     		
     		WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE, new AccessTokenPair(key, secret));
     		
     		char[] passwordChars = Authentication.byteArraytoCharArray(passwordBytes);
     		String hashedPassword = passwordEncryptor.hashPassword(new String(passwordChars));
     		
-			User user = User.save(username, hashedPassword, uid, key, secret);
+			User user = User.save(username, hashedPassword, uid, key, secret, publicKey);
 			user.setSession(session);
         
         return user;

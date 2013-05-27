@@ -2,19 +2,20 @@ package server.operations;
 
 import java.util.Map;
 
+import ciphers.AESGNUCipher;
+import ciphers.SymmetricCipher;
+
 import server.ClientComms;
 import server.databases.H2Files;
 import server.encryption.KeyDerivation;
 
 
-import Ciphers.AESCipher;
-import Ciphers.Cipher;
 
 public class ServerFileOperations {
 	
 	private static H2Files database = new H2Files();
 	
-	private static Cipher cipher = new AESCipher();
+	private static SymmetricCipher cipher = new AESGNUCipher();
 	
 	public static void addFile(int securityLevel, String username,
 			ClientComms comms, byte[] iv, String rev) {

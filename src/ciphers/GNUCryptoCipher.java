@@ -1,4 +1,4 @@
-package Ciphers;
+package ciphers;
 
 import gnu.crypto.mode.IMode;
 import gnu.crypto.mode.ModeFactory;
@@ -17,7 +17,7 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class GNUCryptoCipher implements Cipher {
+public abstract class GNUCryptoCipher implements SymmetricCipher {
 	
 	/* Returns null if the key is invalid
 	 * Cipher example: "AES"

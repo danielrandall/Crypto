@@ -1,5 +1,8 @@
 package server.databases;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,11 +25,12 @@ public class H2Users extends H2Database {
 	public static final String UID = "uid";
 	public static final String ACCESSKEY = "accessKey";
 	public static final String ACCESSSECRET = "accessSecret";
+	public static final String PUBLIC_KEY = "publicKey";
 	public static final String FRIENDS = "friends";
 	/* Attributes in table. Must be changed if the attributes change. */
 	/* The first element of the array is to be the primary key */
 	private static final String[] USER_ATTRIBUTES = {USERNAME, PASSWORD, UID,
-		                                     ACCESSKEY, ACCESSSECRET, FRIENDS};
+		ACCESSKEY, ACCESSSECRET, PUBLIC_KEY, FRIENDS};
 	
 	/* User table element lengths */
 	private static final String USERNAME_LENGTH = "25";
@@ -34,10 +38,11 @@ public class H2Users extends H2Database {
 	private static final String UID_LENGTH = "20";
 	private static final String ACCESSKEY_LENGTH = "20";
 	private static final String ACCESSSECRET_LENGTH = "20";
+	private static final String PUBLIC_KEY_LENGTH = "2048";
 	private static final String FRIENDS_LENGTH = "10000";
 	private static final String[] USER_ATTRIBUTES_LENGTH = {USERNAME_LENGTH,
-		                        PASSWORD_LENGTH, UID_LENGTH, ACCESSKEY_LENGTH,
-		                                 ACCESSSECRET_LENGTH, FRIENDS_LENGTH};
+		PASSWORD_LENGTH, UID_LENGTH, ACCESSKEY_LENGTH, ACCESSSECRET_LENGTH,
+		PUBLIC_KEY_LENGTH, FRIENDS_LENGTH};
 	
 	public static void main(String[] args) throws SQLException {
 		
@@ -108,6 +113,9 @@ public class H2Users extends H2Database {
 	    	if (USER_ATTRIBUTES[i].equals(FRIENDS))
 	    		command = command + USER_ATTRIBUTES[i] + " " + "other("
 	    		    +  userAttributes.get(USER_ATTRIBUTES[i]) + ") NOT NULL,";
+	    	else if (USER_ATTRIBUTES[i].equals(PUBLIC_KEY))
+	    		command = command + USER_ATTRIBUTES[i] + " " + "binary("
+	  	                  +  userAttributes.get(USER_ATTRIBUTES[i]) + ") NOT NULL,";
 	    	else
 	    		command = command + USER_ATTRIBUTES[i] + " " + "varchar("
 	    		   	+  userAttributes.get(USER_ATTRIBUTES[i]) + ") NOT NULL,";
@@ -147,13 +155,13 @@ public class H2Users extends H2Database {
 	
 
 	public void addUser(String username, String password, String uid,
-			          String accessKey, String accessSecret, Object friends) {
+			          String accessKey, String accessSecret, byte[] key, Object friends) {
 		
 		Connection conn = getConnection();
 		
 		try {
 			String command = "INSERT INTO " + TABLE_NAME
-					          + " VALUES (?,?,?,?,?,?)";
+					          + " VALUES (?,?,?,?,?,?,?)";
 			
 			PreparedStatement statement = conn.prepareStatement(command);
 			statement.setString(1, username);
@@ -161,7 +169,9 @@ public class H2Users extends H2Database {
 			statement.setString(3, uid);
 			statement.setString(4, accessKey);
 			statement.setString(5, accessSecret);
-			statement.setObject(6, friends);
+			statement.setBinaryStream(6, new ByteArrayInputStream(key),
+	                  key.length);
+			statement.setObject(7, friends);
 					
             statement.executeUpdate();
 			
@@ -234,13 +244,21 @@ public class H2Users extends H2Database {
 				String accessSecret = r.getString(5);
 				userData.put(USER_ATTRIBUTES[4], accessSecret);
 				
-				Object friends = r.getObject(6);
-				userData.put(USER_ATTRIBUTES[5], friends);
+				InputStream in = r.getBinaryStream(6);
+				byte[] b = new byte[in.available()];
+				in.read(b);
+				userData.put(USER_ATTRIBUTES[5], b);
+				
+				Object friends = r.getObject(7);
+				userData.put(USER_ATTRIBUTES[6], friends);
 			}
 
 			conn.close();
 			
 		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

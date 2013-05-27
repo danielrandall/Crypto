@@ -1,6 +1,6 @@
-package Ciphers;
+package ciphers;
 
-public class AESCipher extends GNUCryptoCipher {
+public class AESGNUCipher extends GNUCryptoCipher {
 	
 	private static final String CIPHER_TYPE = "AES";
 	private static final String MODE_TYPE = "CFB";

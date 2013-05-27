@@ -1,10 +1,8 @@
-package Ciphers;
+package ciphers;
 
-public interface Cipher {
+public interface SymmetricCipher {
 
 	public byte[] encrypt(byte[] file, byte[] key, byte[] iv);
 	public byte[] decrypt(byte[] file, byte[] key, byte[] iv);
-	//public byte[] generateKey();
-	//public byte[] generateIV();
 	
 }

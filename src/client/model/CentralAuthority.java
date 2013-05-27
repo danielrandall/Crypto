@@ -4,7 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.security.PrivateKey;
 
+import ciphers.SecurityVariables;
 import client.model.linking.keystore.KeyStoreOperations;
 
 public class CentralAuthority {
@@ -47,12 +49,18 @@ public class CentralAuthority {
 		ServerComms.toServer(Integer.toString(lowerBound));
 		ServerComms.toServer(Integer.toString(upperBound));
 		
+		/* Receive the user to add's public key */
+		byte[] usersPublicKey = ServerComms.getBytes();
+		
 		/* Get the highest level key to send to the user */
-		byte[] key = KeyStoreOperations.retrieveOwnKey(
+		byte[] keyToSend = KeyStoreOperations.retrieveOwnKey(
 				Integer.toString(lowerBound));
 		
+		/* Encrypt the highest key with the user to add's public key */
+		byte[] encryptedKey = FileOperations.asymmetricEncrypt(keyToSend, SecurityVariables.ConvertBytesToPublicKey(usersPublicKey));
+		
 		/* Send key to the server */
-		ServerComms.sendBytes(key, key.length);
+		ServerComms.sendBytes(encryptedKey, encryptedKey.length);
 		
 		return true;
 		
@@ -67,7 +75,12 @@ public class CentralAuthority {
 		/* Retrieve the most influential key (ie. the highest security level
 		 * you have access to) and its security level from the server */
 		String securityLevel = ServerComms.fromServer();
-		byte[] highestKey = ServerComms.getBytes();
+		byte[] encryptedHighestKey = ServerComms.getBytes();
+		
+		/* Decrypt the highest key with the user's private key */
+		byte[] privateKeyBytes = KeyStoreOperations.retrieveOwnKey("private");
+		PrivateKey privateKey = SecurityVariables.ConvertBytesToPrivateKey(privateKeyBytes);
+		byte[] highestKey = FileOperations.asymmetricDecrypt(encryptedHighestKey, privateKey);
 		
 		/* Store the key */
 		KeyStoreOperations.storeFriendKey(username, securityLevel, highestKey);
