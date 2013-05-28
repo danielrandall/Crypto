@@ -6,7 +6,7 @@ import java.net.ServerSocket;
 /* If multiple users do not work then sockets/ports may be why */
 public class Server {
 	
-	private static final int PORT_NUMBER = 4450;
+	private static final int PORT_NUMBER = 4451;
 	private static final int NUM_CONNECTIONS = 2;
 	
 	private static ServerSocket serverSocket = null;

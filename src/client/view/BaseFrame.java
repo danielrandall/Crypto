@@ -23,6 +23,9 @@ public abstract class BaseFrame extends JFrame implements WindowListener {
 	protected static Font museosans_900_18p;
 	
 	
+	protected static Font helvetica_nue_bd_18p;
+	
+	
 	private void stop() {
 		
 		Controller.exit();
@@ -38,11 +41,17 @@ public abstract class BaseFrame extends JFrame implements WindowListener {
 		Font museosans_700 = null;
 		File ms_900_file = new File("fonts/museosans_900.ttf");
 		Font museosans_900 = null;
+		
+		/* Helvetica */
+		File helvetica_nue_bd_file = new File("fonts/helveticaroundedltstdbd.ttf");
+		Font helvetica_nue_bd = null;
 
 		try {
 			museosans_500 = Font.createFont(Font.TRUETYPE_FONT, ms_500_file);
 			museosans_700 = Font.createFont(Font.TRUETYPE_FONT, ms_700_file);
 			museosans_900 = Font.createFont(Font.TRUETYPE_FONT, ms_900_file);
+			
+			helvetica_nue_bd = Font.createFont(Font.TRUETYPE_FONT, helvetica_nue_bd_file);
 		} catch (FontFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -56,6 +65,7 @@ public abstract class BaseFrame extends JFrame implements WindowListener {
 		museosans_900_10p = museosans_900.deriveFont(10f);
 		museosans_900_18p = museosans_700.deriveFont(18f);
 		
+		helvetica_nue_bd_18p = helvetica_nue_bd.deriveFont(18f);
 	}
 	
 	@Override

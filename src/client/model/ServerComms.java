@@ -12,7 +12,7 @@ public class ServerComms {
 	
 	/* Connection info */
 	private static final String HOST_NAME = "localhost";
-	private static final int PORT_NUMBER = 4450;
+	private static final int PORT_NUMBER = 4451;
 	
 	/* Server communication constants */
 	private static final String EXIT_CODE = "999";
