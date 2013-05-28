@@ -20,6 +20,7 @@ public class Register {
 	private static final String REGISTER = "2";
 	
 	private static final int NUMBER_SECURITY_LEVELS = 5;
+	private static final int HIGHEST_SECURITY_LEVEL = 1;
 	
 	private static final PasswordEncryptor passwordEncryptor = new BCryptEncryptor();
 
@@ -56,20 +57,7 @@ public class Register {
 		DropboxOperations.setUsername(username);
 		DropboxOperations.folderSetup();
 		
-		byte[][] keys = generateKeys();
-		
-		/* Store the keys in the key store */
-		for (int i = 0; i < NUMBER_SECURITY_LEVELS; i++)
-			KeyStoreOperations.storeOwnKey(Integer.toString(i + 1), keys[i]);
-		
-		byte[][] ivs = generateIVs();
-		
-		byte[][] encryptedKeys = FileOperations.encryptKeys(keys, ivs);
-		
-		for (int i = 0; i < encryptedKeys.length; i++) {
-			ServerComms.sendBytes(encryptedKeys[i], encryptedKeys[i].length);
-			ServerComms.sendBytes(ivs[i], ivs[i].length);
-		}
+		generateSymmetricVariables(HIGHEST_SECURITY_LEVEL);
 		
 		/* Generate public key pair */
 		KeyPair keyPair = SecurityVariables.GenerateAsymmetricKeyPair();
@@ -87,43 +75,77 @@ public class Register {
 		/* Send the public to the server to store */
 		ServerComms.sendBytes(publicKeyBytes, publicKeyBytes.length);
 		
-		keys = null;
+		
 		privateKeyBytes = null;
 		
 		return true;
 		
 	}
 	
+	/* Encrypted keys is 1 smaller than generated keys */
+	public static void generateSymmetricVariables (int highestSecurityLevel) {
+		
+		int numKeys = NUMBER_SECURITY_LEVELS - highestSecurityLevel + 1;
+		
+		byte[][] keys = SecurityVariables.generateKeys(numKeys);
+		
+		/* Store the keys in the key store */
+		for (int i = 0; i < numKeys; i++)
+			KeyStoreOperations.storeOwnKey(Integer.toString(highestSecurityLevel + i), keys[i]);
+		
+		byte[][] ivs = SecurityVariables.generateIVs(numKeys);
+		
+		byte[][] keysToEncrypt;
+		if (highestSecurityLevel == HIGHEST_SECURITY_LEVEL)
+			keysToEncrypt = keys;
+		else {
+			keysToEncrypt = new byte[numKeys + 1][];
+			keysToEncrypt[0] = KeyStoreOperations.retrieveOwnKey(Integer.toString(highestSecurityLevel - 1));
+			for (int i = 1; i < numKeys + 1; i++)
+				keysToEncrypt[i] = keys[i - 1];
+		}
+		
+		byte[][] encryptedKeys = FileOperations.encryptKeys(keysToEncrypt, ivs);
+		
+		for (int i = 0; i < encryptedKeys.length; i++) {
+			ServerComms.sendBytes(encryptedKeys[i], encryptedKeys[i].length);
+			ServerComms.sendBytes(ivs[i], ivs[i].length);
+		}
+		
+		keys = null;
+		
+	}
+	
+	/*
+	Probably not needed
+	public static void updateSymmetricVariables(int highestSecurityLevel) {
+		
+		int numKeys = NUMBER_SECURITY_LEVELS - highestSecurityLevel + 1;
+		
+		byte[][] keys = SecurityVariables.generateKeys(numKeys);
+		
+
+		for (int i = 0; i < numKeys; i++)
+			KeyStoreOperations.storeOwnKey(Integer.toString(highestSecurityLevel + i), keys[i]);
+		
+		byte[][] ivs = SecurityVariables.generateIVs(numKeys);
+		
+		byte[][] encryptedKeys = FileOperations.encryptKeys(keys, ivs);
+		
+		for (int i = 0; i < encryptedKeys.length; i++) {
+			ServerComms.sendBytes(encryptedKeys[i], encryptedKeys[i].length);
+			ServerComms.sendBytes(ivs[i], ivs[i].length);
+		}
+		
+		keys = null;
+		
+	}
+	*/
+	
 	/* Returns true if the passwords match, false otherwise */
 	public static boolean passwordCheck(char[] password, char[] reenterPassword) {
 		
 		return Arrays.equals(password, reenterPassword);
-		
-	}
-	
-	/* The users keys are generated.
-	 * keys[0] holds the highest level key. ie. security level 1.
-	 * keys[NUMBER_SECURITY_LEVELS] holds the lowest. */
-	private static byte[][] generateKeys() {
-		
-		byte[][] keys = new byte[NUMBER_SECURITY_LEVELS][];
-		
-		for (int i = 0; i < NUMBER_SECURITY_LEVELS; i++)
-			keys[i] = SecurityVariables.generateKey();
-		
-		return keys;
-		
-	}
-	
-	private static byte[][] generateIVs() {
-		
-		byte[][] ivs = new byte[NUMBER_SECURITY_LEVELS - 1][];
-		
-		/* Generate ivs to be used in encrypting the keys */
-		for (int i = 0; i < NUMBER_SECURITY_LEVELS - 1; i++)
-			ivs[i] = SecurityVariables.generateIV();
-		
-		return ivs;
 		
 	}
 	

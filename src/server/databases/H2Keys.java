@@ -136,7 +136,37 @@ public class H2Keys extends H2Database {
 	}
 	
 	
-	/* Removes the desired key */
+	public void updateKey(String owner, int securityLevel, byte[] key, byte[] iv) {
+		
+		Connection conn = getConnection();
+
+		try {
+			String command = "UPDATE " + TABLE_NAME
+			          + " SET " + KEY + "= ? AND " + IV + "= ? WHERE " + OWNER
+			          + " = '" + owner + "' AND " + SECURITY_LEVEL + " = '" +
+			          securityLevel + "'";
+	
+			PreparedStatement statement = conn.prepareStatement(command);
+			
+			statement.setBinaryStream(1, new ByteArrayInputStream(key),
+	                  key.length);
+			statement.setBinaryStream(2, new ByteArrayInputStream(iv),
+					iv.length);
+			
+			statement.executeUpdate();
+	
+			conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	/* Removes all keys for an owner that are under the influence of a given
+	 * security level, including itself. */
 	public void removeKey(String owner, int securityLevel) {
 		
 		Connection conn = getConnection();
@@ -145,7 +175,7 @@ public class H2Keys extends H2Database {
 			Statement s = conn.createStatement();
 			s.execute("DELETE FROM " + TABLE_NAME + " WHERE " +
 			          FILE_ATTRIBUTES[0] + " = '" + owner + "'" + " AND " +
-					  FILE_ATTRIBUTES[1] + " = '" + securityLevel + "'");
+					  FILE_ATTRIBUTES[1] + " >= '" + securityLevel + "'");
 			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

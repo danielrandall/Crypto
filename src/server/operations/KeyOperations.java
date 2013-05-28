@@ -13,10 +13,14 @@ public class KeyOperations {
 	/* Stores all of the keys and their respective information in the database.
 	 * The indexes of arrays given must correspond to one another. */
 	public static void storeKeys(String owner, byte[][] keys,
-						int[] securityLevels, byte[][] ivs) {
+						int[] securityLevels, byte[][] ivs, boolean update) {
 		
-		for (int i = 0; i < keys.length; i++)
-			keyDatabase.addKey(owner, securityLevels[i], keys[i], ivs[i]);
+		if (update)
+			for (int i = 0; i < keys.length; i++)
+				keyDatabase.updateKey(owner, securityLevels[i], keys[i], ivs[i]);
+		else
+			for (int i = 0; i < keys.length; i++)
+				keyDatabase.addKey(owner, securityLevels[i], keys[i], ivs[i]);
 
 	}
 	

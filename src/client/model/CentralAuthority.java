@@ -20,6 +20,7 @@ public class CentralAuthority {
 	private static final String ACCEPT_FRIEND_REQUEST = "5";
 	private static final String IGNORE_FRIEND_REQUEST = "6";
 	private static final String DOWNLOAD_FRIEND_FILE = "7";
+	private static final String REVOKE_USER = "8";
 	
 	private static final String GET_SECURITY_LEVEL = "50";
 	private static final String GET_FRIENDS = "51";
@@ -291,6 +292,19 @@ public class CentralAuthority {
 		String rev = DropboxOperations.removeFile(fileName);
 		
 		ServerComms.toServer(rev);
+		
+	}
+	
+	
+	/* Revokes the users. */
+	public static void revokeUser(String username) {
+		
+		ServerComms.toServer(REVOKE_USER);
+		ServerComms.toServer(username);
+		
+		int securityLevelOfUser = Integer.parseInt(ServerComms.fromServer());
+		
+		Register.generateSymmetricVariables(securityLevelOfUser);
 		
 	}
 	

@@ -169,6 +169,33 @@ public class SecurityVariables {
 	}
 	
 	
+	/* The users keys are generated.
+	 * keys[0] holds the highest level key. ie. security level 1.
+	 * keys[numLevels] holds the lowest. */
+	public static byte[][] generateKeys(int numLevels) {
+		
+		byte[][] keys = new byte[numLevels][];
+		
+		for (int i = 0; i < numLevels; i++)
+			keys[i] = generateKey();
+		
+		return keys;
+		
+	}
+	
+	public static byte[][] generateIVs(int numLevels) {
+		
+		byte[][] ivs = new byte[numLevels - 1][];
+		
+		/* Generate ivs to be used in encrypting the keys */
+		for (int i = 0; i < numLevels - 1; i++)
+			ivs[i] = generateIV();
+		
+		return ivs;
+		
+	}
+	
+	
 	/* A hash function with a n-bit output resist collisions up to work factor 2^(n/2) at least.
 	 * If hash-mixing was not accumulating entropy up to at least n/2 bits then this could be turned
 	 * into a collision attack on the hash function.

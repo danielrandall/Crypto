@@ -17,7 +17,8 @@ public class UserOperations {
 	private static final String TRUE = "1";
 	private static final String FALSE = "0";
 	
-	private static final int NUMBER_SECURITY_LEVELS = 5;
+	public static final int NUMBER_SECURITY_LEVELS = 5;
+	public static final int HIGHEST_SECURITY_LEVEL = 1;
 
 	private static H2Users database = new H2Users();
 	private static H2Requests requestDatabase = new H2Requests();
@@ -87,17 +88,7 @@ public class UserOperations {
 		String secret = comms.fromClient();
 		String uid = comms.fromClient();
 		
-		byte[][] encryptedKeys = new byte[NUMBER_SECURITY_LEVELS - 1][];
-		byte[][] ivs = new byte[NUMBER_SECURITY_LEVELS - 1][];
-		int[] securityLevels = new int[NUMBER_SECURITY_LEVELS - 1];
-		
-		for (int i = 0; i < NUMBER_SECURITY_LEVELS - 1; i++) {
-			encryptedKeys[i] = comms.getBytes();
-			ivs[i] = comms.getBytes();
-			securityLevels[i] = i + 2;
-		}
-		
-		KeyOperations.storeKeys(username, encryptedKeys, securityLevels, ivs);
+		storeSymmetricKeys(username, HIGHEST_SECURITY_LEVEL + 1, false, comms);
 		
 		/* Receive the user's public key */
 		byte[] publicKey = comms.getBytes();
@@ -106,6 +97,26 @@ public class UserOperations {
 		
 		return user;
 		
+	}
+	
+	/* Given the number of keys it is to receive.
+	 * The variable update indicates whether the keys are being updated - false for new entry, true for update. */
+	public static void storeSymmetricKeys(String username,
+			int highestSecurityLevel, boolean update, ClientComms comms) {
+		
+		int numKeys = NUMBER_SECURITY_LEVELS - highestSecurityLevel + 1;
+		
+		byte[][] encryptedKeys = new byte[numKeys][];
+		byte[][] ivs = new byte[numKeys][];
+		int[] securityLevels = new int[numKeys];
+		
+		for (int i = 0; i < numKeys; i++) {
+			encryptedKeys[i] = comms.getBytes();
+			ivs[i] = comms.getBytes();
+			securityLevels[i] = highestSecurityLevel + i;
+		}
+		
+		KeyOperations.storeKeys(username, encryptedKeys, securityLevels, ivs, update);
 	}
 	
 	
@@ -132,6 +143,16 @@ public class UserOperations {
 		}
 		
 		return friendRequests;
+		
+	}
+	
+	
+	public static int getFriendSecurityLevel(String username, String friend) {
+		
+		Map<String, Object> data = database.getUser(username);
+		FriendsList friendsList = (FriendsList) data.get(H2Users.FRIENDS);
+		
+		return friendsList.getFriendPermissions(friend).getLowerBound();
 		
 	}
 	

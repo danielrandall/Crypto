@@ -25,6 +25,7 @@ public class ServerCentralAuthority {
 	private static final String ACCEPT_FRIEND_REQUEST = "5";
 	private static final String IGNORE_FRIEND_REQUEST = "6";
 	private static final String DOWNLOAD_FRIEND_FILE = "7";
+	private static final String REVOKE_USER = "8";
 	
 	private static final String GET_SECURITY_LEVEL = "50";
 	private static final String GET_FRIENDS = "51";
@@ -77,6 +78,9 @@ public class ServerCentralAuthority {
 			
 			if (decision.equals(DOWNLOAD_FRIEND_FILE))
 				downloadFriendFile(user.getUsername(), comms);
+			
+			if (decision.equals(REVOKE_USER))
+				revokeUser(user.getUsername(), comms);
 		}
 	
 	}
@@ -328,6 +332,26 @@ public class ServerCentralAuthority {
 		
 		comms.sendBytes(iv, iv.length);
 		comms.toClient(Integer.toString(securityLevel));
+		
+	}
+	
+	
+	private static final void revokeUser(String username, ClientComms comms) {
+		
+		String usernameToRevoke = comms.fromClient();
+		
+		int securityLevel = UserOperations.getFriendSecurityLevel(username, usernameToRevoke);
+		comms.toClient(Integer.toString(securityLevel));
+		
+		/* Receive the new encrypted keys and IVs and store them in the database */
+		UserOperations.storeSymmetricKeys(username, securityLevel, true, comms);
+		
+		/* Remove the friends files from their Dropbox folder */
+		User userToRevoke = User.load(usernameToRevoke);
+		userToRevoke.getSession();
+		ServerDropboxOperations.removeFriendsFiles(username, usernameToRevoke, userToRevoke.getSession());
+		
+		// Inform friends
 		
 	}
 

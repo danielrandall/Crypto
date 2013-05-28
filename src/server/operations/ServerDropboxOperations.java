@@ -180,5 +180,22 @@ public class ServerDropboxOperations {
 		
 	}
 	
+	/* Removes all files from the given username from the Dropbox from which
+	 * the given Session is from. */
+	public static void removeFriendsFiles(String friend, String dropboxOwner,
+			Session session) {
+		
+		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
+		
+		String folderPath = "/" + dropboxOwner + FRIENDS_FILE_FOLDER + "/" + friend;
+		
+		try {
+			client.delete(folderPath);
+		} catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	
 }
