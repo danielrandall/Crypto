@@ -1,12 +1,15 @@
 package server.operations;
 
+import java.util.List;
 import java.util.Map;
 
 import ciphers.AESGNUCipher;
 import ciphers.SymmetricCipher;
 
 import server.ClientComms;
+import server.ServerFile;
 import server.databases.H2Files;
+import server.databases.H2Requests;
 import server.encryption.KeyDerivation;
 
 
@@ -53,6 +56,29 @@ public class ServerFileOperations {
 	public static int getSecurityLevel(String fileRev) {
 		
 		return (Integer) getFileInfo(fileRev)[1];
+		
+	}
+
+	
+	/* Returns all file revs and security levels for files under the influence
+	 * of a given security level for a given owner. */
+	public static ServerFile[] getAllFilesUnderSecurityLevel(String owner,
+			int securityLevel) {
+		
+		List<Map<String, Object>> files =
+				database.getFilesUnderLevel(owner,securityLevel);
+
+		int size = files.size();
+		
+		ServerFile[] fileInfo = new ServerFile[size];
+		for (int i = 0; i < size; i++) {
+			String rev = (String) files.get(i).get(H2Files.FILEREV);
+			byte[] iv = (byte[]) files.get(i).get(H2Files.IV);
+			int fileSLevel = (Integer) files.get(i).get(H2Files.SECURITY_LEVEL);
+			fileInfo[i] = new ServerFile(rev, iv, fileSLevel);
+		}
+		
+		return fileInfo;
 		
 	}
 	

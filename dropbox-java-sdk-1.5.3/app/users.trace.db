@@ -283,3 +283,21 @@ INSERT INTO users VALUES (?,?,?,?,?,?,?) [21002-170]
 	at server.operations.UserOperations.registerAttempt(UserOperations.java:71)
 	at server.Protocol.begin(Protocol.java:29)
 	at server.ServerThread.run(ServerThread.java:23)
+05-29 17:09:17 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Data conversion error converting "9d4f4fad6a0aeec3f20732c8440c9cc2e4868186cb5807315c63e30d829e8e7dafeb241cf0f4a7685d2bc30129e8d775"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'username' AND securityLevel = '2' [22018-170]
+05-29 17:09:17 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Data conversion error converting "b7e1f88d6219afcd2c2d2b93798086cdf35c5356bd2c1e3d149cb5995eb1cbdf222aea5e1be34061ccd5d3495c45a371"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'username' AND securityLevel = '3' [22018-170]
+05-29 17:09:17 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Data conversion error converting "ca4d7f0a310b5e01416e3576ab534073c2e617ee6102ac0c035b46f566d56a37c86ed9ff3d6a53373884bce373cedce6"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'username' AND securityLevel = '4' [22018-170]
+05-29 17:36:22 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Data conversion error converting "802a47612e7c46fa2540fc6ff76b68c5cb483b3672bfacf11fc19271da53f0e1059dfd5b2aa9ad92c81a74412914d3f8"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'username' AND securityLevel = 2 [22018-170]
+05-29 17:36:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Data conversion error converting "2ae934f3b70b5cad77048e1cb8dde7933af91c48241bd0db2bbfecc3534d0f58ba07a200ab150d3f1d42b09a72f6430e"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'username' AND securityLevel = 3 [22018-170]
+05-29 17:36:22 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Data conversion error converting "a5e961708b5b7212e47d24bf74f708b7957940bbd2dca015aab0786038243684c8b6535fa920b8e7555e811b069a5a3a"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'username' AND securityLevel = 4 [22018-170]

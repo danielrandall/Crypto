@@ -181,7 +181,7 @@ public class H2Requests extends H2Database {
 		
 			while (r.next()) {
 				Map<String, Object> data = new HashMap<String, Object>(FILE_ATTRIBUTES.length - 2);
-				
+
 				String sourceUser = r.getString(1);
 				data.put(FILE_ATTRIBUTES[0], sourceUser);
 				

@@ -24,9 +24,9 @@ public class FileUploadCommand implements Command {
 		
 		int securityLevel = frame.getSecurityLevel();
 		
-		CentralAuthority.uploadFile(fileLocation, securityLevel);
+		String newFileName = CentralAuthority.uploadFile(fileLocation, securityLevel);
 
-		Object[] fileInfo = {new File(fileLocation).getName(), securityLevel};
+		Object[] fileInfo = {newFileName, securityLevel};
 		panel.addElementToTable(fileInfo);
 		
 		frame.fileUploaded();

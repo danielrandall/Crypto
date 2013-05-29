@@ -9,7 +9,7 @@ import server.password.BCryptEncryptor;
 import server.password.PasswordEncryptor;
 
 import ciphers.SecurityVariables;
-import client.model.linking.keystore.KeyStoreOperations;
+import client.model.keystore.KeyStoreOperations;
 
 public class Register {
 	
@@ -82,7 +82,7 @@ public class Register {
 		
 	}
 	
-	/* Encrypted keys is 1 smaller than generated keys */
+	/* Encrypted keys is 1 smaller than generated keys. */
 	public static void generateSymmetricVariables (int highestSecurityLevel) {
 		
 		int numKeys = NUMBER_SECURITY_LEVELS - highestSecurityLevel + 1;

@@ -5,9 +5,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.security.PrivateKey;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import ciphers.SecurityVariables;
-import client.model.linking.keystore.KeyStoreOperations;
+import client.model.keystore.KeyStoreOperations;
 
 public class CentralAuthority {
 	
@@ -26,8 +30,13 @@ public class CentralAuthority {
 	private static final String GET_FRIENDS = "51";
 	private static final String GET_FRIEND_REQUESTS = "52";
 	
+	/* Locations for downloading and unencrypting files */
 	private static final String DOWNLOAD_LOCATION = "DownloadedAppFiles";	
 	private static final String FRIEND_FILE_DOWNLOAD_LOCATION = "DownloadedAppFiles/FriendFiles";
+	
+	/* Location used to temporarily store files while they await re-encryption
+	 * after keys have been revoked */
+	private static final String TEMP_FILE_STORE = "tempstore";
 
 	
 	public static boolean friendRequest(String usernameToAdd, int lowerBound, int upperBound) {
@@ -122,7 +131,7 @@ public class CentralAuthority {
 	}
 
 
-	public static void uploadFile(String fileLocation, int securityLevel) {
+	public static String uploadFile(String fileLocation, int securityLevel) {
 		
 		/* Tell the server the user wishes to upload a file. */
 		ServerComms.toServer(UPLOAD_FILE);
@@ -142,7 +151,10 @@ public class CentralAuthority {
 		byte[] iv = encryptedFileInfo[1];
 		
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(encryptedFile);
-		String rev = DropboxOperations.uploadFile(fileName, inputStream, encryptedFile.length);
+		String[] fileInfo = DropboxOperations.uploadFile(fileName, inputStream, encryptedFile.length);
+		
+		String newFileName = fileInfo[0];
+		String rev = fileInfo[1];
 		
 		/* Send iv, needed for decryption, to be stored in the server. */
 		ServerComms.sendBytes(iv, iv.length);
@@ -151,75 +163,19 @@ public class CentralAuthority {
 		/* Send file name to the server for file transfer to friends. */
 		ServerComms.toServer(fileName);
 		
+		return newFileName;
+		
 	}
 	
 	/* Downloads and unencrypts the requested file to a pre-determined download
 	 * location.
 	 */
-	public static void downloadFile(String fileName) {
-		
-		/*
-		 fileDownloadName - name of file
-		 downloadLocation - directory and file name
-		 public static void downloadFile(String fileDownloadName, String downloadLocation) {
-		
-		ServerComms.toServer(DOWNLOAD_FILE);
-		
-		File file = new File(downloadLocation);
-		
-		
-		FileOutputStream outputStream = null;
-		
-		try {
-			
-			outputStream = new FileOutputStream(file);
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		String rev = DropboxOperations.downloadFile(fileDownloadName, outputStream);
-		
-		ServerComms.toServer(rev);
-		
-		byte[] iv = ServerComms.getBytes();
-		String securityLevel = ServerComms.fromServer();
-		
-		byte[] key = KeyStoreOperations.retrieveOwnKey(securityLevel);
-		
-		FileOperations.decryptFile(file, rev, iv, key);	
-		*/
-		
-		
-		File downloadFolder = new File(DOWNLOAD_LOCATION);
-		if (!downloadFolder.exists())
-			downloadFolder.mkdir();
-		
-		String downloadLocation = DOWNLOAD_LOCATION + "/" + fileName;
-		
-		File file = new File(downloadLocation);
-		
-		if (file.exists()) 
-			return;
-		
+	public static void downloadFile(String fileName) {		
 		
 		/* Tell server a file is being downloaded */
 		ServerComms.toServer(DOWNLOAD_FILE);
 		
-		FileOutputStream outputStream = null;
-		
-		try {
-			
-			outputStream = new FileOutputStream(file);
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		/* Returns info */
-		String rev = DropboxOperations.downloadFile(fileName, outputStream);
+		String rev = processDownload(fileName, DOWNLOAD_LOCATION);
 		
 		/* Send file information to the server */
 		ServerComms.toServer(rev);
@@ -230,7 +186,7 @@ public class CentralAuthority {
 		
 		byte[] key = KeyStoreOperations.retrieveOwnKey(securityLevel);
 		
-		FileOperations.decryptFile(file, iv, key);	
+		FileOperations.decryptFile(new File(DOWNLOAD_LOCATION + "/" + fileName), iv, key);	
 		
 	}
 	
@@ -296,7 +252,10 @@ public class CentralAuthority {
 	}
 	
 	
-	/* Revokes the users. */
+	/* Revokes the users.
+	 * Sends new keys + ivs to the server.
+	 * The new encrypted files need to be sent after the new keys and
+	 * corresponding ivs have sent as the server is awaiting them. */
 	public static void revokeUser(String username) {
 		
 		ServerComms.toServer(REVOKE_USER);
@@ -304,7 +263,62 @@ public class CentralAuthority {
 		
 		int securityLevelOfUser = Integer.parseInt(ServerComms.fromServer());
 		
+		/* Receive the number files under the influence of the security
+		 * level */
+		int numberFilesEffected = Integer.parseInt(ServerComms.fromServer());
+		Map<String, ClientFile> filesToUnencrypt =
+				new HashMap<String, ClientFile>();
+		
+		for (int i = 0; i < numberFilesEffected; i++) {
+			
+			String rev = ServerComms.fromServer();
+			byte[] iv = ServerComms.getBytes();
+			int fileSLevel = Integer.parseInt(ServerComms.fromServer());
+			
+			filesToUnencrypt.put(rev, new ClientFile(rev, iv, fileSLevel));
+		}
+		
+		/* Find the corresponding file names for each file to unencrypt */
+		filesToUnencrypt = DropboxOperations.findFileNames(filesToUnencrypt);
+		
+		/* Remove all of the files */
+		Iterator<Entry<String, ClientFile>> it = filesToUnencrypt.entrySet().iterator();
+		while (it.hasNext()) {
+			ClientFile file = it.next().getValue();
+			
+			String fileName = file.getFileName();
+			byte[] iv = file.getIV();
+			int securityLevel = file.getSecurityLevel();
+			
+			byte[] key = KeyStoreOperations.retrieveOwnKey(Integer.toString(securityLevel));
+			
+			/* Download the file */
+			processDownload(fileName, TEMP_FILE_STORE);
+			
+			/* Decrypt the file */
+			FileOperations.decryptFile(new File(TEMP_FILE_STORE + "/" + fileName), iv, key);	
+			
+			/* Remove the file from Dropbox */
+			DropboxOperations.removeFile(fileName);
+		}
+			
+		/* Generate new keys */
 		Register.generateSymmetricVariables(securityLevelOfUser);
+		
+		/* Encrypt and upload each decrypted file as normal.
+		 * Delete each temp file when done with it. */
+		it = filesToUnencrypt.entrySet().iterator();
+		while (it.hasNext()) {
+			ClientFile file = it.next().getValue();
+			
+			String fileName = file.getFileName();
+			int securityLevel = file.getSecurityLevel();
+			
+			uploadFile(TEMP_FILE_STORE + "/" + fileName, securityLevel);
+			
+			File temp_File = new File(TEMP_FILE_STORE + "/" + fileName);
+			temp_File.delete();
+		}
 		
 	}
 	
@@ -384,6 +398,36 @@ public class CentralAuthority {
 	public static Object[][] getFriendFiles() {
 		
 		return DropboxOperations.getFriendFiles();
+		
+	}
+	
+	/* Creates an output stream and requests Dropbox to download the file there */
+	private static String processDownload(String fileName, String folderLocation) {
+		
+		File downloadFolder = new File(folderLocation);
+		if (!downloadFolder.exists())
+			downloadFolder.mkdir();
+		
+		String downloadLocation = folderLocation + "/" + fileName;
+		
+		File file = new File(downloadLocation);
+		
+		if (file.exists()) 
+			return null;
+		
+		FileOutputStream outputStream = null;
+		
+		try {
+			
+			outputStream = new FileOutputStream(file);
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		/* Returns file info */
+		return DropboxOperations.downloadFile(fileName, outputStream);
 		
 	}
 

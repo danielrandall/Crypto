@@ -6,8 +6,8 @@ import java.io.InputStreamReader;
 
 import ciphers.SymmetricCipher;
 import ciphers.SecurityVariables;
-import client.model.linking.keystore.JavaKeyStore;
-import client.model.linking.keystore.KeyStores;
+import client.model.keystore.JavaKeyStore;
+import client.model.keystore.KeyStores;
 
 
 public class KeyDerivation {

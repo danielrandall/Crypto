@@ -7,7 +7,7 @@ import java.util.Arrays;
 import server.password.BCryptEncryptor;
 import server.password.PasswordEncryptor;
 
-import client.model.linking.keystore.KeyStoreOperations;
+import client.model.keystore.KeyStoreOperations;
 
 public class Login {
 

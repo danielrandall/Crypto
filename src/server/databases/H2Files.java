@@ -8,7 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /* TODO: Foreign key: users. */
@@ -169,6 +171,48 @@ public class H2Files extends H2Database {
 				
 				int i = r.getInt(4);
 				userData.put(FILE_ATTRIBUTES[3], i);
+			}
+
+			conn.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return userData;
+	}
+	
+	
+	public List<Map<String, Object>> getFilesUnderLevel(String owner, int securityLevel) {
+		
+		Connection conn = getConnection();
+
+		List<Map<String, Object>> userData = new ArrayList<Map<String, Object>>();
+	    
+		try {
+			Statement s = conn.createStatement();	
+			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME +
+					" WHERE " + FILE_ATTRIBUTES[1] + " = '" + owner + "' AND "
+					+ FILE_ATTRIBUTES[3] + " >= " + securityLevel);
+		
+			while (r.next()) {
+				Map<String, Object> data = new HashMap<String, Object>(FILE_ATTRIBUTES.length - 2);
+				
+				String rev = r.getString(1);
+				data.put(FILE_ATTRIBUTES[0], rev);
+				
+				InputStream in = r.getBinaryStream(3);
+				byte[] b = new byte[in.available()];
+				in.read(b);
+				data.put(FILE_ATTRIBUTES[2], b);
+				
+				int i = r.getInt(4);
+				data.put(FILE_ATTRIBUTES[3], i);
+
 			}
 
 			conn.close();

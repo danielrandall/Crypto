@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -57,8 +58,9 @@ public class DropboxOperations {
 	 * Will not overwrite existing file.
 	 * Pass in revision (rev - entry.rev) if you want to overwrite the file
 	 * with the same name.
-	 * Requires the username to be set beforehand. */
-	public static String uploadFile(String path, InputStream inputStream,
+	 * Requires the username to be set beforehand.
+	 * Returns the filename and rev of the file */
+	public static String[] uploadFile(String path, InputStream inputStream,
 										int length) {
 		
 		DropboxAPI<Session> mDBApi = new DropboxAPI<Session>(session);
@@ -69,9 +71,11 @@ public class DropboxOperations {
 		} catch (DropboxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}	
 		
-		return newEntry.rev;
+		String[] fileInfo = {newEntry.fileName(), newEntry.rev};
+
+		return fileInfo;
 	}
 	
 	
@@ -350,4 +354,33 @@ public class DropboxOperations {
 		return cursor;
 	}
 	
+	/* Given a group of revs and associated information, this function
+	 * searches through this user's list of uploaded files and attaches the
+	 * filename to each one. */
+	public static Map<String, ClientFile> findFileNames(Map<String, ClientFile> files) {
+		
+		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
+		
+		try {
+			Entry uploadedEntries = client.metadata("/" + username + OWN_FILE_FOLDER, 0, null, true, null);
+			List<Entry> allFiles = uploadedEntries.contents;
+			
+			int size = allFiles.size();
+			
+			for (int i = 0; i < size; i++) {
+				Entry fileEntry = allFiles.get(i);
+				String rev = fileEntry.rev;
+				if (files.containsKey(rev))
+					files.get(rev).setFileName(fileEntry.fileName());
+			}
+			
+		} catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return files;
+		
+	}
+
 }

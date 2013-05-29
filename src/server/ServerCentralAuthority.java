@@ -335,13 +335,41 @@ public class ServerCentralAuthority {
 		
 	}
 	
-	
+	/* Called when a user requests a friend to be removed from their friends
+	 * and revoked access from the files they shared with them.
+	 * This requires the files to be removed from the friend's Dropbox folder
+	 * and the files encrypted with new keys by the user. The user sends those
+	 * keys to the server after they have reencrypted the files with them.
+	 * BEWARE - reuploading of files. */
 	private static final void revokeUser(String username, ClientComms comms) {
 		
 		String usernameToRevoke = comms.fromClient();
 		
+		/* Send the security level of the friend to revoke to the user */
 		int securityLevel = UserOperations.getFriendSecurityLevel(username, usernameToRevoke);
 		comms.toClient(Integer.toString(securityLevel));
+		
+		/* Find the files effected and send the file security levels
+		 * to the user */
+		ServerFile[] fileInfo = ServerFileOperations.
+				getAllFilesUnderSecurityLevel(username, securityLevel);
+		int numFiles = fileInfo.length;
+		comms.toClient(Integer.toString(numFiles));
+		for (int i = 0; i < numFiles; i++) {
+			/* Send the information for this file to the user */
+			String rev = fileInfo[i].getRev();
+			comms.toClient(rev);
+			
+			byte[] iv = fileInfo[i].getIV();
+			comms.sendBytes(iv, iv.length);
+			
+			int fileSecurityLevel = fileInfo[i].getSecurityLevel();
+			comms.toClient(Integer.toString(fileSecurityLevel));
+			
+			/* Remove the file from the database */
+			ServerFileOperations.removeFile(rev);
+		}
+		
 		
 		/* Receive the new encrypted keys and IVs and store them in the database */
 		UserOperations.storeSymmetricKeys(username, securityLevel, true, comms);
