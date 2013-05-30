@@ -10,8 +10,7 @@
 	<classpathentry kind="lib" path="/homes/dr1810/Crypto/lib/httpclient-4.0.3.jar"/>
 	<classpathentry kind="lib" path="/homes/dr1810/Crypto/lib/httpcore-4.0.1.jar"/>
 	<classpathentry kind="lib" path="/homes/dr1810/Crypto/lib/httpmime-4.0.3.jar"/>
-	<classpathentry kind="lib" path="/homes/dr1810/Crypto/lib/javax-crypto.jar"/>
-	<classpathentry kind="lib" path="/homes/dr1810/Crypto/lib/javax-security.jar"/>
 	<classpathentry kind="lib" path="/homes/dr1810/Crypto/lib/json_simple-1.1.jar"/>
+	<classpathentry kind="lib" path="/homes/dr1810/Crypto/lib/bcprov-jdk15on-148.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

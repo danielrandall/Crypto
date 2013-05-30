@@ -1,5 +1,9 @@
 package ciphers;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -11,59 +15,50 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-public class RSACipher {
+public class RSASunJCECipher {
 	
 	private static final String ALGORITHM = "RSA";
 	private static final String MODE = "ECB";
 	private static final String PADDING = "PKCS1PADDING";
-	private static final String PROVIDER = "SUN";
+	private static final String PROVIDER = "SunJCE";
 	
-	/*
-	public static void main(String[] args) {
+	
+public static void main(String[] args) {
 		
-		KeyPair keyPair = SecurityVariables.GenerateAsymmetricKeyPair();
+		Key key = SecurityVariables.GenerateAsymmetricKeyPair().getPublic();
+		byte[] fileContents = SecurityVariables.generateKey();
+		RSASunJCECipher cipher = new RSASunJCECipher();
 		
-		String plaintext = "helloThere";
+		/* Test */
+		long startTime = 0;// = System.nanoTime();
 		
-		byte[] ciphertext = null;
-		try {
-			ciphertext = encrypt(plaintext.getBytes("UTF-16"), keyPair.getPublic());
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for (int i = -1000; i < 10000; i++) {
+			if (i == 0)
+				startTime = System.nanoTime();;
+			byte[] encryptedFile = cipher.encrypt(fileContents, key);
 		}
 		
-		try {
-			System.out.println(new String(ciphertext, "UTF-16"));
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		long endTime = System.nanoTime();
+
+		long duration = endTime - startTime;
 		
-		byte[] plaintextbytes = decrypt(ciphertext, keyPair.getPrivate());
-		
-		String plaintext2 = null;
-		
-		try {
-			plaintext2 = new String(plaintextbytes, "UTF-16");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		System.out.println(plaintext2);
-		
-		if (plaintext.equals(plaintext2))
-			System.out.println("worked!");
-		
+		System.out.println("startTime = " + startTime);
+		System.out.println("");
+		System.out.println("endTime = " + endTime);
+		System.out.println("");
+		System.out.println("duration = " + duration);
+		double seconds = (double)duration / 1000000000.0;
+		System.out.println("");
+		System.out.println("duration in seconds = " + seconds);
 	}
-*/
+	
+
 	
 	public byte[] encrypt(byte[] file, Key key) {
 	
 		try {
 			Cipher cipher = Cipher.getInstance(ALGORITHM + "/" + MODE +
-					"/" + PADDING);
+					"/" + PADDING, PROVIDER);
 			
 			cipher.init(Cipher.ENCRYPT_MODE, key);
 			
@@ -84,6 +79,9 @@ public class RSACipher {
 		} catch (BadPaddingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		return null;
@@ -95,7 +93,7 @@ public class RSACipher {
 		
 		try {
 			Cipher cipher = Cipher.getInstance(ALGORITHM + "/" + MODE +
-					"/" + PADDING);
+					"/" + PADDING, PROVIDER);
 			
 			cipher.init(Cipher.DECRYPT_MODE, key);
 			
@@ -114,6 +112,9 @@ public class RSACipher {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (BadPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -19,6 +19,8 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.SecretKey;
+
 public class SecurityVariables {
 	
 	/* Key size used for the cipher. Recorded in bytes. */
@@ -29,6 +31,10 @@ public class SecurityVariables {
 	
 	private static final String PRNG_ALGORITHM = "MD";
 	private static final String HASH_FUNCTION = "MD5";
+	
+	/* Public key algorithm used */
+	private static final String SYMMETRIC_ALGORITHM = "AES";
+	private static final String SYMMETRIC_ALGORITHM_PROVIDER = "SUN";
 	
 	
 	/* ASYMMETRIC */
@@ -167,6 +173,27 @@ public class SecurityVariables {
 		return null;
 		
 	}
+	
+	/*
+	public static SecretKey ConvertyBytesToSecretKey(byte[] key) {
+		
+		try {
+			
+			KeyFactory keyFactory = KeyFactory.getInstance(SYMMETRIC_ALGORITHM);
+			return keyFactory.generateSecret(new PKCS8EncodedKeySpec(key));
+			
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+		
+	}
+	*/
 	
 	
 	/* The users keys are generated.

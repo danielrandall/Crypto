@@ -1,0 +1,18 @@
+- Why we do not have to implement the ciphers used
+
+- Evaluating the speed difference between GNU and BC and SUN
+- Evaluating the speed of H2 database
+- Evaluating the speed of the entire system
+- Evaluating the speed using different key sizes for RSA and AES
+- Evaluating the speed of Dropbox uploads
+- Justify each choice
+
+- Why keystore is client side
+- Why we are using RSA to share keys
+
+- Why the users have to accept friend requests
+
+- Privacy implications (server can just add files to their dropbox at will (albeit just the app folder)
+
+- Explain corner cases and how they are dealt with
+- Explain how tampering outside of app is dealt with

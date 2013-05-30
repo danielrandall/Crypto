@@ -1,0 +1,14 @@
+SunJCE provider (1000 iterations (1000 before unrecorded):
+startTime = 1202138431635026
+endTime = 1202153106700891
+duration = 14675065865
+duration in seconds = 14.675065865
+
+GNUCrypto
+
+
+Bouncy Castle
+startTime = 1208240406622794
+endTime = 1208255328977630
+duration = 14922354836
+duration in seconds = 14.700266274

@@ -1,0 +1,22 @@
+\contentsline {section}{\numberline {1}Introduction}{2}
+\contentsline {section}{\numberline {2}Background Research}{2}
+\contentsline {subsection}{\numberline {2.1}Overview}{2}
+\contentsline {subsection}{\numberline {2.2}Technical Research}{3}
+\contentsline {subsubsection}{\numberline {2.2.1}Hierarchical Cryptography for Access Control}{3}
+\contentsline {subsubsection}{\numberline {2.2.2}Interval-Based Access Control}{3}
+\contentsline {subsubsection}{\numberline {2.2.3}Key Assignment Schemes (KAS)}{4}
+\contentsline {subsubsection}{\numberline {2.2.4}Revokation of Permissions and Re-encryption}{6}
+\contentsline {subsubsection}{\numberline {2.2.5}Building the Tree}{7}
+\contentsline {subsubsection}{\numberline {2.2.6}Assured Delete}{7}
+\contentsline {subsubsection}{\numberline {2.2.7}Programming Languages and Usable Software}{8}
+\contentsline {section}{\numberline {3}Project Plan}{9}
+\contentsline {section}{\numberline {4}Evaluation Plan}{10}
+\contentsline {section}{\numberline {5}Related work}{11}
+\contentsline {section}{\numberline {6}Implementation}{11}
+\contentsline {subsection}{\numberline {6.1}Design}{11}
+\contentsline {section}{\numberline {7}Design decisions}{11}
+\contentsline {section}{\numberline {8}Testing}{12}
+\contentsline {section}{\numberline {9}Evalutation}{12}
+\contentsline {subsection}{\numberline {9.1}What I would have done differently}{12}
+\contentsline {section}{\numberline {10}Conclusion}{12}
+\contentsline {subsection}{\numberline {10.1}Future work}{12}

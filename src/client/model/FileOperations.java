@@ -9,14 +9,14 @@ import java.security.Key;
 import java.security.PublicKey;
 
 import ciphers.AESGNUCipher;
-import ciphers.RSACipher;
+import ciphers.RSASunJCECipher;
 import ciphers.SymmetricCipher;
 import ciphers.SecurityVariables;
 
 public class FileOperations {
 	
 	private static SymmetricCipher cipher = new AESGNUCipher();
-	private static RSACipher asymmetricCipher = new RSACipher();
+	private static RSASunJCECipher asymmetricCipher = new RSASunJCECipher();
 	
 	/* Encrypts a given file and returns encrypted file and the generated iv
 	 * which is needed for decryption */
