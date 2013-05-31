@@ -1,13 +1,14 @@
-\documentclass[10pt, titlepage]{article} 
+\documentclass[12pt, titlepage]{article} 
 
 \usepackage[utf8x]{inputenc}
 \usepackage{fullpage}
 \usepackage{graphicx}
 \usepackage{amsfonts}
 \usepackage{amsmath}
+\usepackage{url}
 
 \title{Applications of Cryptographically Enforced Access Control \\ Interim Report}
-\author{Daniel Randall}
+\author{Daniel Randall \\ Imperial College London}
 \date{}
 
 \begin{document}
@@ -17,10 +18,19 @@
 Abstract
 \end{abstract}
 
+% To change the abstract heading to have a similar layout for Acknowledgements
 \renewcommand{\abstractname}{Acknowledgements}
 \begin{abstract}
 Acknowledgements
 \end{abstract}
+
+% To force a line break after paragraph headings
+\makeatletter
+  \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}
+    {-3.25ex\@plus -1ex \@minus -.2ex}
+    {1.5ex \@plus .2ex}
+    {\normalfont\normalsize\bfseries}}
+\makeatother
 
 
 % Create the contents page
@@ -36,7 +46,10 @@ The problem taken on by this product is that of implementing a concrete applicat
 
 \section{Background Research}
 \subsection{Overview}
-While protecting sensitive data from adversaries has been a concern for hundreds of years it was not until the First World War that the field of cryptography received serious academic attention however from then on the majority of the work was carried out secretively by states.\cite{appliedCryptoBook} Cryptography was only employed by the military until the 1970s where cheaper hardware reduced ``the design limitations of mechanical computing and brought the cost of high grade cryptographic devices down to where they can be used in such commercial applications as remote cash dispensers and computer terminals.\cite{newCryptoDirections}" And new methods of sharing keys such that they could be transferred over insecure channels and thus eliminate the need for physical contact (ie. couriers) before secure communication became possible. One such technique was a \textit{public key cryptosystem}, in which two distinct asymmetric keys are used. One for encrypting, which is made publically available, and one for decrypting, which is kept private, thus anyone can encrypt messages with the public key but only the owner of the private key may decrypt the messages. Also, more importantly to this project, the 1970s also saw the development of major publically known symmetric key ciphers such as Data Encryption Standard (DES). Since then improvements on such algorithms have been designed and cryptography has become an integral part of many businesses who use it, not only for privacy but, for many different reasons, such as: ``authentication (bank cards, wireless telephone, e-commerce, pay-TV), access control (car lock systems, ski lifts), payment (prepaid telephone, e-cash)."\cite{classicalCryptoBook}
+
+\subsection{Technical Research}
+\paragraph*{Cryptography}
+While protecting sensitive data from adversaries has been a concern for hundreds of years it was not until the First World War that the field of cryptography received serious academic attention however from then on the majority of the work was carried out secretively by states.\cite{appliedCryptoBook} Cryptography was only employed by the military until the 1970s where cheaper hardware reduced ``the design limitations of mechanical computing and brought the cost of high grade cryptographic devices down to where they can be used in such commercial applications as remote cash dispensers and computer terminals."\cite{newCryptoDirections} And new methods of sharing keys such that they could be transferred over insecure channels and thus eliminate the need for physical contact (ie. couriers) before secure communication became possible. One such technique was a \textit{public key cryptosystem}, in which two distinct asymmetric keys are used. One for encrypting, which is made publically available, and one for decrypting, which is kept private, thus anyone can encrypt messages with the public key but only the owner of the private key may decrypt the messages. Also, more importantly to this project, the 1970s also saw the development of major publically known symmetric key ciphers such as Data Encryption Standard (DES). Since then improvements on such algorithms have been designed and cryptography has become an integral part of many businesses who use it, not only for privacy but, for many different reasons, such as: ``authentication (bank cards, wireless telephone, e-commerce, pay-TV), access control (car lock systems, ski lifts), payment (prepaid telephone, e-cash)."\cite{classicalCryptoBook}
 \newline \indent Block ciphers (such as DES) are a type of symmetric key algorithms used to encrypt data. They map $n$-bit plain-text blocks to $n$-bit cipher-text blocks where $n$ is the length of the block. This mapping is one-to-one and thus invertible. The encryption function takes ``a $k$-bit key $K$, taking values from a subset $K$ (the key space) of the set of all $k$-bit vectors $V_{k}$." \cite{blockCiphers} Block ciphers are deterministic and so with the same key and the same plain-text, one should receive the same cipher-text.
 \newline \indent This project focuses on access control as the application of cryptography. The purpose of access control is to ``limit the actions or operations that a legitimate user of a computer system can perform. Access control constrains what a user can do directly, as well as what programs executing on behalf of the users are allowed to do."\cite{accessControlPrinciples} For instance, many operating systems control access to files by assigning permissions to users (eg. read, write, execute.) Typically vanilla access control is based on capabilities or access control lists (ACLs). ACLs works by assigning each object its own ACL detailing for each user which permissions she is authorised to perform on the object. With this setup it is easy to add, edit or remove user permissions and it is easy to see what users have permissions for each object, however all ACLs need to be accessed to determine what objects a user currently has access to. Capabilities are similar to ACLs however each user is associated with a list instead of an object and all capability lists need to examined to determine which users can access a particular object. An example of this, similar to what would be deployed in an OS, can be viewed in Figure ~\ref{fig:capabilities} where 'R' refers to read, 'W' to write and 'Own' signifies that that user is the owner of the object.
 \newline
@@ -48,8 +61,6 @@ While protecting sensitive data from adversaries has been a concern for hundreds
 \caption{Capabiliy list for four files and three users.\cite{accessControlPrinciples}}
 \label{fig:capabilities}
 \end{figure}
-
-\subsection{Technical Research}
 
 \subsubsection{Hierarchical Cryptography for Access Control}
 Hierarchical access control relies on different levels (or classes) of security which can be represented as labels in a partially ordered set (L, $≤$). These labels can be applied to users, $u$, and objects, $o$, using a many-to-many labelling function $lambda : U ∪ O → L$ where $U$ is a set of all users $u$ and $O$ is a set of all objects $o$. "$u$ is authorized to access $o$ if and only if $\lambda(u)≤\lambda(o)$\cite{mainPaper}."
@@ -150,16 +161,6 @@ The result of this procedure can be seen in Figure ~\ref{fig:binarydecomp}a for 
 \newline \indent It is clear to see that the information flow policy is still upheld, ie. each node still has access to all other nodes it previously had access to before the binary decomposition however it has not gained access to any new nodes.
 \newline \indent Crampton details how this algorithm can be extended to temporal, geo-spatial and general interval access control.
 
-\subsubsection{Assured Delete}
-In this system it may be desirable to include reassurances that files which have been restricted from access (which may well happen frequently) are truly unrecoverable. Perlman[2005]\cite{delete} offers measures to achieve this using cryptography in 3 different ways:
-\begin{itemize}
-\item \textbf{Time-based} - For when files have an expiration date when they are published.
-\item \textbf{Individual deletion on-demand} - When files can be deleted individually at any time.
-\item \textbf{Custom classes that can be deleted on-demand} - Sets of files (a class) are encrypted with a custom key where the class can be deleted or suspended at any time.
-\end{itemize}
-While all methods may be applicable in some scenario, most notably the 3rd method has the most parallels with our proposed system. For instance, as all files in a security level must be encrypted with the same key assured delete may be seamlessly applied to all security levels.
-\newline \indent This process works mainly by having a trusted authority, one for each class, which controls access to files using a public key and decrypting files (using blind decryption) for the client. In our system it is clear that it would only be suitable for the owner of the filesystem to have access to the public key to encrypt new data and access to the authority would have to be regulated under our own existing access control.
-
 \subsubsection{Programming Languages and Usable Software}
 Dropbox has a choice of SDKs which can be used for this project: the options for desktop development are written in Python, Java and Ruby, while there are options for Android and iOS development.
 \newline Following is a run down of the different languages and what they offer:
@@ -172,85 +173,99 @@ Dropbox has a choice of SDKs which can be used for this project: the options for
 Keyczar is an API that exists for Java, Python and C++.\cite{keyczar} However it does not appear flexible enough to be used in this case. It is intended for those who have little understanding of cryptography and so it hides too much information to be useful in our case.
 \newline As a large part of the evaluation for this project is based around performance I have ignored the possibility of creating the system on a mobile platform where it may not perform to its full potential. As for desktop languages, due to my inexperience with Ruby and wider cryptography support for the other languages available I decided it was not the best language for this project. It also seems unnecessary to take the extra time needed to code the project in C/C++ to risk compatability issues and possible performance hits on linking the languages. While the Dropbox source code is written Python and so may well integrate better with the Python Dropbox API, Java offers a greater range of cryptographic support. The most appealing of the APIs is GNU Crypto as the system will always run on a Linux machine and the lack of unpatented code will prevent the system from becoming tied down if there is a desire to freely distribute it after production.
 
-\section{Project Plan}
-Initially the primary goal will be to implement the basic structure of the system which can then be expanded on in many ways. The criteria this structure will need to fulfill are as follows:
-\begin{itemize}
-\item \textbf{Sharing} - There has to be methods in place which enables a user to share folders or files with other users
-\item \textbf{Access Control} - A user has to be able to control which level of access other users have to her files or folders. The implementation should not be dependent on the following:
-	\begin{itemize}
-	\item \textbf{KAS}
-	\item \textbf{Re-encryption policy}
-	\item \textbf{Ciphers}
-	\item \textbf{Hash functions}
-	\end{itemize}
-All should be easily changeable.
-\item \textbf{Revokation or adjustment} - A user has to be able to remove previously granted permissions or adjust them to a different level.
-\item \textbf{Re-encryption} - No particular method needs to be implemented however the system needs to be flexibly accommodating to different methods of re-encryption being 'plug-and-played.'
-\item \textbf{Filesystem} - The implementation should not depend on the files being hosted in a certain location.
-\newline Coming into this project the initial aim was to implement this system on top of Dropbox's 'public' folder however unfortunately Dropbox has discontinued support for this feature for new users.\cite{dropboxPublicFolder} However Dropbox refers developers to the \textit{/shares} call which enables users to share a file or folder with others.
-\newline \indent Once the structure of the system has been created I will begin to create the different implementations of the features discussed.
-\end{itemize}
-
-The proposed time scale for this project is as follows:
-\begin{itemize}
-\item \textbf{Structure} - Two weeks (8th Feb - 22nd Feb). By this time criteria as described should have been fulfilled.
-\item \textbf{Algorithms} - Two weeks (22nd Feb - 8th March) By this time the majority of the proposed algorithms to evaluated will have been implemented.
-\item \textbf{Assured delete} - One week (8th March - 15th March) - By this time the assured delete method will have been implemented.
-\item \textbf{Evaluation} - One week (15th March - 22nd March) - By this time tests will have been carried out for the implemented features.
-\item \textbf{Further features/evaluation} - One week (17th May - 24th May) In this time any extra features or evaluations will be implemented or carried out.
-\item \textbf{Report} - Three weeks (24th May - 14th June) During this time the report will be written.
-\end{itemize}
-
-\section{Evaluation Plan}
-To meet the objectives the main criterias to be measured for success are as follows:
-\begin{itemize}
-\item \textbf{Speed} - To be measured in seconds/milliseconds. Perhaps the most important time interval to measure is,  using a set of test queries, the average time it takes a user to go from probing a file for access to receiving the file. Using a 'correct' set of test queries this metric will give a reading as to how well every feature is performing together. A 'correct' set can be defined as those which activate all features at an appropriate frequency (for instance, a user needs to be revoked permissions to incorporate the re-encryption algorithm into the reading). This measure can be taken with the same features on a number of differently sized trees to show how consistent it remains.
-\newline Individual 
-\item \textbf{Security} - For each implementation, as a user, attempts can be made to derive information for which they are not permitted to access. There are known attacks for some implementations of hierarchical access control (such as collusion whereby two users with different permission work together to derive forbidden keys) which can be used to test how resistant the implementation is. However known attacks will almost always be applicable meaning that such attacks will only be interesting if the time taken to execute them is drastically reduced. Much of the focus will go to see if there are any security holes, rather than brute force attacks, and how dangerous they may be.
-\item \textbf{Ease of use} - Dropbox is famous for its simplicity which will likely make it clear to see if the usability is infringed upon heavily. This could be measured by how many clicks it takes to access a file (vanilla Dropbox takes 1), how many clicks it takes to secure a file, how many clicks it takes to assign permissions and how many clicks it takes to revoke permissions. The time activities take, talked about under '\textit{Speed}' above, will also play into how usable the system is.
-\newline \indent While this may be interesting to see and will indicate whether there is any production value for the system, this is not the most important measurement for this project.
-\end{itemize}
-Some implementations may perform exceptionally well under certain condition and others may perform reasonably well under a small number of conditions and awful in others. To detect such high and low points it is important to thoroughly test each one under as many different conditions as possible.
-\newline \indent The main determining factor of how well each implementation performs is the shape and size of the tree. The tree can be manipulated in a number of ways:
-\begin{itemize}
-\item Increase the number of security levels. This will tend to increase the breadth of the tree.
-\item Alter the edges in the tree such that the the number of edges, ($|E|$), becomes high or low, or such that the diameter of the graph, ($d$), becomes high or low. Typically increasing one has the inverse effect on the other. 
-\item Assign the user more secret keys. This will have the effect of making tree searches smaller. For instance, going from 1 key to 2 keys potentially halves the size of any one single tree.
-\item Force aspects of the graph to conform to maximum, minimum or interval boundaries. This could be applied to the depth, breadth, in-degree and out-degree. A manner to achieve this is to randomly generate a number between 0 and 1 and sum that with the difference between the maximum possible value and the minimum possible value. An example of this can be seen in Table ~\ref{tab:graphGenerator}. This uses truncation to solve the problem of attaining non-integer values after taking the product of the random number and the interval. As can be clearly seen by the in-degree and out-degree examples this raises a problem in which in the interval $[1 \dots 2]$, 1 shall be selected $100/101$\% of the time. This solution will majorly distort the results. A better alternative will be to round the fraction to the nearest integer, however in this example 1 shall be still be selected $51/101$\% of the time compared to 2 being selected $50/101$\% of the time.
-\newline \indent Naturally when forcing features of the tree to conform to an interval there are occasions in which one feature will create requirements that another feature will have to abide by to allow the creation of the tree to remain possible. For instance, if the bounds for the out-degree is $1≤x≤1$ where $x$ is the out-degree then the minimum bound for the breadth can be no larger than 1. This is because with a maximum bound of 1 for the out-degree the tree can only be a straight line with breadth 1. Due to this there must be measures in place to ensure that the intervals are controlled to eliminate such conflicts. It can also be noted that even if in the given example the minimum bound obeys the requirements and is no higher than 1, the maximum must be ignored if it is higher than 1 or also be forced to be no higher than 1.
- 
-\end{itemize}
-Upon identifying a particular weakness or flaw in an algorithm, further work can be found by narrowing down the root cause of the problem. If possible, a solution or work around could be devised with the intent to improve upon the algorithm in general or to adapt it to become more applicable to the environment at hand. This new solution could be evaluated independently from the old algorithm.
-
-\begin{center}
-\begin{table}
-    \begin{tabular}{ | l | l | l | p{5cm} |}
-    \hline
-    Table feature & Random number & Interval & Result \\ \hline
-    Depth & 0.70 & $[2 \dots 7]$ & $0.70 \times (7-2) = 3.5$ \newline \textbf{$3$} \\ \hline
-    Breadth & 0.51 & $[3 \dots 9]$ & $0.51 \times (9-3) = 3.06$ \newline \textbf{$3$} \\ \hline
-    In-degree & 0.98 & $[1 \dots 2]$ & $0.98 \times (2-1) = 0.98$ \newline \textbf{$1$} \\ \hline
-    Out-degree & 0.34 & $[1 \dots 2]$ & $0.34 \times (2-1) = 0.34$ \newline \textbf{$1$} \\ \hline 
-    \end{tabular}
-    \caption{Generating trees using feature intervals. Takes a random number $x$, where $0≤x≤1$ and fraction results are truncated to reach an integer.} \label{tab:graphGenerator}
-    \end{table}
-\end{center}
-
-\section{Related work}
+\subsection{Related work}
 Dropbox
 Bitbox?
 Mega
 
-\section{Implementation}
-\subsection{Design}
-- Class diagram
-- Purpose of each class
 
-\section{Design decisions}
+
+\section{Initial Assessments}
+
 \subsection{Algorithm choices}
 
+There are 4 key decisions to be made when choosing to employ a Crytographic algorithm. These are:
+\begin{itemize}
+	\item \textbf{Algorithm} - The algorithm itself
+	\item \textbf{Mode} - The mode of operation used
+	\item \textbf{Key size} - The size of the key used for encryption and decryption
+	\item \textbf{Padding scheme} - The method to increase the size of the file to be encrypted in order to force into a multiple of the block size of that algorithm.
+\end{itemize}
+Here we will discuss which algorithms to use for this project and why.
+
+\subsubsection*{Symmetric Algorithm}
+\begin{itemize}
+	\item \textbf{DES} - A block cipher which used to be government standard. DES uses 56bit keys, however such small key lengths have proven to be insecure (eg. by the `EFF DES cracker') and can no longer be used safely.
+	\item \textbf{3DES} - A variant on DES in which plaintext is fed through 3 seperate instances of DES using up to 3 different keys. 3DES, with 3 unique keys, is secure up to $2^112$bits of security, which is very secure. However DES is designed for hardware implementations and so it is slow when used in software which, unfortunately, is what we wish to use it for.
+	\item \textbf{Blowfish} - 64 bit block size with up to 448 bit keys.
+	\item \textbf{Twofish} - Successor to Blowfish. 128 bit block size with up to 256 bit keys
+	\item \textbf{AES} - Uses 128 bit blocks with up to 256 bit keys. The current government standard.
+\end{itemize}
+There is no reason not to use AES and so that is what we shall use.
+\\
+\\
+AES supports the following modes of operation:\cite{aesModes}
+\begin{itemize}
+	\item \textbf{ECB} - Has been shown to be vulnerable if it used to encrypt more than one block of data with the same key. In our case, it can not be used to encrypt a file larger than 128 bits. ECB also has the undesirable trait where each plaintext block encrypted with the same key results in the same ciphertext block. This is undesirable as attackers are able to detect trends in an individuals encryptions. Requires padding.
+	\item \textbf{CBC} - Each plaintext block is XORed with the previous block before it is encrypted by block cipher. An initialisation vector (IV) is used to XOR the first block. The ciphertext generated from the plaintext will different each time iff the IV is different. Requires padding.
+	\item \textbf{CFB} - Requires padding
+	\item \textbf{OFB} - Turns the block cipher into a stream. Does not require padding.
+	\item \textbf{CTR} - Similarly to OFB, CTR turns the block into a stream cipher. Does not require padding.
+	\item \textbf{EAX} - A variation on CTR which includes integrity checks
+	\item \textbf{GCM} - A variation on CTR which includes integrity checks
+\end{itemize}
+While it is true that the modes that require padding, such as ECB, CBC and CFB can be subject to padding oracle attacks, in our implementation we will have no such oracle and so we need not worry about such attacks.\cite{oraclePadding}
+\newline We will use CBC for no reason other than it is widely supported and relatively simple to implement while not sacrificing any security if implemented correctly.
+\\
+\\
+AES supports the following key sizes:
+\begin{itemize}
+	\item \textbf{128 bit}
+	\item \textbf{192 bit}
+	\item \textbf{256 bit}
+\end{itemize}
+The only weakness possible resulting from the size of the key chosen is that of brute force attacks. A 128 bit AES key provides 128 bits of security (pg. 64, Table 2) and is speculated to be safe beyond the year 2031 (pg. 67, Table 4).\cite{nistKeys}
+While we may choose to use a 256 bit key `just to be safe' it is unlikely that this system will be around in 30 or 40 years and so this sort of precaution is unnecessary. Using a 192 bit key instead would cause us to take a performance hit of around 20\% while a 256 bit key would cause a 40\% hit, due to the fact that 128 bit, 192 bit and 256 bit keys require 10, 12, 14 rounds respectively (pg. 14, Figure 4)\cite{announcingAES}. Due to this, using a smaller key is desirable for performance.
+\newline For these reasons we shall use a 128 bit key for AES in our system.
+
+\subsubsection*{Asymmetric algorithm}
+Some asymmetric ciphers that exist today are:
+\begin{itemize}
+	\item \textbf{RSA}
+	\item \textbf{DSA}
+	\item \textbf{ElGamal}
+\end{itemize}
+By far the most popular asymmetric algorithm used today is RSA. That is what we shall use.
+\\
+\\
+The key sizes supported by RSA are:
+\begin{itemize}
+	\item \textbf{1024}
+	\item \textbf{2048}
+	\item \textbf{3072}
+	\item \textbf{4028}
+\end{itemize}
+Similarily to the choice of the symmetric key size we could go for an exceptionally large key `just in case'. However each time we double the size of an RSA key decryption is 6-7 times slower.\footnote{\url{http://www.javamex.com/tutorials/cryptography/rsa_key_length.shtml}}
+Therefore we wish to use the smallest reasonable key size. A 1024 bit RSA key provides 80 bits of security (pg. 64, Table 2) which is currently deprecated today (pg. 67, Table 4), meaning that this key size is currently unnaceptable for use with RSA. A 2048 bit key provides 112 bits of security (pg. 64, Table 2) which is acceptable today through 2030 which is plenty good enough for our system (pg. 67, Table 4).\cite{nistKeys}
+\newline We shall use a 2048 bit RSA key.
+\\
+\\
+The padding recommended by FIPS is PKCS\#1 v1.5 and, as we have no reason to not to, we shall use that.
+
+\subsubsection*{Password hashing algorithm}
+Password hashing algorithms are odd in the sense that the trait with which to seperate them by is which is the slowest. It is desirable for a password hashing algorithm to be slow to prevent an attacker bruteforcing a password dictionary in the hope of entering the correct one into a log in form. Making log in slower makes this task much more time consuming.
+\newline There are two password hashing algorithms commonly in use. They are:
+\begin{itemize}
+	\item \textbf{PBKDF2} - Based on SHA-256(VERIFY)
+	\item \textbf{bcrypt} - Based on Blowfish.
+\end{itemize}
+NIST recommends the use of PBKDF2 in the use of the password storage.\cite{nistPassword} However bcrypt has a desirable trait which PBKDF2 lacks - the computational cost of the password scheme increases as the hardware it runs on improves. It does this by requiring fast RAM which GPUs do not possess but CPUs do.\cite{bcryptPaper} What this means in a practical sense is that the algorithm is more efficient on a CPU rather than a GPU - quick for servers and slow for the attackers.
+\newline There currently exists GPUs which contain modern field-programmable gate arrays with RAM which can be used to optimise attacks on bcrypt. A new password scheme has been designed to combat this problem called scrypt\footnote{http://www.tarsnap.com/scrypt.html}, however it has only existed for a small amount of time (4 years at the time of writing) and so has not yet `stood the test of time' like that of bcrypt (nearly 14 years at the time of writing.)
+\newline For these reasons we shall use bcrypt to store passwords in our system. 
+
+
 \subsection*{Algorithm providers}
-There are many different providers of AES algorithms for Java, however there is little literature on the differences between them. This is problematic due to the fact our system is very likely to execute these algorithms very frequently and if the algorithm is inefficient the algorithm may end up becoming an unnecessary bottle neck. The possible ways we can differentiate between the implementations are as follows:
+There are many different providers of AES algorithms for Java, however there is little literature on the differences between them. This is problematic due to the fact our system is very likely to execute these algorithms very frequently and if the implementation is inefficient we may end up with unecessary delays. The possible ways we can differentiate between the different implementations are as follows:
 \begin{itemize}
 	\item \textbf{Correctness} - The algorithm is implemented correctly.
 	\item \textbf{Speed} - The time the implementation takes to execute.
@@ -259,7 +274,8 @@ There are many different providers of AES algorithms for Java, however there is 
 Determining the correctness of the implementations is outside of the scope of this report and so it will be assumed all implementations covered here are implemented correctly. The speed and size of the import needed are easy enough to measure and so they are the features we shall be looking at.
 
 \subsubsection*{AES algorithm provider}
-\newline The findings for each implementation of AES can be found in Table ~\ref{tab:aesComparison}. As can be seen GNUCrypto is tested with a slightly different algorithm, specifically a different spadding scheme. This is because it does not implement PKCS5 padding (or any in common with the other implementations being tested), only PKCS7. Because of this a fairer comparison would have been to compare each using no padding, which all of them implement, however we have no control over the size of the files the user may encrypt and so the results would have irrelevent to the situation we face. For this reason each implementation used the padding which we would use should it be included in our system. Looking at the table the most striking result is the length of time the GNUCrypto implementation takes. Incorporating the GNUCrpyto implementation into the project is far more complicated than the interface provided by the JCE framework (requiring 15x as much code!) and so that may be an explanation but, in any case, henceforth we shall disregard the GNUCrypto implementation. As for the fastest implementation, there is little between the SunJCE and Bouncy Castle implementations. The real difference is not in speed but in the much more extensive library of ciphers BC provides against not requiring an external jar in the case of SunJCE.
+The findings for each implementation of AES can be found in Table ~\ref{tab:aesComparison}. As can be seen GNUCrypto is tested with a slightly different algorithm, specifically a different spadding scheme. This is because it does not implement PKCS5 padding (or any in common with the other implementations being tested), only PKCS7. Because of this a fairer comparison would have been to compare each using no padding, which all of them implement, however we have no control over the size of the files the user may encrypt and so the results would have irrelevent to the situation we face. For this reason each implementation used the padding which we would use should it be included in our system. However, it is true that PCKS5 and PCKS7 are practically interchangeable and so no difference should observed as a result.
+\newline Looking at the table the most striking result is the length of time the GNUCrypto implementation takes. Incorporating the GNUCrpyto implementation into the project is far more complicated than the interface provided by the JCE framework (requiring 15x as much code!) and so that may be an explanation but, in any case, henceforth we shall disregard the GNUCrypto implementation. As for the fastest implementation, there is little between the SunJCE and Bouncy Castle implementations. The real difference is not in speed but in the much more extensive library of ciphers BC provides against not requiring an external jar in the case of SunJCE.
 
 % Comparison of AES implementation features
 \begin{center}
@@ -279,7 +295,7 @@ Determining the correctness of the implementations is outside of the scope of th
     \end{table}
 \end{center}
 
-\subsection*{RSA algorithm provider}
+\subsubsection*{RSA algorithm provider}
 GNUCrypto does not provide an implementation of RSA and so it is omitted from the tests.
 
 % Comparison of RSA implementation features
@@ -298,10 +314,35 @@ GNUCrypto does not provide an implementation of RSA and so it is omitted from th
     \end{table}
 \end{center}
 
+\subsection*{File sharing platform}
+
+\subsection*{Database}
+\begin{itemize}
+	\item \textbf{Hibernate}
+	\item \textbf{H2Database}
+\end{itemize}
+
+\subsection*{Programming language}
+
+
+
+
+\section{Implementation}
+\subsection{Design}
+- Class diagram
+- Purpose of each class
+
+
 \section{Testing}
+
+
+
 
 \section{Evalutation}
 \subsection{What I would have done differently}
+Replacing keys after a set period of time.
+\\ Implement adjustable lower bounds as per Jason Crampton's algorithm.
+\\ Employ a more lazy key revocation scheme.
 
 \section{Conclusion}
 \subsection{Future work}
@@ -363,30 +404,58 @@ Radia Perlman, \emph{``File System Design with Assured Delete"}, Sun Microsystem
 
 \bibitem{pyCrypto}
 Dwayne C. Litzenberger, \emph{``PyCrypto - The Python Cryptography Toolkit"},
-Available at: \texttt{https://www.dlitz.net/software/pycrypto/}.
+\\ Available at: \texttt{https://www.dlitz.net/software/pycrypto/}.
 
 \bibitem{javaJCA}
 \emph{``Java\texttrademark Cryptography Architecture (JCA) Reference Guide"},
-Available at: \texttt{http://docs.oracle.com/javase/6/docs/technotes/guides/security/crypto/CryptoSpec.html}.
+\\ Available at: \texttt{http://docs.oracle.com/javase/6/docs/technotes/guides/security/crypto/CryptoSpec.html}.
 
 \bibitem{bouncyCastle}
 \emph{``The Legion of the Bouncy Castle"},
-Available at: \texttt{http://www.bouncycastle.org/java.html}.
+\\ Available at: \texttt{http://www.bouncycastle.org/java.html}.
 
 \bibitem{gnuCrypto}
 \emph{``The GNU Crypto project"},
-Available at: \texttt{https://www.gnu.org/software/gnu-crypto/\#introduction}.
+\\ Available at: \texttt{https://www.gnu.org/software/gnu-crypto/\#introduction}.
 
 \bibitem{rubyOpenSSL}
 \emph{"openssl: Ruby Standard Library Documentation"},
-Available at: \texttt{http://www.ruby-doc.org/stdlib-1.9.3/libdoc/openssl/rdoc/index.html}.
+\\ Available at: \texttt{http://www.ruby-doc.org/stdlib-1.9.3/libdoc/openssl/rdoc/index.html}.
 
 \bibitem{keyczar}
 \emph{"Keyczar"}, Available at: \texttt{http://www.keyczar.org/}.
 
+\bibitem{aesModes}
+NIST, \emph{Recommendation for Block Cipher Modes of Operation}, 2001 Edition
+\\ Available at: \texttt{http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf}.
+
+\bibitem{oraclePadding}
+Juliano Rizzo and Thai Duong, \emph{Practical Padding Oracle Attacks}, May 25th 2010,
+\\ Available at: \texttt{\url{http://static.usenix.org/events/woot10/tech/full_papers/Rizzo.pdf}}.
+
+
+\bibitem{nistKeys}
+Elaine Barker, William Barker, William Burr, Wi
+lliam Polk, and Miles Smid, \emph{NIST Special Publication 800-57}, Recommendation for Key Management – Part 1: General (Revision 3), July
+2012,
+\\ Available at: \texttt{\url{http://csrc.nist.gov/publications/nistpubs/800-57/sp800-57_part1_rev3_general.pdf}}
+
+\bibitem{announcingAES}
+FIPS, \emph{Announcing the ADVANCED ENCRYPTION STANDARD (AES)}, November 26, 2001,
+\\ Available at:
+\texttt{http://csrc.nist.gov/publications/fips/fips197/fips-197.pdf}.
+
+\bibitem{nistPassword}
+Meltem Sönmez Turan, Elaine Barker, William Burr, and Lily Chen, \emph{NIST Special Publication 800-132}, Recommendation for Password-Based Key Derivation, Part 1: Storage Applications, December 2010,
+\\ Available at: \texttt{http://csrc.nist.gov/publications/nistpubs/800-132/nist-sp800-132.pdf}.
+
+\bibitem{bcryptPaper}
+Niels Provos and David Mazières, \emph{A Future-Adaptable Password Scheme}, 1999 USENIX Annual Technical Conference, June 6–11 1999,
+\\ Available at: \texttt{http://static.usenix.org/event/usenix99/provos/provos.pdf}. 
+
 \bibitem{dropboxPublicFolder}
 Dropbox API Team, \emph{``New sharing model will replace Public folder"},  15th June 2012,
-Available at: \texttt{https://www.dropbox.com/developers/blog/19}.
+\\ Available at: \texttt{https://www.dropbox.com/developers/blog/19}.
 
 \end{thebibliography}
 
