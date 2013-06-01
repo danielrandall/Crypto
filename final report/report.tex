@@ -7,7 +7,7 @@
 \usepackage{amsmath}
 \usepackage{url}
 
-\title{Applications of Cryptographically Enforced Access Control \\ Interim Report}
+\title{Applications of Cryptographically Enforced Access Control}
 \author{Daniel Randall \\ Imperial College London}
 \date{}
 
@@ -41,8 +41,13 @@ Acknowledgements
 \newcommand{\defeq}{\stackrel{\textup{\tiny def}}{=}}
 
 \section{Introduction}
+
+\subsection{Motivation}
+
 The problem taken on by this product is that of implementing a concrete application of modern cryptographically enforced access control techniques. This problems stems from changes in the last decade, mainly due to the huge popularity of the internet, which has seen a big increase in the amount of open information available and methods those with malicious intent can use to gain access to information which is protected. This has brought with it a focus from academics and corporations on controlling who has access to what information and how efficient and secure these techniques are. While a lot of recent research has been done on techniques to achieve this there are little freely available implementations of these techniques in a practical environment.
 \newline \indent By building a Dropbox app this project aims to implement and analyse a selection of techniques for cryptographically enforced access control. To achieve this a structure will be developed, with care taken not to rely on any features to be tested and instead allow for easy plug-and-play for each feature such that all combinations can be easily analysed. The objectives are to find the extent of the strengths and weaknesses of the chosen proposals and those which work well together and those which are not able to work so well together. With these results the hope is that further insights will be generated as to where future work is needed. Another interesting result will be how well such cryptographically enforced access control measures are able to be used in a `everyday' environment such as the type which Dropbox offers.
+
+\subsection{Objectives}
 
 \section{Background Research}
 \subsection{Overview}
@@ -52,9 +57,6 @@ The problem taken on by this product is that of implementing a concrete applicat
 While protecting sensitive data from adversaries has been a concern for hundreds of years it was not until the First World War that the field of cryptography received serious academic attention however from then on the majority of the work was carried out secretively by states.\cite{appliedCryptoBook} Cryptography was only employed by the military until the 1970s where cheaper hardware reduced ``the design limitations of mechanical computing and brought the cost of high grade cryptographic devices down to where they can be used in such commercial applications as remote cash dispensers and computer terminals."\cite{newCryptoDirections} And new methods of sharing keys such that they could be transferred over insecure channels and thus eliminate the need for physical contact (ie. couriers) before secure communication became possible. One such technique was a \textit{public key cryptosystem}, in which two distinct asymmetric keys are used. One for encrypting, which is made publically available, and one for decrypting, which is kept private, thus anyone can encrypt messages with the public key but only the owner of the private key may decrypt the messages. Also, more importantly to this project, the 1970s also saw the development of major publically known symmetric key ciphers such as Data Encryption Standard (DES). Since then improvements on such algorithms have been designed and cryptography has become an integral part of many businesses who use it, not only for privacy but, for many different reasons, such as: ``authentication (bank cards, wireless telephone, e-commerce, pay-TV), access control (car lock systems, ski lifts), payment (prepaid telephone, e-cash)."\cite{classicalCryptoBook}
 \newline \indent Block ciphers (such as DES) are a type of symmetric key algorithms used to encrypt data. They map $n$-bit plain-text blocks to $n$-bit cipher-text blocks where $n$ is the length of the block. This mapping is one-to-one and thus invertible. The encryption function takes ``a $k$-bit key $K$, taking values from a subset $K$ (the key space) of the set of all $k$-bit vectors $V_{k}$." \cite{blockCiphers} Block ciphers are deterministic and so with the same key and the same plain-text, one should receive the same cipher-text.
 \newline \indent This project focuses on access control as the application of cryptography. The purpose of access control is to ``limit the actions or operations that a legitimate user of a computer system can perform. Access control constrains what a user can do directly, as well as what programs executing on behalf of the users are allowed to do."\cite{accessControlPrinciples} For instance, many operating systems control access to files by assigning permissions to users (eg. read, write, execute.) Typically vanilla access control is based on capabilities or access control lists (ACLs). ACLs works by assigning each object its own ACL detailing for each user which permissions she is authorised to perform on the object. With this setup it is easy to add, edit or remove user permissions and it is easy to see what users have permissions for each object, however all ACLs need to be accessed to determine what objects a user currently has access to. Capabilities are similar to ACLs however each user is associated with a list instead of an object and all capability lists need to examined to determine which users can access a particular object. An example of this, similar to what would be deployed in an OS, can be viewed in Figure ~\ref{fig:capabilities} where 'R' refers to read, 'W' to write and 'Own' signifies that that user is the owner of the object.
-\newline
-\newline This project is an implementation of the latest theories and ideas on how to securely and efficiently create a solution for hierarchical a for access control. The concrete application domain chosen has been chosen as a public Dropbox. The reasons for this are that the folder structure implemented by filesystems, and incorporated by Dropbox, naturally conform to the strict hierarchy requirements by the chosen encryption method. Dropbox is incredibly popular, with over 100 million users collectively saving 1 billions files per day.\cite{dropboxInfo}
-\newline \indent An appropriate alternative application could have been a content distribution network such as BitTorrent\cite{bittorrent}, however due to a number of different clients being used (Utorrent, Deluge...), many different ways to connect to the tracker (.torrent files, magnetic links...) as well as inconsistent performance when using BitTorrent meant that testing the implementation would have posed a much more difficult task.
 
 \begin{figure}
 \centerline{\includegraphics[height=2.5in,width=4in,angle=0]{capabilities.pdf}}
@@ -161,18 +163,6 @@ The result of this procedure can be seen in Figure ~\ref{fig:binarydecomp}a for 
 \newline \indent It is clear to see that the information flow policy is still upheld, ie. each node still has access to all other nodes it previously had access to before the binary decomposition however it has not gained access to any new nodes.
 \newline \indent Crampton details how this algorithm can be extended to temporal, geo-spatial and general interval access control.
 
-\subsubsection{Programming Languages and Usable Software}
-Dropbox has a choice of SDKs which can be used for this project: the options for desktop development are written in Python, Java and Ruby, while there are options for Android and iOS development.
-\newline Following is a run down of the different languages and what they offer:
-\begin{itemize}
-\item Python has a few cryptographic tools available, such as PyCrypto which has a number of hash functions and encryption algorithms ready to use. The low level functions in PyCrypto are written in C for speed.\cite{pyCrypto} Programming in Python is quick and flexible.
-\item The main cryptography API available for Java is the Java Cryptography Architecture (JCA) which incorporates two packages, \textit{javax.crypto}, which contains an interface for low level cryptography such as encryption, decryption, and hashing, and \textit{java.security} which contains an interface for key management, certificate management, and signatures. The algorithms to implement the cryptography are included with a Service Provider Interface (SPI), with these there are many symmetric algorithms available such as AES, DES, DESede, Blowfish and IDEA\cite{javaJCA}. An alternative is The Legion of the Bouncy Castle API which incorporates JCA/JCE\cite{bouncyCastle}. Another alternative is The GNU Crypto project which is native on Linux machines and is coded in Java and offers many algorithms including AES, DES, Blowfish. An important point is that "GNU Crypto does not implement any algorithms that are encumbered by patents, and does not rely on any non-free code or documentation."\cite{gnuCrypto}.
-\item Ruby offers a module to interface with the OpenSSL cryptography library written in C. The module offers many modern ciphers such as AES.\cite{rubyOpenSSL}
-\item It is also possible to create this project in C/C++ using OpenSSL. This can be done by linking the C code to the Dropbox API using Java JNI or creating built-in modules for Python.
-\end{itemize}
-Keyczar is an API that exists for Java, Python and C++.\cite{keyczar} However it does not appear flexible enough to be used in this case. It is intended for those who have little understanding of cryptography and so it hides too much information to be useful in our case.
-\newline As a large part of the evaluation for this project is based around performance I have ignored the possibility of creating the system on a mobile platform where it may not perform to its full potential. As for desktop languages, due to my inexperience with Ruby and wider cryptography support for the other languages available I decided it was not the best language for this project. It also seems unnecessary to take the extra time needed to code the project in C/C++ to risk compatability issues and possible performance hits on linking the languages. While the Dropbox source code is written Python and so may well integrate better with the Python Dropbox API, Java offers a greater range of cryptographic support. The most appealing of the APIs is GNU Crypto as the system will always run on a Linux machine and the lack of unpatented code will prevent the system from becoming tied down if there is a desire to freely distribute it after production.
-
 \subsection{Related work}
 Dropbox
 Bitbox?
@@ -182,9 +172,36 @@ Mega
 
 \section{Initial Assessments}
 
-\subsection{Algorithm choices}
+\subsection{System design}
+In this section we will dicuss the required components of the system, why they are necessary for our system and how we shall go about achieving each one. The required components of the system are:
+\begin{itemize}
+	\item \textbf{Encryption of files}
+	\item \textbf{Key exchange}
+	\item \textbf{Friends}
+	\item \textbf{User data storage}
+	\item \textbf{Key revocation}
+	\item \textbf{Version control}
+	\item \textbf{GUI}
+\end{itemize}
 
-There are 4 key decisions to be made when choosing to employ a Crytographic algorithm. These are:
+\subsubsection*{Encryption of files}
+
+\subsubsection*{Key exchange}
+
+\subsubsection*{Friends}
+
+\subsubsection*{User data storage}
+
+\subsubsection*{Key revocation}
+
+\subsubsection*{Version control}
+
+\subsubsection*{GUI}
+
+
+\subsection{Algorithm choices}
+In this section we shall decide which algorithms we shall use to perform the tasks described in the previous section and attempt to rationalise each decision.
+\newline \indent There are 4 key decisions to be made when choosing to employ a Crytographic algorithm. These are:
 \begin{itemize}
 	\item \textbf{Algorithm} - The algorithm itself
 	\item \textbf{Mode} - The mode of operation used
@@ -198,15 +215,17 @@ Here we will discuss which algorithms to use for this project and why.
 	\item \textbf{DES} - A block cipher which used to be government standard. DES uses 56bit keys, however such small key lengths have proven to be insecure (eg. by the `EFF DES cracker') and can no longer be used safely.
 	\item \textbf{3DES} - A variant on DES in which plaintext is fed through 3 seperate instances of DES using up to 3 different keys. 3DES, with 3 unique keys, is secure up to $2^112$bits of security, which is very secure. However DES is designed for hardware implementations and so it is slow when used in software which, unfortunately, is what we wish to use it for.
 	\item \textbf{Blowfish} - 64 bit block size with up to 448 bit keys.
-	\item \textbf{Twofish} - Successor to Blowfish. 128 bit block size with up to 256 bit keys
-	\item \textbf{AES} - Uses 128 bit blocks with up to 256 bit keys. The current government standard.
+	\item \textbf{Twofish} - Successor to Blowfish. 128-bit block size with up to 256-bit keys
+	\item \textbf{AES} - Uses 128-bit blocks with up to 256-bit keys. The current government standard.
 \end{itemize}
+
+AES is by far the most popular block cipher in use today and is currently approved by FIPS for use.\cite{aesFIPSApproved}
 There is no reason not to use AES and so that is what we shall use.
 \\
 \\
 AES supports the following modes of operation:\cite{aesModes}
 \begin{itemize}
-	\item \textbf{ECB} - Has been shown to be vulnerable if it used to encrypt more than one block of data with the same key. In our case, it can not be used to encrypt a file larger than 128 bits. ECB also has the undesirable trait where each plaintext block encrypted with the same key results in the same ciphertext block. This is undesirable as attackers are able to detect trends in an individuals encryptions. Requires padding.
+	\item \textbf{ECB} - Has been shown to be vulnerable if it used to encrypt more than one block of data with the same key. In our case, it can not be used to encrypt a file larger than 128-bits. ECB also has the undesirable trait where each plaintext block encrypted with the same key results in the same ciphertext block. This is undesirable as attackers are able to detect trends in an individuals encryptions. Requires padding.
 	\item \textbf{CBC} - Each plaintext block is XORed with the previous block before it is encrypted by block cipher. An initialisation vector (IV) is used to XOR the first block. The ciphertext generated from the plaintext will different each time iff the IV is different. Requires padding.
 	\item \textbf{CFB} - Requires padding
 	\item \textbf{OFB} - Turns the block cipher into a stream. Does not require padding.
@@ -220,22 +239,25 @@ While it is true that the modes that require padding, such as ECB, CBC and CFB c
 \\
 AES supports the following key sizes:
 \begin{itemize}
-	\item \textbf{128 bit}
-	\item \textbf{192 bit}
-	\item \textbf{256 bit}
+	\item \textbf{128-bit}
+	\item \textbf{192-bit}
+	\item \textbf{256-bit}
 \end{itemize}
-The only weakness possible resulting from the size of the key chosen is that of brute force attacks. A 128 bit AES key provides 128 bits of security (pg. 64, Table 2) and is speculated to be safe beyond the year 2031 (pg. 67, Table 4).\cite{nistKeys}
-While we may choose to use a 256 bit key `just to be safe' it is unlikely that this system will be around in 30 or 40 years and so this sort of precaution is unnecessary. Using a 192 bit key instead would cause us to take a performance hit of around 20\% while a 256 bit key would cause a 40\% hit, due to the fact that 128 bit, 192 bit and 256 bit keys require 10, 12, 14 rounds respectively (pg. 14, Figure 4)\cite{announcingAES}. Due to this, using a smaller key is desirable for performance.
-\newline For these reasons we shall use a 128 bit key for AES in our system.
+The only weakness possible resulting from the size of the key chosen is that of brute force attacks. A 128-bit AES key provides 128-bits of security (pg. 64, Table 2) and is speculated to be safe beyond the year 2031 (pg. 67, Table 4).\cite{nistKeys}
+While we may choose to use a 256-bit key `just to be safe' it is unlikely that this system will be around in 30 or 40 years and so this sort of precaution is unnecessary. Using a 192-bit key instead would cause us to take a performance hit of around 20\% while a 256-bit key would cause a 40\% hit, due to the fact that 128-bit, 192-bit and 256-bit keys require 10, 12, 14 rounds respectively (pg. 14, Figure 4)\cite{announcingAES}. Due to this, using a smaller key is desirable for performance.
+\newline For these reasons we shall use a 128-bit key for AES in our system.
+
+
 
 \subsubsection*{Asymmetric algorithm}
-Some asymmetric ciphers that exist today are:
+As we wish to use asymmetric encryption for key exchange the options available to use are:
 \begin{itemize}
-	\item \textbf{RSA}
-	\item \textbf{DSA}
-	\item \textbf{ElGamal}
+	\item \textbf{RSA} - Relies on the difficulty of factoring large primes
+	\item \textbf{ElGamal} - Relies on the difficulty of solving the discrete logarithm problem.
+	\item \textbf{DSA} - A variant on ELGamal used for the digital signatures
+	\item \textbf{Diffie-Hellman} - A method of key exchanged using asymmetric cryptography.
 \end{itemize}
-By far the most popular asymmetric algorithm used today is RSA. That is what we shall use.
+By far the most popular and widely supported asymmetric algorithm used today is RSA. For that reason only, that is what we shall use.
 \\
 \\
 The key sizes supported by RSA are:
@@ -246,11 +268,12 @@ The key sizes supported by RSA are:
 	\item \textbf{4028}
 \end{itemize}
 Similarily to the choice of the symmetric key size we could go for an exceptionally large key `just in case'. However each time we double the size of an RSA key decryption is 6-7 times slower.\footnote{\url{http://www.javamex.com/tutorials/cryptography/rsa_key_length.shtml}}
-Therefore we wish to use the smallest reasonable key size. A 1024 bit RSA key provides 80 bits of security (pg. 64, Table 2) which is currently deprecated today (pg. 67, Table 4), meaning that this key size is currently unnaceptable for use with RSA. A 2048 bit key provides 112 bits of security (pg. 64, Table 2) which is acceptable today through 2030 which is plenty good enough for our system (pg. 67, Table 4).\cite{nistKeys}
-\newline We shall use a 2048 bit RSA key.
+Therefore we wish to use the smallest, reasonable key size. A 1024-bit RSA key provides 80-bits of security (pg. 64, Table 2) which is currently deprecated today (pg. 67, Table 4), meaning that this key size is currently unnaceptable for use with RSA. A 2048-bit key provides 112-bits of security (pg. 64, Table 2) which is acceptable today through 2030 which is plenty good enough for our system (pg. 67, Table 4).\cite{nistKeys}
+\newline \indent Due to how RSA works there is a limit on the size of the plaintexts we can encrypt in relation to the size of the key we choose. As we only wish to use the keys to encrypt AES keys of 128-bit in length the limit imposed by choosing a 2048-bit RSA key, 2047-bits, is plenty for the task in hand.
+\newline We shall use a 2048-bit RSA key.
 \\
 \\
-The padding recommended by FIPS is PKCS\#1 v1.5 and, as we have no reason to not to, we shall use that.
+The PKCS\#1 v1.5 padding scheme and the OAEP padding scheme which was standardised in PKCS\#1 v2.0 are both endorsed by FIPS for use with RSA (CITATION NEEDED). OAEP was designed to overcome two weaknesses that exist with PKCS\#1 v1.5, that is to become more resilient in the face of chosen ciphertext attacks and to prove the security that it provides. While OAEP is not infallible\cite{oaepAttack}, it would seem to be an improvement on PKCS\# 1 v1.5 and so that is what we shall use.
 
 \subsubsection*{Password hashing algorithm}
 Password hashing algorithms are odd in the sense that the trait with which to seperate them by is which is the slowest. It is desirable for a password hashing algorithm to be slow to prevent an attacker bruteforcing a password dictionary in the hope of entering the correct one into a log in form. Making log in slower makes this task much more time consuming.
@@ -265,17 +288,18 @@ NIST recommends the use of PBKDF2 in the use of the password storage.\cite{nistP
 
 
 \subsection*{Algorithm providers}
-There are many different providers of AES algorithms for Java, however there is little literature on the differences between them. This is problematic due to the fact our system is very likely to execute these algorithms very frequently and if the implementation is inefficient we may end up with unecessary delays. The possible ways we can differentiate between the different implementations are as follows:
+There are many different providers of cryptographic algorithms for Java, however there is little literature on the differences between them. This is problematic due to the fact our system is very likely to execute these algorithms very frequently and if the implementation is inefficient we may end up with unecessary delays. The possible ways we can differentiate between the different implementations are as follows:
 \begin{itemize}
 	\item \textbf{Correctness} - The algorithm is implemented correctly.
 	\item \textbf{Speed} - The time the implementation takes to execute.
 	\item \textbf{Size} - The size of the .jar import needed to use the implementation.
 \end{itemize}
 Determining the correctness of the implementations is outside of the scope of this report and so it will be assumed all implementations covered here are implemented correctly. The speed and size of the import needed are easy enough to measure and so they are the features we shall be looking at.
+\newline \indent We shall consider the sunJCE, the suite of Cryptography algorithms which come with the JDK. The second we will consider is Bouncy Castle, the popular, extensive set of algorithms. We will consider Bouncy Castle through the JCA provider structure due to it being simpler to program and change in the future if necessary (either to other algorithms or to another provider.) Lastly, we shall consider GNUCrypto, an open source set of algorithms which are claimed to be high quality and provably correct.
 
 \subsubsection*{AES algorithm provider}
 The findings for each implementation of AES can be found in Table ~\ref{tab:aesComparison}. As can be seen GNUCrypto is tested with a slightly different algorithm, specifically a different spadding scheme. This is because it does not implement PKCS5 padding (or any in common with the other implementations being tested), only PKCS7. Because of this a fairer comparison would have been to compare each using no padding, which all of them implement, however we have no control over the size of the files the user may encrypt and so the results would have irrelevent to the situation we face. For this reason each implementation used the padding which we would use should it be included in our system. However, it is true that PCKS5 and PCKS7 are practically interchangeable and so no difference should observed as a result.
-\newline Looking at the table the most striking result is the length of time the GNUCrypto implementation takes. Incorporating the GNUCrpyto implementation into the project is far more complicated than the interface provided by the JCE framework (requiring 15x as much code!) and so that may be an explanation but, in any case, henceforth we shall disregard the GNUCrypto implementation. As for the fastest implementation, there is little between the SunJCE and Bouncy Castle implementations. The real difference is not in speed but in the much more extensive library of ciphers BC provides against not requiring an external jar in the case of SunJCE.
+\newline Looking at the table the most striking result is the disappointing length of time the GNUCrypto implementation takes to complete the test. Incorporating the GNUCrpyto implementation into the project is far more complicated than the interface provided by the JCE framework (requiring 15x as much code!) and so that may be an explanation but, in any case, henceforth we shall disregard the GNUCrypto implementation. As for the fastest implementation, there is little between the SunJCE and Bouncy Castle implementations. The real difference is not in speed but in the much more extensive library of ciphers BC provides against not requiring an external jar in the case of SunJCE.
 
 % Comparison of AES implementation features
 \begin{center}
@@ -296,7 +320,7 @@ The findings for each implementation of AES can be found in Table ~\ref{tab:aesC
 \end{center}
 
 \subsubsection*{RSA algorithm provider}
-GNUCrypto does not provide an implementation of RSA and so it is omitted from the tests.
+The results from the comparisons can be seen in Table~\ref{tab:rsaComparison}. GNUCrypto does not provide an implementation of RSA and so it is omitted from the test. As can be seen there is little to seperate the two implementations. In order to avoid unnecessary imports and contain a level of consistency we will simply use the sunJCE implementation of the RSA algorithm.
 
 % Comparison of RSA implementation features
 \begin{center}
@@ -305,9 +329,9 @@ GNUCrypto does not provide an implementation of RSA and so it is omitted from th
     \hline
     Implementation & Algorithm & Import Size & Time taken (seconds) \\ \hline
     
-    SunJCE & RSA/ECB/PKCS1 Padding/2048bit key & 0 & 2.188269064 \\ \hline
+    SunJCE & RSA/PKCS1 Padding/2048bit key & 0 & 2.188269064 \\ \hline
     
-     Bouncy Castle (via JCA provider) & RSA/ECB/PKCS1 Padding/2048bit key & 2.3MB & 2.356249393 \\ \hline
+     Bouncy Castle (via JCA provider) & RSA/PKCS1 Padding/2048bit key & 2.3MB & 2.356249393 \\ \hline
     
     \end{tabular}
     \caption{Comparisons between different implementations of RSA when encrypting a 256bit AES key 10000 times} \label{tab:rsaComparison}
@@ -315,17 +339,34 @@ GNUCrypto does not provide an implementation of RSA and so it is omitted from th
 \end{center}
 
 \subsection*{File sharing platform}
+The system we are developing needs some way to transfer files from one user to another when they desire. The are many ways in which we can do this. Preferably the method we choose allows for us to easily automate sending and receiving of the files to minimise the work the user has to conduct to assist the working of application. This requirement rules out methods such as email, Facebook and Skype.
+\newline \indent As observed by Fu, Kamara and Kohno an appropriate file transfer method for herarchical access control is a content distribution network such as BitTorrent.\cite{bittorrent} However, in our case, due to a number of different torrent clients available (Utorrent, Deluge...), many different ways to connect to a tracker (.torrent files, magnetic links...), inconsistent performance and a lack of programmable interface means that implementing and testing our system would pose a challenging task.
+\newline \indent There are many modern dedicated filesharing tools available today that we can consider. Some of these are: Dropbox, Mega and Wuala. These tools are ideal in the sense that they borrow the folder structure implemented by filesystems which naturally conform to strict hierarchy requirements. This means we have a lot of power in how we can choose to manage our files. Dropbox is incredibly popular, with over 100 million users collectively saving 1 billions files per day.\footnote{https://www.dropbox.com/news/company-info} It also has an extensive SDK for many different programming languages. Mega is a relatively new file hosting service (19 January 2013) with over 3 million members.\footnote{https://twitter.com/KimDotcom/statuses/304003119447158784} Mega  has stricter security requirements than that of Dropbox which closer match what we a trying to achieve. For instance, encryption is performed client side using AES in CBC mode with a 128-bit key.\footnote{https://mega.co.nz/\#developers} However as we are having to perform this actions ourselves, regardless, it is irrelevent to us, if not a hindrance due to wasted CPU time. At the time writing an SDK has been proposed but not released.
+\newline Due to the extremely large userbase, multi-platform support and a extensive `tried-and-tested' SDK we shall use Dropbox to transfer our files.
 
-\subsection*{Database}
+\subsection*{Platform and programming language}
+Dropbox has a choice of SDKs which can be used for this project: the options for desktop development are written in Python, Java and Ruby, while for mobile development there are options for Android and iOS development.
+\newline Following is a run down of the different languages and what they offer:
 \begin{itemize}
-	\item \textbf{Hibernate}
-	\item \textbf{H2Database}
+\item Python has a few cryptographic tools available, such as PyCrypto which has a number of hash functions and encryption algorithms ready to use. The low level functions in PyCrypto are written in C for speed.\cite{pyCrypto} Programming in Python is quick and flexible.
+\item The main cryptography API available for Java is the Java Cryptography Architecture (JCA) and Java Cryptography Extension (JCE) which incorporates two packages, \textit{javax.crypto}, which contains an interface for low level cryptography such as encryption, decryption, and hashing, and \textit{java.security} which contains an interface for key management, certificate management, and signatures. The algorithms to implement the cryptography are included with a Service Provider Interface (SPI), with these there are many symmetric algorithms available such as AES, DES, DESede, Blowfish and IDEA\cite{javaJCA}. An alternative is The Legion of the Bouncy Castle API which incorporates JCA/JCE\cite{bouncyCastle}. Another alternative is The GNU Crypto project which is native on Linux machines and is coded in Java and offers many algorithms including AES, DES, Blowfish. An important point is that "GNU Crypto does not implement any algorithms that are encumbered by patents, and does not rely on any non-free code or documentation."\cite{gnuCrypto}.
+\item Ruby offers a module to interface with the OpenSSL cryptography library written in C. The module offers many modern ciphers such as AES.\cite{rubyOpenSSL}
+\item It is also possible to create this project in C/C++ using OpenSSL. This can be done by linking the C code to the Dropbox API using Java JNI or creating built-in modules for Python.
 \end{itemize}
+Keyczar is an API that exists for Java, Python and C++.\cite{keyczar} However it does not appear flexible enough to be used in this case. It is intended for those who have little understanding of cryptography and so it hides too much information to be useful in our system.
+\newline Due to the author's inexperience with Ruby and wider cryptography support for the other languages available decided it is likely not the best language for this project. It also seems unnecessary to take the extra time needed to code the project in C/C++ to risk compatability issues and possible performance hits by linking the languages. While the Dropbox source code is written in Python and so may well integrate better with the Python Dropbox SDK, Java offers a greater range of cryptographic support.
+\newline \indent While mobile development is a possiblity, the author's experience is mainly in desktop programming and it feels unecessary to limit the computational power available to us when compared to a desktop application when the system would be more no more valuable in that domain.
+\newline \indent For these reasons we shall create a desktop application in Java.
 
-\subsection*{Programming language}
-
-
-
+\subsection*{Databases}
+Some popular embedded Java database we could use are:
+\begin{itemize}
+	\item \textbf{Apache Derby} - A simple, popular database with an embedded JDBC driver.
+	\item \textbf{H2Database} - An open source, light-weight database promising good performance.
+\end{itemize}
+H2 at 1.5MB has a smaller footprint than Derby, 2.6MB. H2 also claims to have superior performance when compared to Derby for simple queries.\footnote{www.h2database.com/html/performance.html} It is unlikely that we will have to execute more complex queries beyond simple SELECT... FROM ... WHEREs meaning that the tests likely to be highly relevant to our situation.
+\newline \indent Hibernate is a database framework designed to be able to make Object/Relational Mapping easier. The only object that would be convenient to store in the database is the `friends list' we intend to design. Considering the use of Hibernate comes with an overhead and in order to use the latest stable version (v. 4.2.2) we have to include 8 .jar files totalling 6.3MB, it would seem overkill to use solely for a single object. Instead it may be more sensible to simply use the Java \textit{serialization} process and store that in a `simple' database.
+\newline \indent For these reasons we shall employ the H2Database in our system without the Hibernate framework.
 
 \section{Implementation}
 \subsection{Design}
@@ -365,10 +406,6 @@ A. Menezes, P. van Oorschot and S. Vanstone, \emph{``Handbook of Applied Cryptog
 \bibitem{accessControlPrinciples}
 Sandhu and Samarati, \emph{``Access Control: Princples and Practice"},
 IEEE Communications Magazine, September 1994.
-
-\bibitem{dropboxInfo}
-\emph{``Dropbox company info"},
-Available at: \texttt{https://www.dropbox.com/news/company-info}.
 
 \bibitem{bittorrent}
 Fu, Kamara and Kohno, \emph{``Key Regression$\colon$ Enabling Efficient Key Distribution for Secure Distributed Storage"}, 2005.
@@ -425,6 +462,11 @@ Dwayne C. Litzenberger, \emph{``PyCrypto - The Python Cryptography Toolkit"},
 \bibitem{keyczar}
 \emph{"Keyczar"}, Available at: \texttt{http://www.keyczar.org/}.
 
+\bibitem{aesFIPSApproved}
+Randall J. Easter and Carolyn French, \emph{Approved Security Functions
+for FIPS PUB 140-2}, May 30 2012,
+\\ Available at: \texttt{http://csrc.nist.gov/publications/fips/fips140-2/fips1402annexa.pdf}.
+
 \bibitem{aesModes}
 NIST, \emph{Recommendation for Block Cipher Modes of Operation}, 2001 Edition
 \\ Available at: \texttt{http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf}.
@@ -435,8 +477,7 @@ Juliano Rizzo and Thai Duong, \emph{Practical Padding Oracle Attacks}, May 25th 
 
 
 \bibitem{nistKeys}
-Elaine Barker, William Barker, William Burr, Wi
-lliam Polk, and Miles Smid, \emph{NIST Special Publication 800-57}, Recommendation for Key Management – Part 1: General (Revision 3), July
+Elaine Barker, William Barker, William Burr, William Polk, and Miles Smid, \emph{NIST Special Publication 800-57}, Recommendation for Key Management – Part 1: General (Revision 3), July
 2012,
 \\ Available at: \texttt{\url{http://csrc.nist.gov/publications/nistpubs/800-57/sp800-57_part1_rev3_general.pdf}}
 
@@ -448,6 +489,9 @@ FIPS, \emph{Announcing the ADVANCED ENCRYPTION STANDARD (AES)}, November 26, 200
 \bibitem{nistPassword}
 Meltem Sönmez Turan, Elaine Barker, William Burr, and Lily Chen, \emph{NIST Special Publication 800-132}, Recommendation for Password-Based Key Derivation, Part 1: Storage Applications, December 2010,
 \\ Available at: \texttt{http://csrc.nist.gov/publications/nistpubs/800-132/nist-sp800-132.pdf}.
+
+\bibitem{oaepAttack}
+James Manger, \emph{A Chosen Ciphertext Attack on RSA Optimal Asymmetric Encryption Padding (OAEP) as Standardized in PKCS \#1 v2.0}, 2001.
 
 \bibitem{bcryptPaper}
 Niels Provos and David Mazières, \emph{A Future-Adaptable Password Scheme}, 1999 USENIX Annual Technical Conference, June 6–11 1999,

@@ -1,20 +1,22 @@
 \contentsline {section}{\numberline {1}Introduction}{2}
+\contentsline {subsection}{\numberline {1.1}Motivation}{2}
+\contentsline {subsection}{\numberline {1.2}Objectives}{2}
 \contentsline {section}{\numberline {2}Background Research}{2}
 \contentsline {subsection}{\numberline {2.1}Overview}{2}
 \contentsline {subsection}{\numberline {2.2}Technical Research}{2}
-\contentsline {subsubsection}{\numberline {2.2.1}Hierarchical Cryptography for Access Control}{4}
-\contentsline {subsubsection}{\numberline {2.2.2}Interval-Based Access Control}{4}
+\contentsline {subsubsection}{\numberline {2.2.1}Hierarchical Cryptography for Access Control}{3}
+\contentsline {subsubsection}{\numberline {2.2.2}Interval-Based Access Control}{3}
 \contentsline {subsubsection}{\numberline {2.2.3}Key Assignment Schemes (KAS)}{5}
 \contentsline {subsubsection}{\numberline {2.2.4}Revokation of Permissions and Re-encryption}{7}
 \contentsline {subsubsection}{\numberline {2.2.5}Building the Tree}{8}
-\contentsline {subsubsection}{\numberline {2.2.6}Programming Languages and Usable Software}{9}
-\contentsline {subsection}{\numberline {2.3}Related work}{10}
-\contentsline {section}{\numberline {3}Initial Assessments}{10}
-\contentsline {subsection}{\numberline {3.1}Algorithm choices}{10}
-\contentsline {section}{\numberline {4}Implementation}{15}
-\contentsline {subsection}{\numberline {4.1}Design}{15}
-\contentsline {section}{\numberline {5}Testing}{15}
-\contentsline {section}{\numberline {6}Evalutation}{15}
-\contentsline {subsection}{\numberline {6.1}What I would have done differently}{15}
-\contentsline {section}{\numberline {7}Conclusion}{16}
-\contentsline {subsection}{\numberline {7.1}Future work}{16}
+\contentsline {subsection}{\numberline {2.3}Related work}{9}
+\contentsline {section}{\numberline {3}Initial Assessments}{9}
+\contentsline {subsection}{\numberline {3.1}System design}{9}
+\contentsline {subsection}{\numberline {3.2}Algorithm choices}{10}
+\contentsline {section}{\numberline {4}Implementation}{17}
+\contentsline {subsection}{\numberline {4.1}Design}{17}
+\contentsline {section}{\numberline {5}Testing}{17}
+\contentsline {section}{\numberline {6}Evalutation}{17}
+\contentsline {subsection}{\numberline {6.1}What I would have done differently}{17}
+\contentsline {section}{\numberline {7}Conclusion}{18}
+\contentsline {subsection}{\numberline {7.1}Future work}{18}
