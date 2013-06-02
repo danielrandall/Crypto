@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.9.27)  1 JUN 2013 16:39
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.10.26)  2 JUN 2013 16:22
 entering extended mode
  %&-line parsing enabled.
 **report.tex
@@ -220,105 +220,106 @@ File: geospatial.pdf Graphic file (type pdf)
 [7 <./geospatial.pdf>] <binarydecompo.pdf, id=58, 2961.0625pt x 1805.74625pt>
 File: binarydecompo.pdf Graphic file (type pdf)
 
-<use binarydecompo.pdf> [8 <./binarydecompo.pdf>] [9]
-Underfull \hbox (badness 10000) in paragraph at lines 222--227
+<use binarydecompo.pdf> [8 <./binarydecompo.pdf>]
+(/usr/share/texmf-texlive/tex/latex/ucs/data/uni-32.def
+File: uni-32.def 2004/10/17 UCS: Unicode data U+2000..U+20FF
+) [9] [10] [11] [12]
+[13]
+Underfull \hbox (badness 10000) in paragraph at lines 246--251
 
- []
-
-[10]
-Underfull \hbox (badness 10000) in paragraph at lines 236--241
-
- []
-
-[11]
-Underfull \hbox (badness 10000) in paragraph at lines 260--264
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 270--277
-
- []
-
-[12] [13]
-Overfull \hbox (126.7394pt too wide) in paragraph at lines 307--318
-[][] 
  []
 
 [14]
-Overfull \hbox (104.05768pt too wide) in paragraph at lines 328--337
+Underfull \hbox (badness 10000) in paragraph at lines 260--265
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 284--288
+
+ []
+
+[15]
+Underfull \hbox (badness 10000) in paragraph at lines 294--301
+
+ []
+
+[16] [17]
+Overfull \hbox (126.7394pt too wide) in paragraph at lines 331--342
 [][] 
  []
 
-[15] [16] [17] [18]
-Overfull \hbox (151.07341pt too wide) in paragraph at lines 447--449
+
+Overfull \hbox (104.05768pt too wide) in paragraph at lines 352--361
+[][] 
+ []
+
+[18] [19] [20] [21]
+Overfull \hbox (151.07341pt too wide) in paragraph at lines 471--473
 \OT1/cmr/m/n/12 Available at: \OT1/cmtt/m/n/12 http://docs.oracle.com/javase/6/
 docs/technotes/guides/security/crypto/CryptoSpec.html\OT1/cmr/m/n/12 . 
  []
 
 
-Overfull \hbox (39.92336pt too wide) in paragraph at lines 459--461
+Overfull \hbox (39.92336pt too wide) in paragraph at lines 483--485
 \OT1/cmr/m/n/12 Available at: \OT1/cmtt/m/n/12 http://www.ruby-doc.org/stdlib-1
 .9.3/libdoc/openssl/rdoc/index.html\OT1/cmr/m/n/12 . 
  []
 
 
-Overfull \hbox (39.92336pt too wide) in paragraph at lines 466--469
+Overfull \hbox (39.92336pt too wide) in paragraph at lines 490--493
 \OT1/cmr/m/n/12 Available at: \OT1/cmtt/m/n/12 http://csrc.nist.gov/publication
 s/fips/fips140-2/fips1402annexa.pdf\OT1/cmr/m/n/12 . 
  []
 
-
-Overfull \hbox (21.39835pt too wide) in paragraph at lines 471--473
+[22]
+Overfull \hbox (21.39835pt too wide) in paragraph at lines 495--497
 \OT1/cmr/m/n/12 Available at: \OT1/cmtt/m/n/12 http://csrc.nist.gov/publication
 s/nistpubs/800-38a/sp800-38a.pdf\OT1/cmr/m/n/12 . 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 475--477
+Underfull \hbox (badness 10000) in paragraph at lines 499--501
 \OT1/cmr/m/n/12 Available at: $\OT1/cmtt/m/n/12 http : / / static . usenix . or
 g / events / woot10 / tech / full _ papers /
  []
 
-(/usr/share/texmf-texlive/tex/latex/ucs/data/uni-32.def
-File: uni-32.def 2004/10/17 UCS: Unicode data U+2000..U+20FF
-)
 (/usr/share/texmf-texlive/tex/latex/ucs/data/uni-0.def
 File: uni-0.def 2004/10/17 UCS: Unicode data U+0000..U+00FF
 )
-Overfull \hbox (52.27336pt too wide) in paragraph at lines 490--492
+Overfull \hbox (52.27336pt too wide) in paragraph at lines 514--516
 \OT1/cmr/m/n/12 Available at: \OT1/cmtt/m/n/12 http://csrc.nist.gov/publication
 s/nistpubs/800-132/nist-sp800-132.pdf\OT1/cmr/m/n/12 . 
  []
 
-[19] [20] (./report.aux) ) 
+[23] (./report.aux) ) 
 Here is how much of TeX's memory you used:
  3566 strings out of 495000
- 43029 string characters out of 1180493
- 93859 words of memory out of 3000000
+ 43029 string characters out of 1180492
+ 94097 words of memory out of 3000000
  6729 multiletter control sequences out of 15000+50000
  14084 words of font info for 55 fonts, out of 3000000 for 9000
  36 hyphenation exceptions out of 8191
- 27i,9n,22p,1749b,588s stack positions out of 5000i,500n,10000p,200000b,50000s
-</usr/share/texmf-texlive/fonts/type1/public/amsfonts
-/cm/cmbx12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmex10.
-pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/s
-hare/texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texmf-t
-exlive/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texmf-texlive/fonts
-/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-texlive/fonts/type1/publi
-c/amsfonts/cm/cmr12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/c
-m/cmr17.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr6.pfb><
-/usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/te
-xmf-texlive/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-texlive/f
-onts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type1/
-public/amsfonts/cm/cmsy8.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfo
-nts/cm/cmti12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmti
-8.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr
-/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt12.pfb></usr/share/texm
-f-texlive/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on report.pdf (23 pages, 1545841 bytes).
+ 27i,9n,22p,1820b,583s stack positions out of 5000i,500n,10000p,200000b,50000s
+</usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/c
+mbx12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmex10.pfb><
+/usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/
+texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texmf-texliv
+e/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texmf-texlive/fonts/type
+1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-texlive/fonts/type1/public/ams
+fonts/cm/cmr12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr
+17.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/
+share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-t
+exlive/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-texlive/fonts/
+type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type1/publi
+c/amsfonts/cm/cmsy8.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/c
+m/cmti12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmti8.pfb
+></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/shar
+e/texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt12.pfb></usr/share/texmf-tex
+live/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on report.pdf (26 pages, 1557450 bytes).
 PDF statistics:
- 164 PDF objects out of 1000 (max. 8388607)
+ 174 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  21 words of extra memory for PDF output out of 10000 (max. 10000000)
 

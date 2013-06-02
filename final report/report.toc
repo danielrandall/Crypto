@@ -12,11 +12,11 @@
 \contentsline {subsection}{\numberline {2.3}Related work}{9}
 \contentsline {section}{\numberline {3}Initial Assessments}{9}
 \contentsline {subsection}{\numberline {3.1}System design}{9}
-\contentsline {subsection}{\numberline {3.2}Algorithm choices}{10}
-\contentsline {section}{\numberline {4}Implementation}{17}
-\contentsline {subsection}{\numberline {4.1}Design}{17}
-\contentsline {section}{\numberline {5}Testing}{17}
-\contentsline {section}{\numberline {6}Evalutation}{17}
-\contentsline {subsection}{\numberline {6.1}What I would have done differently}{17}
-\contentsline {section}{\numberline {7}Conclusion}{18}
-\contentsline {subsection}{\numberline {7.1}Future work}{18}
+\contentsline {subsection}{\numberline {3.2}Algorithm choices}{13}
+\contentsline {section}{\numberline {4}Implementation}{21}
+\contentsline {subsection}{\numberline {4.1}Design}{21}
+\contentsline {section}{\numberline {5}Testing}{21}
+\contentsline {section}{\numberline {6}Evalutation}{21}
+\contentsline {subsection}{\numberline {6.1}What I would have done differently}{21}
+\contentsline {section}{\numberline {7}Conclusion}{21}
+\contentsline {subsection}{\numberline {7.1}Future work}{21}
