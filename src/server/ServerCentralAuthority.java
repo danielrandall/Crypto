@@ -136,10 +136,24 @@ public class ServerCentralAuthority {
 		User sourceUser = Authentication.loadUser(sourceUsername);
 		Session sourceSession = sourceUser.getSession();
 		
+		try {
+			Thread.sleep(1);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		/* Send key to the user. This line needs to be placed away from the
 		 * send of the security level as the client needs time to process
 		 * the messages. */
 		comms.sendBytes(key, key.length);
+		
+		try {
+			Thread.sleep(1);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		/* Send the encrypted lower keys to the user to derive */
 		sendLowerEncryptedKeys(sourceUsername, securityLevel, comms);
@@ -183,10 +197,20 @@ public class ServerCentralAuthority {
 				e.printStackTrace();
 			}
 			
+			
 			Object[] keyAndIV = keys.get(i);
 			
 			byte[] key = (byte[]) keyAndIV[0];
 			comms.sendBytes(key, key.length);
+			
+			
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			
 			byte[] iv = (byte[]) keyAndIV[1];
 			comms.sendBytes(iv, iv.length);
@@ -360,23 +384,36 @@ public class ServerCentralAuthority {
 			String rev = fileInfo[i].getRev();
 			comms.toClient(rev);
 			
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			byte[] iv = fileInfo[i].getIV();
 			comms.sendBytes(iv, iv.length);
+			
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			int fileSecurityLevel = fileInfo[i].getSecurityLevel();
 			comms.toClient(Integer.toString(fileSecurityLevel));
 			
 			/* Remove the file from the database */
 			ServerFileOperations.removeFile(rev);
+			
 		}
-		
 		
 		/* Receive the new encrypted keys and IVs and store them in the database */
 		UserOperations.storeSymmetricKeys(username, securityLevel, true, comms);
 		
 		/* Remove the friends files from their Dropbox folder */
-		User userToRevoke = User.load(usernameToRevoke);
-		userToRevoke.getSession();
+		User userToRevoke = Authentication.loadUser(usernameToRevoke);
 		ServerDropboxOperations.removeFriendsFiles(username, usernameToRevoke, userToRevoke.getSession());
 		
 		// Inform friends

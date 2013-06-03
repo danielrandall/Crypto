@@ -59,20 +59,26 @@ public class CentralAuthority {
 		ServerComms.toServer(Integer.toString(lowerBound));
 		ServerComms.toServer(Integer.toString(upperBound));
 		
+		encryptKey(Integer.toString(lowerBound));
+		
+		return true;
+		
+	}
+	
+	private static void encryptKey(String securityLevel) {
+		
 		/* Receive the user to add's public key */
 		byte[] usersPublicKey = ServerComms.getBytes();
 		
 		/* Get the highest level key to send to the user */
 		byte[] keyToSend = KeyStoreOperations.retrieveOwnKey(
-				Integer.toString(lowerBound));
+				securityLevel);
 		
 		/* Encrypt the highest key with the user to add's public key */
 		byte[] encryptedKey = FileOperations.asymmetricEncrypt(keyToSend, SecurityVariables.ConvertBytesToPublicKey(usersPublicKey));
 		
 		/* Send key to the server */
 		ServerComms.sendBytes(encryptedKey, encryptedKey.length);
-		
-		return true;
 		
 	}
 	
@@ -85,11 +91,22 @@ public class CentralAuthority {
 		/* Retrieve the most influential key (ie. the highest security level
 		 * you have access to) and its security level from the server */
 		String securityLevel = ServerComms.fromServer();
-		byte[] encryptedHighestKey = ServerComms.getBytes();
 		
-		/* Decrypt the highest key with the user's private key */
+		/* Retrieve this user's private key */
 		byte[] privateKeyBytes = KeyStoreOperations.retrieveOwnKey("private");
 		PrivateKey privateKey = SecurityVariables.ConvertBytesToPrivateKey(privateKeyBytes);
+		
+		deriveKeys(username, privateKey, securityLevel);
+		
+	}
+	
+	private static void deriveKeys(String username, PrivateKey privateKey, String securityLevel) {
+		
+		/* Retrieve the most influential key (ie. the highest security level
+		 * you have access to) and its security level from the server */
+		byte[] encryptedHighestKey = ServerComms.getBytes();		
+		
+		/* Decrypt the highest key with the user's private key */
 		byte[] highestKey = FileOperations.asymmetricDecrypt(encryptedHighestKey, privateKey);
 		
 		/* Store the key */
@@ -107,6 +124,13 @@ public class CentralAuthority {
 		 * associated security levels. */
 		for (int i = securityLevelInt + 1; i <= securityLevelInt + numberOfWeakerKeys; i++) {
 			
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			byte[] encryptedKey = ServerComms.getBytes();
 			byte[] iv = ServerComms.getBytes();
 			
@@ -119,7 +143,6 @@ public class CentralAuthority {
 		}
 		
 	}
-	
 	
 	/* TODO implement on server side */
 	public static void ignoreFriendRequest(String username) {
@@ -266,12 +289,21 @@ public class CentralAuthority {
 		/* Receive the number files under the influence of the security
 		 * level */
 		int numberFilesEffected = Integer.parseInt(ServerComms.fromServer());
+		System.out.println(numberFilesEffected);
 		Map<String, ClientFile> filesToUnencrypt =
 				new HashMap<String, ClientFile>();
 		
 		for (int i = 0; i < numberFilesEffected; i++) {
 			
 			String rev = ServerComms.fromServer();
+			
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			byte[] iv = ServerComms.getBytes();
 			int fileSLevel = Integer.parseInt(ServerComms.fromServer());
 			
@@ -281,12 +313,16 @@ public class CentralAuthority {
 		/* Find the corresponding file names for each file to unencrypt */
 		filesToUnencrypt = DropboxOperations.findFileNames(filesToUnencrypt);
 		
-		/* Remove all of the files */
+		/* Decrypt all of the files and place in a temporary store.
+		 * Remove all of the files from Dropbox. */
 		Iterator<Entry<String, ClientFile>> it = filesToUnencrypt.entrySet().iterator();
 		while (it.hasNext()) {
+			System.out.println("first in");
+			
 			ClientFile file = it.next().getValue();
 			
 			String fileName = file.getFileName();
+			System.out.println(fileName);
 			byte[] iv = file.getIV();
 			int securityLevel = file.getSecurityLevel();
 			
@@ -314,10 +350,22 @@ public class CentralAuthority {
 			String fileName = file.getFileName();
 			int securityLevel = file.getSecurityLevel();
 			
+			System.out.println("new security level: " + securityLevel);
+			
 			uploadFile(TEMP_FILE_STORE + "/" + fileName, securityLevel);
 			
 			File temp_File = new File(TEMP_FILE_STORE + "/" + fileName);
 			temp_File.delete();
+		}
+		
+		
+		/* Get number of friends to notify */
+		int numFriends = Integer.parseInt(ServerComms.fromServer());
+		
+		/* Receive public key and highest security level of friend */
+		for (int i = 0; i < numFriends; i++) {
+			String maxSecurityLevel = ServerComms.fromServer();
+			encryptKey(maxSecurityLevel);
 		}
 		
 	}

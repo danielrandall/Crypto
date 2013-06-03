@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ciphers.SecurityVariables;
+
 public class H2Keys extends H2Database {
 	
 	
@@ -142,9 +144,9 @@ public class H2Keys extends H2Database {
 
 		try {
 			String command = "UPDATE " + TABLE_NAME
-			          + " SET " + KEY + "= ? AND " + IV + "= ? WHERE " + OWNER
-			          + " = '" + owner + "' AND " + SECURITY_LEVEL + " = " +
-			          securityLevel;
+			          + " SET " + KEY + "= ?," + IV + "= ? " +
+			          "WHERE " + OWNER + " = '" + owner + "' AND " +
+			          SECURITY_LEVEL + " = " + securityLevel;
 	
 			PreparedStatement statement = conn.prepareStatement(command);
 			

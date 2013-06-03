@@ -60,10 +60,41 @@ public class H2Files extends H2Database {
 		h.dropFileTable();
 		h.createFileTable();
 		
-	//	String [] inputs = {"0123", "9876", s};
-	//	h.addFile(inputs);
 		
-	//	h.removeFile("file1");
+		/*
+		List<Map<String, Object>> list = h.getAllFiles();
+		
+		for (int i = 0; i < list.size(); i++) {
+			
+			Map<String, Object> map = list.get(i);
+			
+			System.out.println(map.get(FILEREV));
+			System.out.println(map.get(IV));
+			System.out.println(map.get(OWNER));
+			System.out.println(map.get(SECURITY_LEVEL));
+			
+		}
+		*/
+		
+//		h.addFile("1234", "username", "3".getBytes(), 3);
+	//	h.addFile("1231", "username", "3".getBytes(), 1);
+		
+		//Map<String, Object> map = h.getFile("1234");
+		
+		/*
+		List<Map<String, Object>> list = h.getFilesUnderLevel("username", 3);
+		for (int i = 0; i < list.size(); i++) {
+			
+			Map<String, Object> map = list.get(i);
+			
+			System.out.println(map.get(FILEREV));
+			System.out.println(map.get(IV));
+			System.out.println(map.get(OWNER));
+			System.out.println(map.get(SECURITY_LEVEL));
+			
+		}
+		*/
+	
 		
 	}
 
@@ -147,7 +178,7 @@ public class H2Files extends H2Database {
 	}
 	
 	
-	public Map<String, Object> getFile(String username) {
+	public Map<String, Object> getFile(String rev) {
 		
 		Connection conn = getConnection();
 
@@ -155,7 +186,7 @@ public class H2Files extends H2Database {
 	    
 		try {
 			Statement s = conn.createStatement();	
-			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + FILE_ATTRIBUTES[0] + " = '" + username + "'");
+			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + FILE_ATTRIBUTES[0] + " = '" + rev + "'");
 		
 			if (r.next()) {
 				String fileRev = r.getString(1);
@@ -196,11 +227,12 @@ public class H2Files extends H2Database {
 		try {
 			Statement s = conn.createStatement();	
 			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME +
-					" WHERE " + FILE_ATTRIBUTES[1] + " = '" + owner + "' AND "
-					+ FILE_ATTRIBUTES[3] + " >= " + securityLevel);
+					" WHERE " + FILE_ATTRIBUTES[1] + " = '" + owner + "'" +
+					" AND " + FILE_ATTRIBUTES[3] + " >= " + securityLevel);
 		
 			while (r.next()) {
-				Map<String, Object> data = new HashMap<String, Object>(FILE_ATTRIBUTES.length - 2);
+
+				Map<String, Object> data = new HashMap<String, Object>(FILE_ATTRIBUTES.length);
 				
 				String rev = r.getString(1);
 				data.put(FILE_ATTRIBUTES[0], rev);
@@ -212,6 +244,54 @@ public class H2Files extends H2Database {
 				
 				int i = r.getInt(4);
 				data.put(FILE_ATTRIBUTES[3], i);
+				
+				userData.add(data);
+
+			}
+
+			conn.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return userData;
+	}
+	
+	
+	
+	public List<Map<String, Object>> getAllFiles() {
+		
+		Connection conn = getConnection();
+
+		List<Map<String, Object>> userData = new ArrayList<Map<String, Object>>();
+	    
+		try {
+			Statement s = conn.createStatement();	
+			ResultSet r = s.executeQuery("SELECT * FROM " + TABLE_NAME);
+		
+			while (r.next()) {
+				Map<String, Object> data = new HashMap<String, Object>(FILE_ATTRIBUTES.length);
+				
+				String rev = r.getString(1);
+				data.put(FILE_ATTRIBUTES[0], rev);
+				
+				String owner = r.getString(2);
+				data.put(FILE_ATTRIBUTES[1], owner);
+				
+				InputStream in = r.getBinaryStream(3);
+				byte[] b = new byte[in.available()];
+				in.read(b);
+				data.put(FILE_ATTRIBUTES[2], b);
+				
+				int i = r.getInt(4);
+				data.put(FILE_ATTRIBUTES[3], i);
+				
+				userData.add(data);
 
 			}
 

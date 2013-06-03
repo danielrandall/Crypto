@@ -5,7 +5,7 @@ public class KeyStoreOperations {
 	private static KeyStores keystore = new JavaKeyStore();
 	
 	public static byte[] retrieveOwnKey(String level) {
-		
+
 		return keystore.retrieveKey(level);
 		
 	}

@@ -82,9 +82,8 @@ public class FileOperations {
 		int numKeys = keys.length - 1;
 		byte[][] encryptedKeys = new byte[numKeys][];
 		
-		for (int i = 0; i < numKeys; i++) {
+		for (int i = 0; i < numKeys; i++)
 			encryptedKeys[i] = cipher.encrypt(keys[i + 1], keys[i], ivs[i]);
-		}
 		
 		return encryptedKeys;
 		

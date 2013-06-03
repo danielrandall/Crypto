@@ -93,13 +93,15 @@ public class Register {
 		for (int i = 0; i < numKeys; i++)
 			KeyStoreOperations.storeOwnKey(Integer.toString(highestSecurityLevel + i), keys[i]);
 		
-		byte[][] ivs = SecurityVariables.generateIVs(numKeys);
+		byte[][] ivs;
 		
 		byte[][] keysToEncrypt;
-		if (highestSecurityLevel == HIGHEST_SECURITY_LEVEL)
+		if (highestSecurityLevel == HIGHEST_SECURITY_LEVEL) {
 			keysToEncrypt = keys;
-		else {
+		 	ivs = SecurityVariables.generateIVs(numKeys);
+		} else {
 			keysToEncrypt = new byte[numKeys + 1][];
+			ivs = SecurityVariables.generateIVs(numKeys + 1);
 			keysToEncrypt[0] = KeyStoreOperations.retrieveOwnKey(Integer.toString(highestSecurityLevel - 1));
 			for (int i = 1; i < numKeys + 1; i++)
 				keysToEncrypt[i] = keys[i - 1];

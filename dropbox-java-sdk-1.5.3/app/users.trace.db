@@ -301,3 +301,104 @@ UPDATE keys SET key= ? AND iv= ? WHERE owner = 'username' AND securityLevel = 3 
 05-29 17:36:22 jdbc[4]: exception
 org.h2.jdbc.JdbcSQLException: Data conversion error converting "a5e961708b5b7212e47d24bf74f708b7957940bbd2dca015aab0786038243684c8b6535fa920b8e7555e811b069a5a3a"; SQL statement:
 UPDATE keys SET key= ? AND iv= ? WHERE owner = 'username' AND securityLevel = 4 [22018-170]
+06-03 13:08:14 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Data conversion error converting "98f7db8c1dc8a7e6108d5b6c2a8d7e3894a15c825a06d54ebbbe4f499c662a238898ebffdb2f16f32a9cb8f540e456f4"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'username' AND securityLevel = 2 [22018-170]
+06-03 13:08:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Data conversion error converting "4d515f3e06c087fd72caf151d36ec3aadccfb796939960fee04818b7190777bed706ac318d5f7f1a489d2b49acdf442f"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'username' AND securityLevel = 3 [22018-170]
+06-03 13:08:14 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Data conversion error converting "26125fdefe6be5c6f35ff81192f042f32b57e169ac5a5a146d0d053bb89737e4224206924e3a4177f0df0b6315c11ba7"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'username' AND securityLevel = 4 [22018-170]
+06-03 13:08:14 jdbc[5]: exception
+org.h2.jdbc.JdbcSQLException: Data conversion error converting "018ddfd09cce2703b25eb9f78d81eff5d4ed1c0d5946f8616526cbf3203af8badf8fae3e5ce733684dcddf078c91e4bf"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'username' AND securityLevel = 5 [22018-170]
+06-03 13:45:10 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Hexadecimal string with odd number of characters: "FALSE"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'owner' AND securityLevel = 1 [90003-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.util.StringUtils.convertHexToBytes(StringUtils.java:990)
+	at org.h2.value.Value.convertTo(Value.java:821)
+	at org.h2.table.Column.convert(Column.java:143)
+	at org.h2.command.dml.Update.update(Update.java:119)
+	at org.h2.command.CommandContainer.update(CommandContainer.java:75)
+	at org.h2.command.Command.executeUpdate(Command.java:230)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdateInternal(JdbcPreparedStatement.java:156)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdate(JdbcPreparedStatement.java:142)
+	at server.databases.H2Keys.updateKey(H2Keys.java:170)
+	at server.databases.H2Keys.main(H2Keys.java:79)
+06-03 13:45:53 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Hexadecimal string with odd number of characters: "FALSE"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'owner' AND securityLevel = 1 [90003-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.util.StringUtils.convertHexToBytes(StringUtils.java:990)
+	at org.h2.value.Value.convertTo(Value.java:821)
+	at org.h2.table.Column.convert(Column.java:143)
+	at org.h2.command.dml.Update.update(Update.java:119)
+	at org.h2.command.CommandContainer.update(CommandContainer.java:75)
+	at org.h2.command.Command.executeUpdate(Command.java:230)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdateInternal(JdbcPreparedStatement.java:156)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdate(JdbcPreparedStatement.java:142)
+	at server.databases.H2Keys.updateKey(H2Keys.java:171)
+	at server.databases.H2Keys.main(H2Keys.java:80)
+06-03 13:49:44 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Invalid value "3" for parameter "parameterIndex" [90008-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.getInvalidValueException(DbException.java:215)
+	at org.h2.jdbc.JdbcPreparedStatement.setParameter(JdbcPreparedStatement.java:1284)
+	at org.h2.jdbc.JdbcPreparedStatement.setBinaryStream(JdbcPreparedStatement.java:869)
+	at org.h2.jdbc.JdbcPreparedStatement.setBinaryStream(JdbcPreparedStatement.java:889)
+	at server.databases.H2Keys.updateKey(H2Keys.java:168)
+	at server.databases.H2Keys.main(H2Keys.java:80)
+06-03 13:49:53 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Hexadecimal string with odd number of characters: "FALSE"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'owner' AND securityLevel = 1 [90003-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.util.StringUtils.convertHexToBytes(StringUtils.java:990)
+	at org.h2.value.Value.convertTo(Value.java:821)
+	at org.h2.table.Column.convert(Column.java:143)
+	at org.h2.command.dml.Update.update(Update.java:119)
+	at org.h2.command.CommandContainer.update(CommandContainer.java:75)
+	at org.h2.command.Command.executeUpdate(Command.java:230)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdateInternal(JdbcPreparedStatement.java:156)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdate(JdbcPreparedStatement.java:142)
+	at server.databases.H2Keys.updateKey(H2Keys.java:171)
+	at server.databases.H2Keys.main(H2Keys.java:80)
+06-03 13:50:18 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Hexadecimal string with odd number of characters: "FALSE"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'owner' AND securityLevel = 1 [90003-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	at org.h2.message.DbException.get(DbException.java:169)
+	at org.h2.message.DbException.get(DbException.java:146)
+	at org.h2.util.StringUtils.convertHexToBytes(StringUtils.java:990)
+	at org.h2.value.Value.convertTo(Value.java:821)
+	at org.h2.table.Column.convert(Column.java:143)
+	at org.h2.command.dml.Update.update(Update.java:119)
+	at org.h2.command.CommandContainer.update(CommandContainer.java:75)
+	at org.h2.command.Command.executeUpdate(Command.java:230)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdateInternal(JdbcPreparedStatement.java:156)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdate(JdbcPreparedStatement.java:142)
+	at server.databases.H2Keys.updateKey(H2Keys.java:166)
+	at server.databases.H2Keys.main(H2Keys.java:79)
+06-03 13:51:01 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Data conversion error converting "b7b631a6b2c5b4f291a1663a53486c909dc7bbcf1dfbc4fe394bc1d21ef2f7bc"; SQL statement:
+UPDATE keys SET key= ? AND iv= ? WHERE owner = 'owner' AND securityLevel = 1 [22018-170]
+06-03 14:01:27 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Data conversion error converting "c2e1c2d90acc928715ba0d39a6725ddd5a6165e980c10912c9bc1b1ef2a2a7e3"; SQL statement:
+UPDATE keys SET key=? AND iv=? WHERE owner = 'owner' AND securityLevel = 1 [22018-170]
+06-03 15:36:09 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "SELECT * FROM FILES WHERE OWNER = 'username' ,[*] SECURITYLEVEL >= 3 "; SQL statement:
+SELECT * FROM files WHERE owner = 'username' , securityLevel >= 3 [42000-170]
+06-03 15:37:43 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "SELECT * FROM files WHERE owner = [*]'username"; SQL statement:
+SELECT * FROM files WHERE owner = 'username [42000-170]
+06-03 15:40:16 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "SELECT * FROM files WHERE owner = [*]'username "; SQL statement:
+SELECT * FROM files WHERE owner = 'username  [42000-170]
