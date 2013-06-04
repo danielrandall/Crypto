@@ -29,6 +29,9 @@ public final class Authentication {
 		byte[] passwordBytes = null;
 			
 		username = comms.fromClient();
+		
+		comms.sendInt(1);
+		
 		passwordBytes = comms.getBytes();
 		
 		char[] passwordChars = byteArraytoCharArray(passwordBytes);

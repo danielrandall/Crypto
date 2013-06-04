@@ -33,16 +33,9 @@ public class Login {
 
 		ServerComms.toServer(username);
 		
-		/* Needs to wait for the server to catch up here.
-		 * I don't know why...
-		 * Hangs indefinitely without the sleep. */
-		try {
-			Thread.sleep(1);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		/* Receive Acknowledgement */
+		ServerComms.getInt();
+	
 		ServerComms.sendBytes(passwordBytes, passwordBytes.length);
 
 		if (ServerComms.fromServer().equals(TRUE)) {
@@ -65,6 +58,7 @@ public class Login {
 		
 		/* Acquire Dropbox key and secret for logged in user from server */
 		String key = ServerComms.fromServer();
+		
 		String secret = ServerComms.fromServer();
 		
 		/* Create an active session for the user and store it in

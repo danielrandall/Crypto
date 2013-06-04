@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import server.ClientComms;
+import server.databases.H2KeyUpdates;
 import server.databases.H2Requests;
 import server.databases.H2Users;
 import server.users.Authentication;
@@ -22,12 +23,14 @@ public class UserOperations {
 
 	private static H2Users database = new H2Users();
 	private static H2Requests requestDatabase = new H2Requests();
+	private static H2KeyUpdates updateDatabase = new H2KeyUpdates();
 	
 	
 	public static void main (String[] args) {
 		
 		FriendsList fl = (FriendsList) database.getUser("username").get(H2Users.FRIENDS);
 		fl.removeFriend("daniel");
+		fl.removeFriend("katie");
 		
 		database.updateFriends("username", fl);
 		
@@ -156,6 +159,15 @@ public class UserOperations {
 		
 	}
 	
+	public static void removeFriend(String username, String usernameToRevoke) {
+		
+		FriendsList friendsList = (FriendsList) database.getUser(username).get(H2Users.FRIENDS);
+		friendsList.removeFriend(usernameToRevoke);
+		
+		database.updateFriends(username, friendsList);
+		
+	}
+	
 	/* Returns a user's public key */
 	public static byte[] getPublicKey(String username) {
 		
@@ -199,5 +211,46 @@ public class UserOperations {
 		return info;
 	}
 	
+	
+	public static void addUpdate(String sourceUser, String destUser,
+			int securityLevel, byte[] key) {
+		
+		updateDatabase.addUpdate(sourceUser, destUser, securityLevel, key);
+		
+	}
+	
+
+	public static void removeUpdate(String sourceUser, String destUser) {
+		
+		updateDatabase.removeUpdate(sourceUser, destUser);
+		
+	}
+	
+	
+	public static String[][] getUpdates(String username) {
+		
+		List<Map<String, Object>> requests = updateDatabase.getAllUpdatesForUser(username);
+		int size = requests.size();
+		
+		String[][] friendRequests = new String[size][2];
+		for (int i = 0; i < size; i++) {
+			friendRequests[i][0] = (String) requests.get(i).get(H2KeyUpdates.SOURCE_USER);
+			friendRequests[i][1] = Integer.toString((Integer) requests.get(i).get(H2KeyUpdates.SECURITY_LEVEL));
+		}
+		
+		return friendRequests;
+		
+	}
+	
+	public static Object[] getUpdateInfo(String sourceUser, String destUser) {
+
+		Map<String, Object> data = updateDatabase.getUpdateInfo(sourceUser, destUser);
+		Object[] info = new Object[data.size()];
+		
+		info[0] = data.get(H2Requests.SECURITY_LEVEL);
+		info[1] = data.get(H2Requests.KEY);
+		
+		return info;
+	}
 	
 }

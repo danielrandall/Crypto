@@ -148,13 +148,21 @@ public class ServerDropboxOperations {
 	public static void shareFilesWithFriend(String sourceUsername, Session sourceSession, String destUsername,
 			            Session destSession, List<String> permittedFiles) {
 		
-		DropboxAPI<Session> client = new DropboxAPI<Session>(sourceSession);
+		DropboxAPI<Session> client = new DropboxAPI<Session>(destSession);
 		
 		for (int i = 0; i < permittedFiles.size(); i++) {
 			String fileName = permittedFiles.get(i);
 		
 			String sourcePath = "/" + sourceUsername + OWN_FILE_FOLDER + "/" + fileName;
 			String destPath = "/" + destUsername + FRIENDS_FILE_FOLDER + "/" + sourceUsername + "/" + fileName;
+			
+			try {
+				if (!client.metadata(destPath, 0, null, false, null).isDeleted)
+					client.delete(destPath);
+			} catch (DropboxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			copyBetweenAccounts(sourceSession, destSession, sourcePath, destPath);
 		}

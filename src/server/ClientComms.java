@@ -5,6 +5,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -15,6 +17,8 @@ public class ClientComms {
 	private PrintWriter out = null;
 	private DataInputStream dis = null;
 	private DataOutputStream dOut = null;
+	private static ObjectOutputStream OOut = null;
+    private static ObjectInputStream OIn = null;
 	
 	public ClientComms(Socket socket) {
 		
@@ -28,6 +32,8 @@ public class ClientComms {
 			out = new PrintWriter(socket.getOutputStream(), true);
 			dis = new DataInputStream(socket.getInputStream());
 			dOut = new DataOutputStream(socket.getOutputStream());
+			OOut = new ObjectOutputStream(socket.getOutputStream());
+			OIn = new ObjectInputStream(socket.getInputStream());
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -35,6 +41,65 @@ public class ClientComms {
 		}
 		
 	}
+	
+	public static void sendObject(Object object) {
+    	
+    	try {
+			OOut.writeObject(object);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    }
+    
+    
+    public static Object getObject() {
+    	
+    	Object object = null;
+    	
+    	try {
+			object = OIn.readObject();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	return object;
+    	
+    }
+    
+    
+    public void sendInt(int i) {
+    	
+    	try {
+			dOut.writeInt(i);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace() ;
+		}
+    	
+    }
+    
+    
+    public int getInt() {
+    	
+    	int i = 0;
+    	
+    	try {
+			i = dis.readInt();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace() ;
+		}
+    	
+    	return i;
+    	
+    }
+    
 	
 	
 	/* Close all open streams. */
@@ -45,6 +110,9 @@ public class ClientComms {
 			dis.close();
 			out.close();
 			in.close();
+			OOut.close();
+			OIn.close();
+			
 			socket.close();
 			
 		} catch (IOException e) {

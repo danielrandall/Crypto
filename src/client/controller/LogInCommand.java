@@ -22,6 +22,7 @@ public class LogInCommand implements Command {
 			Object[][] friends = CentralAuthority.getFriends();
 			Object[][] friendRequests = CentralAuthority.getFriendRequests();
 			Object[][] friendFiles = CentralAuthority.getFriendFiles();
+			CentralAuthority.checkUpdates();
 			frame.login(rows, friends, friendRequests, friendFiles);
 			//Login.getRequests();
 		} else
