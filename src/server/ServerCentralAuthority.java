@@ -288,7 +288,7 @@ public class ServerCentralAuthority {
 	private static void uploadEncryptedFile(String username,
 			Session session, ClientComms comms) {
 		
-		int securityLevel = comms.getInt();
+		int securityLevel = Integer.parseInt(comms.fromClient());
 		System.out.println(securityLevel);
 		
 		/* Send acknowledgement */
@@ -303,6 +303,8 @@ public class ServerCentralAuthority {
 		ServerFileOperations.addFile(securityLevel, username, comms, iv, rev);
 		
 		sendFiletoFriends(username, fileName, securityLevel, session, comms);
+		
+		
 		
 	}
 

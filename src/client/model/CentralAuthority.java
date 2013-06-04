@@ -160,7 +160,7 @@ public class CentralAuthority {
 		ServerComms.toServer(UPLOAD_FILE);
 		
 		/* Send security level of file to server. */
-		ServerComms.sendInt(securityLevel);
+		ServerComms.toServer(Integer.toString(securityLevel));
 		
 		/* Receive Acknowledgement */
 		ServerComms.getInt();
