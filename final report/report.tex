@@ -164,10 +164,6 @@ The result of this procedure can be seen in Figure ~\ref{fig:binarydecomp}a for 
 \newline \indent Crampton details how this algorithm can be extended to temporal, geo-spatial and general interval access control.
 
 \subsection{Related work}
-Dropbox
-Bitbox?
-Mega
-
 
 
 \section{Initial Assessments}
@@ -217,10 +213,10 @@ As discussed in the previous sections, \textit{Encryption of files} and \textit{
 \subsubsection*{Version control}
 It may be desirable for the users who receive shared files to be able to edit them and update the file owner's version of the file. This would prevent the user who changed the file from having to upload the file themselves and integrate file management into their own security levels - for instance they may not wish for that user to see any of their files which they would be required to do if they uploaded changed file at some security level and shared that level's corresponding key with the owner. Allowing people to update the file at other user's locations circumvents the need for this.
 \newline \indent However an issue arises when two users the file owner has shared the file with are editing the the the file concurrently. If one user updates the version of the file and then the other updates it soon after the first update will be lost in the public domain. Unfortunately it is outside the scope of this work to deal with such issues in a meaningful way. One measure we can take in an attempt to prevent this is to ripple out the changes to all users who have access to the file. As users are required to download and decrypt the file to a seperate location this would not overwrite the changes any user may make but it will alert each user that changes have been made which may wish to incorporate into their own changes before the version themselves.
-\newline \indent It can not be assumed that is behaviour is desired for every friend added. We will add an option when a user adds a friend whether that friend is permitted to update files. This option, in a sense, is similar to granting read access or read and write access. This would work by friend privileges being stored in the database and when the friend desires to update the file they are required to verify with the server before the action is permitted.
+\newline \indent It can not be assumed that this behaviour is desired for every friend added. We will add an option when a user adds a friend whether that friend is permitted to update files. This option, in a sense, is similar to granting read access or read and write access. This would work by friend privileges being stored in the database and when the friend desires to update the file they are required to verify with the server before the action is permitted.
 
 \subsubsection*{GUI}
-
+While the system we are designing is perfectly usable in a command line window, the tables of data, such as list of the user's own files, friends and files shared with them, would far easier to display in visual tables. The multitude of actions they are able to perform with the data would also be accessed more easily in a graphical for mrather than a text based form. It is also possible that retaining the the system in a command line window would reduce the potential user base a great deal. For these reasons we shall design a simple interface with which to view and manipulate the files and friends.
 
 
 \subsection{Algorithm choices}
@@ -405,7 +401,7 @@ H2 at 1.5MB has a smaller footprint than Derby, 2.6MB. H2 also claims to have su
 
 \section{Evalutation}
 \subsection{What I would have done differently}
-Replacing keys after a set period of time.
+Replacing keys automatically after a set period of time. (ie. they expire)
 \\ Implement adjustable lower bounds as per Jason Crampton's algorithm.
 \\ Employ a more lazy key revocation scheme.
 

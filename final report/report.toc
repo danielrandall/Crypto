@@ -12,7 +12,7 @@
 \contentsline {subsection}{\numberline {2.3}Related work}{9}
 \contentsline {section}{\numberline {3}Initial Assessments}{9}
 \contentsline {subsection}{\numberline {3.1}System design}{9}
-\contentsline {subsection}{\numberline {3.2}Algorithm choices}{13}
+\contentsline {subsection}{\numberline {3.2}Algorithm choices}{14}
 \contentsline {section}{\numberline {4}Implementation}{21}
 \contentsline {subsection}{\numberline {4.1}Design}{21}
 \contentsline {section}{\numberline {5}Testing}{21}
