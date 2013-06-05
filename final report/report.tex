@@ -24,14 +24,6 @@ Abstract
 Acknowledgements
 \end{abstract}
 
-% To force a line break after paragraph headings
-\makeatletter
-  \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}
-    {-3.25ex\@plus -1ex \@minus -.2ex}
-    {1.5ex \@plus .2ex}
-    {\normalfont\normalsize\bfseries}}
-\makeatother
-
 
 % Create the contents page
 \newpage
@@ -43,20 +35,39 @@ Acknowledgements
 \section{Introduction}
 
 \subsection{Motivation}
-
-The problem taken on by this product is that of implementing a concrete application of modern cryptographically enforced access control techniques. This problems stems from changes in the last decade, mainly due to the huge popularity of the internet, which has seen a big increase in the amount of open information available and methods those with malicious intent can use to gain access to information which is protected. This has brought with it a focus from academics and corporations on controlling who has access to what information and how efficient and secure these techniques are. While a lot of recent research has been done on techniques to achieve this there are little freely available implementations of these techniques in a practical environment.
-\newline \indent By building a Dropbox app this project aims to implement and analyse a selection of techniques for cryptographically enforced access control. To achieve this a structure will be developed, with care taken not to rely on any features to be tested and instead allow for easy plug-and-play for each feature such that all combinations can be easily analysed. The objectives are to find the extent of the strengths and weaknesses of the chosen proposals and those which work well together and those which are not able to work so well together. With these results the hope is that further insights will be generated as to where future work is needed. Another interesting result will be how well such cryptographically enforced access control measures are able to be used in a `everyday' environment such as the type which Dropbox offers.
+The internet has caused an explosion in the number of ways to share files. People are now, more than ever, relying on the internet to share data. For many years email was the platform of choice to achieve this, however recent years has seen this superseded by many specialised platforms in order to meet the differing needs in users. These have been in the form factor of file systems in Dropbox, document collaboration in Google Drive and Microsoft SharePoint, as well as social networks in Facebook. In general, the user sharing the file has no interest in sharing it with every user of the internet and so each platform implements some variant of access control. Typically the platforms available today allows for the user to configure the access control for their files by specifying the recipients of the file they are uploading with each file uploaded. Some efforts have been made in eliminating the need to specify access control requirements for every file, this can be seen in platforms that offer `shared folders', however it is often the case that a user has more than one group they wish to share the file with. Not only does this result in having to upload the file more than once, it also results in multiple instances of the file to be managed. Our solution to the access control problem is to employ cryptography to allow the file to be `freely' available with the key which grants access being derivable to all members, in all groups you wish to access it, thus automating the entire process.
+\newline \indent The basis for this project is a relatively new field, hierarchical cryptography.
+\newline
+\newline \indent This report begins with the background research into the technical work behind this system. This will cover the different types of access control available to us and the cryptography that shall be used to enforce this. We will then examine similar products and techniques and show the limitations in their application. In section 3 we proceed to describe the necessary components of the system and rationalise our choices of the 3rd part software to employ. We discuss the best platform to build our work on.
 
 \subsection{Objectives}
+
 
 \section{Background Research}
 \subsection{Overview}
 
 \subsection{Technical Research}
-\paragraph*{Cryptography}
-While protecting sensitive data from adversaries has been a concern for hundreds of years it was not until the First World War that the field of cryptography received serious academic attention however from then on the majority of the work was carried out secretively by states.\cite{appliedCryptoBook} Cryptography was only employed by the military until the 1970s where cheaper hardware reduced ``the design limitations of mechanical computing and brought the cost of high grade cryptographic devices down to where they can be used in such commercial applications as remote cash dispensers and computer terminals."\cite{newCryptoDirections} And new methods of sharing keys such that they could be transferred over insecure channels and thus eliminate the need for physical contact (ie. couriers) before secure communication became possible. One such technique was a \textit{public key cryptosystem}, in which two distinct asymmetric keys are used. One for encrypting, which is made publically available, and one for decrypting, which is kept private, thus anyone can encrypt messages with the public key but only the owner of the private key may decrypt the messages. Also, more importantly to this project, the 1970s also saw the development of major publically known symmetric key ciphers such as Data Encryption Standard (DES). Since then improvements on such algorithms have been designed and cryptography has become an integral part of many businesses who use it, not only for privacy but, for many different reasons, such as: ``authentication (bank cards, wireless telephone, e-commerce, pay-TV), access control (car lock systems, ski lifts), payment (prepaid telephone, e-cash)."\cite{classicalCryptoBook}
-\newline \indent Block ciphers (such as DES) are a type of symmetric key algorithms used to encrypt data. They map $n$-bit plain-text blocks to $n$-bit cipher-text blocks where $n$ is the length of the block. This mapping is one-to-one and thus invertible. The encryption function takes ``a $k$-bit key $K$, taking values from a subset $K$ (the key space) of the set of all $k$-bit vectors $V_{k}$." \cite{blockCiphers} Block ciphers are deterministic and so with the same key and the same plain-text, one should receive the same cipher-text.
-\newline \indent This project focuses on access control as the application of cryptography. The purpose of access control is to ``limit the actions or operations that a legitimate user of a computer system can perform. Access control constrains what a user can do directly, as well as what programs executing on behalf of the users are allowed to do."\cite{accessControlPrinciples} For instance, many operating systems control access to files by assigning permissions to users (eg. read, write, execute.) Typically vanilla access control is based on capabilities or access control lists (ACLs). ACLs works by assigning each object its own ACL detailing for each user which permissions she is authorised to perform on the object. With this setup it is easy to add, edit or remove user permissions and it is easy to see what users have permissions for each object, however all ACLs need to be accessed to determine what objects a user currently has access to. Capabilities are similar to ACLs however each user is associated with a list instead of an object and all capability lists need to examined to determine which users can access a particular object. An example of this, similar to what would be deployed in an OS, can be viewed in Figure ~\ref{fig:capabilities} where 'R' refers to read, 'W' to write and 'Own' signifies that that user is the owner of the object.
+\subsection*{Cryptography}
+While protecting sensitive data from adversaries has been a concern for hundreds of years it was not until the First World War that the field of cryptography received serious academic attention however from then on the majority of the work was carried out secretively by states.\cite{appliedCryptoBook} Cryptography was only employed by the military until the 1970s where cheaper hardware reduced ``the design limitations of mechanical computing and brought the cost of high grade cryptographic devices down to where they can be used in such commercial applications as remote cash dispensers and computer terminals."\cite{newCryptoDirections} And new methods of sharing keys such that they could be transferred over insecure channels and thus eliminate the need for physical contact (ie. couriers) before secure communication became possible. One such technique was a \textit{public key cryptosystem}, in which two distinct asymmetric keys are used. One for encrypting, which is made publically available, and one for decrypting, which is kept private, thus anyone can encrypt messages with the public key but only the owner of the private key may decrypt the messages. The 1970s also saw the development of major publically known symmetric key ciphers such as Data Encryption Standard (DES). Since then improvements on such algorithms have been designed and cryptography has become an integral part of many businesses who use it, not only for privacy but for many different reasons, such as: ``authentication (bank cards, wireless telephone, e-commerce, pay-TV), access control (car lock systems, ski lifts), payment (prepaid telephone, e-cash)."\cite{classicalCryptoBook}
+
+\subsubsection*{Symmetric cryptography}
+A symmetric-key algorithm is a algorithm which uses the same key for the encryption of plaintext as it does decryption of ciphertext. Symmetric-key algorithms can be either block ciphers or stream ciphers. Block ciphers (such as DES) are a type of symmetric key algorithms used to encrypt data. They map $n$-bit plain-text blocks to $n$-bit cipher-text blocks where $n$ is the length of the block. This mapping is one-to-one and thus invertible. The encryption function takes ``a $k$-bit key $K$, taking values from a subset $K$ (the key space) of the set of all $k$-bit vectors $V_{k}$." \cite{blockCiphers} Block ciphers are deterministic and so with the same key and the same plain-text, one should receive the same cipher-text.
+\newline \indent Block ciphers attempt to obscure information using a process know as \textit{confusion and diffusion}, where confusion refers to the process of creating a complex (non-linear) relationship between the ciphertext and, both, the plaintext and key. Diffusion refers to process of each plaintext and key bit affecting many different ciphertext bits.
+\newline \indent Stream ciphers work by creating a keystream
+
+\subsubsection*{Asymmetric cryptography}
+Relies on \textit{Trapdoor functions}. Trapdoor functions are functions which are simple to perform but difficult to invert. For instance, RSA relies on the difficulty of inverting
+\begin{align*}
+f(m) = m^e (\bmod N)
+\end{align*}
+where m is the message to be encrypted, e is the value of the public key and N is the modulus.
+\newline It necessary to rely on trapdoor functions as the encryption key is public and so without them the message would be easily derivable.
+\newline \indent Asymmetric cryptography is generally slower at performing encryption and decryption when compared to symmetric. The reason for this is that typically symmetric algorithms use `CPU-friendly' operations such as XOR (DES, Blowfish, AES) and table-lookups (DES, AES),.
+\newline \indent Asymmetric cryptography often results in a much larger ciphertext:plaintext ration than symmetric cryptography. For instance, with RSA as described by PKCS\#1, with a 1024-bit key, you can encrypt a data element only up to 117 bytes, yielding a 128-byte value.\footnote{http://www.rsa.com/rsalabs/node.asp?id=2125} Over a large plaintext, such as file, this would add up quickly.
+\newline \indent Due to the speed of encryption and size of the cipher text, typically asymmetric cryptography is used to encrypt a symmetric key which in turn is used to encrypt substantial information.
+
+\subsection*{Access control}
+This project focuses on access control as the application of cryptography. The purpose of access control is to ``limit the actions or operations that a legitimate user of a computer system can perform. Access control constrains what a user can do directly, as well as what programs executing on behalf of the users are allowed to do."\cite{accessControlPrinciples} For instance, many operating systems control access to files by assigning permissions to users (eg. read, write, execute.) Typically vanilla access control is based on capabilities or access control lists (ACLs). ACLs works by assigning each object its own ACL detailing for each user which permissions she is authorised to perform on the object. With this setup it is easy to add, edit or remove user permissions and it is easy to see what users have permissions for each object, however all ACLs need to be accessed to determine what objects a user currently has access to. Capabilities are similar to ACLs however each user is associated with a list instead of an object and all capability lists need to examined to determine which users can access a particular object. An example of this, similar to what would be deployed in an OS, can be viewed in Figure ~\ref{fig:capabilities} where 'R' refers to read, 'W' to write and 'Own' signifies that that user is the owner of the object.
 
 \begin{figure}
 \centerline{\includegraphics[height=2.5in,width=4in,angle=0]{capabilities.pdf}}
@@ -164,7 +175,9 @@ The result of this procedure can be seen in Figure ~\ref{fig:binarydecomp}a for 
 \newline \indent Crampton details how this algorithm can be extended to temporal, geo-spatial and general interval access control.
 
 \subsection{Related work}
-
+To the best of my knowledge no current commercial software implements hierarchichal cryptography for use in file sharing.
+\newline \indent Established file sharing platforms such as Dropbox and Mega offer users a way to share their files with other users. This can be in the form of a single file or an entire folder. Our system could be simulated using the folder sharing, where each folder represents a security level and the folders are simply shared folders with the desired users one-by-one. Of course, this method requires a lot more work.
+\newline \indent Existing military based models such as the \textit{Bell-LaPadula model} (BLP) could be applied to create a similar environment to which we are attempting. Using BLP works by labelling each object (file) and user with a security level, such as `Unclassified' ... `Top Secret'. BLP prevents subjects from reading objects with a higher level and from writing to objects with a lower level. We could attempt to use this by assigning each user their own BLP and give them full control of labelling. However the military environment is stricter than our target environment and we are left with the unnecessary and unwanted write restriction and no method of sharing the files outside of the network the model is located is specified.
 
 \section{Initial Assessments}
 
@@ -181,41 +194,41 @@ In this section we will dicuss the required components of the system, why they a
 	\item \textbf{GUI}
 \end{itemize}
 
-\subsubsection*{Information storage}
+\subsubsection{Information storage}
 We need a method of keeping track of the information associated with the files uploaded, such as the security level, initialisation vector, the user who uploaded it, as well as information about each user, such as authentication details and friends. We need to keep track of this information to be able to display it back to the user and ensure only authorised operations are carried out by authorised users.
 \newline \indent The traditional way of achieving this is to allocate a single authority who keeps track of a database. In this model a user is required to communicate with the authority to conduct actions who then verifies that the action is permitted. When an action has been verified for this user the authority may send some information required for the action to process and on completion of the action the user may send the necessary information to the authority to store for latter use. The most popular way of achieving this is using the \textit{Client–server model}. Using the Client–server model each entity is modelled by either a client or a server. In our environment each user is modelled by a client and our single authority is modelled by a server. However, there are issues involved in using a centralised authority. Having a single server which is not able to process all of the traffic from the clients introduces a bottle neck. There are also privacy issues involved by housing information in a centralised authority. The user must trust that those who control the information do not have malicious intent and are competent enough to protect the information sufficiently or are simply unlucky enough to fall victim to a `unpreventable' attack.  
 \newline \indent It is possible to keep track of the information we need in a manner which does not require a centralised authority. We could attempt to implement a peer-to-peer network similar to that used by Bitcoin today, that is to allow each user to submit updated friends lists and file information (ie. unique file identifier and associated security level) into a public record. However implementing such a system requires a large number of users to donate a large amount of processing power to authorise is submission by users. While Bitcoin can encourage this with financial rewards we can offer no such thing. This model also requires each users friend list, including each user and their associated security level, to be public as well as the number of files each user has submitted at which security level.
 \newline \indent Due to the the Client–server model being well established, familiar with many users and the easier option to implement that is what we shall use for this system.
 
-\subsubsection*{Authentication}
+\subsubsection{Authentication}
 As we are using a Client–server model we need some way for the client to authenticate themselves with the server. The traditional manner of achieving this for each user to have a unique, public indentifier, a username, and private information for the client to verify who they say they are, a password. Upon log in the client must provide both pieces of information to the server before being authorised to perform operations unique to that user as well being provided information unique to that user.
 \newline \indent In order for the server to be able to verify that the username and password that the client supplies are indeed correct both need to have been stored previously for the server to retrieve. Due to the username being public there are no privacy issues in storing it as plaintext in the database. The password is private information and so care must be taken before it is stored, due to privacy issues as well as security ones if the database is compromised. This problem can be solved by using a password hasher before the password is stored in the database. Doing so means that the plaintext password can not be read by database administrators and if the database is compromised an attacker can not simply resubmit the hashed password and gain access to a user's account. The hashing must take place on the server side - this is because, while the user's plaintext password can not be read, in the event of the database being compromised the hashed password can be simply re-sent to the server and any security benefits of hashing the password would be lost. Care still needs to be taken in sending the plaintext password to the server. In order to prevent eavesdropping we will simply securely send the plaintext password securely, either through a secure channel such as a HTTPS tunnel or encrypted with a public key belonging to the server.
 \newline \indent In summary, we shall hash the passwords which are sent to the server securely, serverside and then store the hash in the database which can the be used for authentication given a username and plaintext password.
 
-\subsubsection*{Encryption of files}
+\subsubsection{Encryption of files}
 In order for our users to safely upload our files into a `public' domain they need to encrypt the files. In our scenario the same authority on the file is the  only person who we wish to grant access to the file (until it is shared, which we shall address in the \textit{Key exchange} section.) For this we shall use symmetric key cryptography. While we could use public key cryptography to achieve this symmetric key cryptography is faster and, as we have no prior knowledge on the size of the files the user may wish to upload, this speed difference may well be significant.
 
-\subsubsection*{Key exchange}
+\subsubsection{Key exchange}
 Given a key a user will be able to derive any key with a security level below that for a given user. However assuming that a user wishes to grant another user access to a maximum of some level the key for that level needs to transferred to the other user for without any other user being able to observe it. This is the type of scenario which public key cryptography was designed. In order to achieve this behaviour using public key cryptography, each user can generate their own public and private key pair and send the public key only the server to be stored publicly. When a user wishes to share their files with another user they can then request the public key of the user in question and then encrypt the symmetric of the highest level they wish to share at then send that to the server for storage. The receiving user can decrypt the key using their private key which they have stored.
 
-\subsubsection*{Friends}
+\subsubsection{Friends}
 There are a few options available to us in how we handle the adding of friends. We could allow for either the owner of files to request to share the files with another user or for a users to request access to another user's files. There are no real positives or negatives associated with either method but it makes more sense for the owner of the files to decide who has access, rather than rely on the correct people to request access.
 \newline \indent When the owner of files decides another user is entitled to access some of them we shall post a request to that using stating the owner whishes to share files with them. The reason for this is that without requests the user may be subject to un-wanted or potentially malicious files which they would have no way of preventing. It may also be the case that the underlying network charges for the amount of space used and the users may wish to be selective on who can share files with them.
 \newline \indent As all of the files are encrypted, when a user is granted access to some owners files at some level we have the option on which files we share with them. Of course the files they have been granted access to should be be shared with them, however we could simply share all of the files the owner has uploaded with them. This is acceptable as the user is only able to decrypt ones for which they have been able to derive keys for. The benefit of this method is if in the future the user's access level is increased by the owner no further change is needed in regards to the files shared with them. The downside is the user can see the file names of the files they do not have access to, all files uploaded in the future by the owner which they do not have access to has to be shared with them and unnecessary space is taken by files the user is not interested in. For this reason we shall only share the owner's files for which the user has access to.
-In summary, in our system an owner of files will be able to request to share their files with a users at some level. While all uploaded files are considered to be in the public domain, we will only share files directly to users for which they will be able to decrypt.
+In summary, in our system an owner of files will be able to request to share their files with a users at some level. With the request shall be the symmetric key representing the highest level the user wishes to share with the potential friend. The key shall be encrypted with the potential friend's public key. If the potential friend accepts the request, while all uploaded files are considered to be in the public domain, we will only share files directly to the new friend for which they will be able to decrypt (ie. if the levels available are 1-5 and this users is permitted for levels <= 3 then we shall share files labelled <= 3 but not > 3.)
 
-\subsubsection*{Key revocation}
+\subsubsection{Key revocation}
 There may come a point when a user no longer wishes for a friend to be able to access their files. We are able to implement this feature in one of two ways, as previously describe - immediate or lazy. The computational requirement for both is the same, however lazy key revocation spreads the computation needed over time. Lazy key revocation requires much more complex logic and so due to the time constraints on this project we shall implement immediate key revocation. 
 
-\subsubsection*{Key storage}
+\subsubsection{Key storage}
 As discussed in the previous sections, \textit{Encryption of files} and \textit{Key exchange}, each user is required to store some number of symmetric keys and a single private key. The privacy of these keys is fundamental to the functioning of the system in the way we desire. If the symmetric keys are compromised then all of the user's files can be accessed at will as well as all of the keys which have been shared with this user. If the private key is compromised then all future keys shared with this user can be intercepted and derived. Due to these reasons the keys need to be carefully stored. To avoid storing the keys in unprotected files there are software implementations to keep them in called \textit{key stores}. These key stores can be protected by a password which has to be supplied before the keys can be accessed. It would be more secure if we require a user to supply two seperate, distinct passwords. One password is sent to the server to be hashed as previously explained and the other is not sent to the server and instead used to create a key store. This means that even in the event of the database at the server being compromised the attacker is still unable to access the user's key store even with access to user's particular machine. However this method requires the user to remember two different passwords and could be consider an unreasonable request for the events in which it would provide any extra security. In the case where the likely attackers are known personally to a user, such as in the same company or in the same household, it likely be a significant improvement in security. As we do not have any real knowledge on our likely userbase's situations we shall simply reuse the password for server authentication as the password for the key store.
 
-\subsubsection*{Version control}
+\subsubsection{Version control}
 It may be desirable for the users who receive shared files to be able to edit them and update the file owner's version of the file. This would prevent the user who changed the file from having to upload the file themselves and integrate file management into their own security levels - for instance they may not wish for that user to see any of their files which they would be required to do if they uploaded changed file at some security level and shared that level's corresponding key with the owner. Allowing people to update the file at other user's locations circumvents the need for this.
 \newline \indent However an issue arises when two users the file owner has shared the file with are editing the the the file concurrently. If one user updates the version of the file and then the other updates it soon after the first update will be lost in the public domain. Unfortunately it is outside the scope of this work to deal with such issues in a meaningful way. One measure we can take in an attempt to prevent this is to ripple out the changes to all users who have access to the file. As users are required to download and decrypt the file to a seperate location this would not overwrite the changes any user may make but it will alert each user that changes have been made which may wish to incorporate into their own changes before the version themselves.
 \newline \indent It can not be assumed that this behaviour is desired for every friend added. We will add an option when a user adds a friend whether that friend is permitted to update files. This option, in a sense, is similar to granting read access or read and write access. This would work by friend privileges being stored in the database and when the friend desires to update the file they are required to verify with the server before the action is permitted.
 
-\subsubsection*{GUI}
+\subsubsection{GUI}
 While the system we are designing is perfectly usable in a command line window, the tables of data, such as list of the user's own files, friends and files shared with them, would far easier to display in visual tables. The multitude of actions they are able to perform with the data would also be accessed more easily in a graphical for mrather than a text based form. It is also possible that retaining the the system in a command line window would reduce the potential user base a great deal. For these reasons we shall design a simple interface with which to view and manipulate the files and friends.
 
 
@@ -230,7 +243,7 @@ In this section we shall decide which algorithms we shall use to perform the tas
 \end{itemize}
 Here we will discuss which algorithms to use for this project and why.
 
-\subsubsection*{Symmetric Algorithm}
+\subsubsection{Symmetric Algorithm}
 \begin{itemize}
 	\item \textbf{DES} - A block cipher which used to be government standard. DES uses 56bit keys, however such small key lengths have proven to be insecure (eg. by the `EFF DES cracker') and can no longer be used safely.
 	\item \textbf{3DES} - A variant on DES in which plaintext is fed through 3 seperate instances of DES using up to 3 different keys. 3DES, with 3 unique keys, is secure up to $2^112$bits of security, which is very secure. However DES is designed for hardware implementations and so it is slow when used in software which, unfortunately, is what we wish to use it for.
@@ -269,7 +282,7 @@ While we may choose to use a 256-bit key `just to be safe' it is unlikely that t
 
 
 
-\subsubsection*{Asymmetric algorithm}
+\subsubsection{Asymmetric algorithm}
 As we wish to use asymmetric encryption for key exchange the options available to use are:
 \begin{itemize}
 	\item \textbf{RSA} - Relies on the difficulty of factoring large primes
@@ -295,7 +308,7 @@ Therefore we wish to use the smallest, reasonable key size. A 1024-bit RSA key p
 \\
 The PKCS\#1 v1.5 padding scheme and the OAEP padding scheme which was standardised in PKCS\#1 v2.0 are both endorsed by FIPS for use with RSA (CITATION NEEDED). OAEP was designed to overcome two weaknesses that exist with PKCS\#1 v1.5, that is to become more resilient in the face of chosen ciphertext attacks and to prove the security that it provides. While OAEP is not infallible\cite{oaepAttack}, it would seem to be an improvement on PKCS\# 1 v1.5 and so that is what we shall use.
 
-\subsubsection*{Password hashing algorithm}
+\subsubsection{Password hashing algorithm}
 Password hashing algorithms are odd in the sense that the trait with which to seperate them by is which is the slowest. It is desirable for a password hashing algorithm to be slow to prevent an attacker bruteforcing a password dictionary in the hope of entering the correct one into a log in form. Making log in slower makes this task much more time consuming.
 \newline There are two password hashing algorithms commonly in use. They are:
 \begin{itemize}
@@ -307,7 +320,7 @@ NIST recommends the use of PBKDF2 in the use of the password storage.\cite{nistP
 \newline For these reasons we shall use bcrypt to store passwords in our system. 
 
 
-\subsection*{Algorithm providers}
+\subsection{Algorithm providers}
 There are many different providers of cryptographic algorithms for Java, however there is little literature on the differences between them. This is problematic due to the fact our system is very likely to execute these algorithms very frequently and if the implementation is inefficient we may end up with unecessary delays. The possible ways we can differentiate between the different implementations are as follows:
 \begin{itemize}
 	\item \textbf{Correctness} - The algorithm is implemented correctly.
@@ -317,7 +330,7 @@ There are many different providers of cryptographic algorithms for Java, however
 Determining the correctness of the implementations is outside of the scope of this report and so it will be assumed all implementations covered here are implemented correctly. The speed and size of the import needed are easy enough to measure and so they are the features we shall be looking at.
 \newline \indent We shall consider the sunJCE, the suite of Cryptography algorithms which come with the JDK. The second we will consider is Bouncy Castle, the popular, extensive set of algorithms. We will consider Bouncy Castle through the JCA provider structure due to it being simpler to program and change in the future if necessary (either to other algorithms or to another provider.) Lastly, we shall consider GNUCrypto, an open source set of algorithms which are claimed to be high quality and provably correct.
 
-\subsubsection*{AES algorithm provider}
+\subsubsection{AES algorithm provider}
 The findings for each implementation of AES can be found in Table ~\ref{tab:aesComparison}. As can be seen GNUCrypto is tested with a slightly different algorithm, specifically a different spadding scheme. This is because it does not implement PKCS5 padding (or any in common with the other implementations being tested), only PKCS7. Because of this a fairer comparison would have been to compare each using no padding, which all of them implement, however we have no control over the size of the files the user may encrypt and so the results would have irrelevent to the situation we face. For this reason each implementation used the padding which we would use should it be included in our system. However, it is true that PCKS5 and PCKS7 are practically interchangeable and so no difference should observed as a result.
 \newline Looking at the table the most striking result is the disappointing length of time the GNUCrypto implementation takes to complete the test. Incorporating the GNUCrpyto implementation into the project is far more complicated than the interface provided by the JCE framework (requiring 15x as much code!) and so that may be an explanation but, in any case, henceforth we shall disregard the GNUCrypto implementation. As for the fastest implementation, there is little between the SunJCE and Bouncy Castle implementations. The real difference is not in speed but in the much more extensive library of ciphers BC provides against not requiring an external jar in the case of SunJCE.
 
@@ -339,7 +352,7 @@ The findings for each implementation of AES can be found in Table ~\ref{tab:aesC
     \end{table}
 \end{center}
 
-\subsubsection*{RSA algorithm provider}
+\subsubsection{RSA algorithm provider}
 The results from the comparisons can be seen in Table~\ref{tab:rsaComparison}. GNUCrypto does not provide an implementation of RSA and so it is omitted from the test. As can be seen there is little to seperate the two implementations. In order to avoid unnecessary imports and contain a level of consistency we will simply use the sunJCE implementation of the RSA algorithm.
 
 % Comparison of RSA implementation features
@@ -358,13 +371,13 @@ The results from the comparisons can be seen in Table~\ref{tab:rsaComparison}. G
     \end{table}
 \end{center}
 
-\subsection*{File sharing platform}
+\subsection{File sharing platform}
 The system we are developing needs some way to transfer files from one user to another when they desire. The are many ways in which we can do this. Preferably the method we choose allows for us to easily automate sending and receiving of the files to minimise the work the user has to conduct to assist the working of application. This requirement rules out methods such as email, Facebook and Skype.
 \newline \indent As observed by Fu, Kamara and Kohno an appropriate file transfer method for herarchical access control is a content distribution network such as BitTorrent.\cite{bittorrent} However, in our case, due to a number of different torrent clients available (Utorrent, Deluge...), many different ways to connect to a tracker (.torrent files, magnetic links...), inconsistent performance and a lack of programmable interface means that implementing and testing our system would pose a challenging task.
 \newline \indent There are many modern dedicated filesharing tools available today that we can consider. Some of these are: Dropbox, Mega and Wuala. These tools are ideal in the sense that they borrow the folder structure implemented by filesystems which naturally conform to strict hierarchy requirements. This means we have a lot of power in how we can choose to manage our files. Dropbox is incredibly popular, with over 100 million users collectively saving 1 billions files per day.\footnote{https://www.dropbox.com/news/company-info} It also has an extensive SDK for many different programming languages. Mega is a relatively new file hosting service (19 January 2013) with over 3 million members.\footnote{https://twitter.com/KimDotcom/statuses/304003119447158784} Mega  has stricter security requirements than that of Dropbox which closer match what we a trying to achieve. For instance, encryption is performed client side using AES in CBC mode with a 128-bit key.\footnote{https://mega.co.nz/\#developers} However as we are having to perform this actions ourselves, regardless, it is irrelevent to us, if not a hindrance due to wasted CPU time. At the time writing an SDK has been proposed but not released.
 \newline Due to the extremely large userbase, multi-platform support and a extensive `tried-and-tested' SDK we shall use Dropbox to transfer our files.
 
-\subsection*{Platform and programming language}
+\subsection{Platform and programming language}
 Dropbox has a choice of SDKs which can be used for this project: the options for desktop development are written in Python, Java and Ruby, while for mobile development there are options for Android and iOS development.
 \newline Following is a run down of the different languages and what they offer:
 \begin{itemize}
@@ -378,7 +391,7 @@ Keyczar is an API that exists for Java, Python and C++.\cite{keyczar} However it
 \newline \indent While mobile development is a possiblity, the author's experience is mainly in desktop programming and it feels unecessary to limit the computational power available to us when compared to a desktop application when the system would be more no more valuable in that domain.
 \newline \indent For these reasons we shall create a desktop application in Java.
 
-\subsection*{Databases}
+\subsection{Databases}
 Some popular embedded Java database we could use are:
 \begin{itemize}
 	\item \textbf{Apache Derby} - A simple, popular database with an embedded JDBC driver.
@@ -389,23 +402,66 @@ H2 at 1.5MB has a smaller footprint than Derby, 2.6MB. H2 also claims to have su
 \newline \indent For these reasons we shall employ the H2Database in our system without the Hibernate framework.
 
 \section{Implementation}
+In this section we shall discuss the implementations created as a result of our discussion in the previous section.
+\subsection{Structure}
+The general structure of our solution can be viewed in Figure . In this diagram we have obscured out some classes. The full class diagram can be viewed in Figure .
+\newline \indent We have many classes in our solution and it would not be sensible to discuss them all. For this reason we shall discuss many at once.
+
+\paragraph*{GUI}
+\paragraph*{Controller}
+\paragraph*{Central Authority}
+\paragraph*{User operations}
+\paragraph*{Ciphers}
+\paragraph*{Key store}
+
+
 \subsection{Design}
 - Class diagram
 - Purpose of each class
 
+
+\subsection{Security}
+When building a platform for users to control access to a resource, it is of upmost importance to ensure that this can not be circumvented by malicious users. Here we shall discuss some potential issues and how attempts were made to address them.
+\subsubsection{Dropbox tampering}
+Choosing to use Dropbox as the method to share files does not come free of security implications. One potential issue is the fact that it is entirely possible for a user to manipulate the folder in which the files for this application is stored outside of our application. The manipulation that could be can be divided into two categories. That is, manipulation of the folder containing their own uploaded files and manipulations of a folder containing files that their friend has shared with them. We shall address the former first. The potential manipulations that can be performed are:
+\begin{itemize}
+	\item Add a file to the folder containing their own uploads
+	\item Remove a file in the folder containing their own uploads
+	\item Edit a file in the folder containing their own uploads
+\end{itemize}
+For the manipulation in which a file is added to the folder containing a user's own uploads, the query to the server for file information will result in nothing being returned. We have options in how to deal with this. We could alert the user of the change and request information in order to handle the file, process the file as normal and treat it as regular upload. We could also simply ignore it. For now the file is simply ignored.
+\newline \indent Removing a file from the user's own upload folder can be addressed in one of two ways, if the file has been shared we could replace the file in the user's uploads by copying it from one of their friends and then continue as normal. An alternative is to treat it as regular deletion and remove the file information from the database and remove it where it has been shared. Lastly, we could simply ignore it, however this results in the user losing control of the file and the friends with which they have shared it with can keep it and update it for as long as they like.
+\newline \indent Manipulations in which a file is edited can be considered as a removal (of the file un-edited) and an addition (of the newly edited file) and can be treated as such.
+\newline
+\newline \indent The tampering of the folders of friend's shared files is a far more pressing security matter than that of tampering of user's own files. Here we shall discuss some potential issues. These issues are:
+\begin{itemize}
+	\item Create a folder for a user of which they have access at no level.
+	\item Add a file to a folder containing a friend's uploads
+	\item Remove a file in a folder containing a friend's uploads
+	\item Edit a file in a folder containing a friend's uploads
+\end{itemize}
+Creating a folder for a user of which they have access at no level can only have the reaction of the being ignored.
+\newline \indent When a user adds a file to a folder containing a friend's uploads our only safe option is to ignore it. To do this we must contact the server to verify the integrity of each file. Whether the file added is an encrypted file they do not have access to is not significant as they do not possess the key to decrypt it and the server can not be tricked into providing it as it does not possess any client keys.
+\newline \indent Removing a file from a folder containing a friend's uploads can be ignored, meaning that they will no longer has access to the file, at least until someone updates it. Or we could simply replace the file by copying the owner's current version of the file.
 
 \section{Testing}
 
 
 
 
-\section{Evalutation}
+\section{Evaluation}
+
+\subsection{User stories}
+
 \subsection{What I would have done differently}
 Replacing keys automatically after a set period of time. (ie. they expire)
 \\ Implement adjustable lower bounds as per Jason Crampton's algorithm.
 \\ Employ a more lazy key revocation scheme.
 
 \section{Conclusion}
+
+\subsection{Achievements}
+
 \subsection{Future work}
 
 \begin{thebibliography}{10}
