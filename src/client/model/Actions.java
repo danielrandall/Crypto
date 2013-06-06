@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import ciphers.SecurityVariables;
 import client.model.keystore.KeyStoreOperations;
 
-public class CentralAuthority {
+public class Actions {
 	
 	private static final String TRUE = "1";
 	
@@ -96,53 +96,13 @@ public class CentralAuthority {
 		ServerComms.sendInt(1);
 		
 		/* Retrieve this user's private key */
-		byte[] privateKeyBytes = KeyStoreOperations.retrieveOwnKey("private");
+		byte[] privateKeyBytes = KeyStoreOperations.retrievePrivateKey();
 		PrivateKey privateKey = SecurityVariables.ConvertBytesToPrivateKey(privateKeyBytes);
 		
-		deriveKeys(username, privateKey, securityLevel);
+		KeyDerivation.deriveKeys(username, privateKey, securityLevel);
 		
 	}
 	
-	private static void deriveKeys(String username, PrivateKey privateKey, String securityLevel) {
-		
-		/* Retrieve the most influential key (ie. the highest security level
-		 * you have access to) and its security level from the server */
-		byte[] encryptedHighestKey = ServerComms.getBytes();		
-		
-		/* Decrypt the highest key with the user's private key */
-		byte[] highestKey = FileOperations.asymmetricDecrypt(encryptedHighestKey, privateKey);
-		
-		/* Store the key */
-		KeyStoreOperations.storeFriendKey(username, securityLevel, highestKey);
-		
-		int securityLevelInt = Integer.parseInt(securityLevel);
-		
-		byte[] previousKey = highestKey;
-		
-		/* Receive from the server the number of keys to decrypt and use */
-		int numberOfWeakerKeys = Integer.parseInt(ServerComms.fromServer());
-		ServerComms.sendInt(1);
-		
-		/* Retrieve the following, encrypted, keys from the server in order.
-		 * Decrypt them with their previous key and store them with their
-		 * associated security levels. */
-		for (int i = securityLevelInt + 1; i <= securityLevelInt + numberOfWeakerKeys; i++) {
-			
-			byte[] encryptedKey = ServerComms.getBytes();
-			ServerComms.sendInt(1);
-			
-			byte[] iv = ServerComms.getBytes();
-			ServerComms.sendInt(1);
-			
-			byte[] decryptedKey = FileOperations.decryptKey(encryptedKey, previousKey, iv);
-			
-			KeyStoreOperations.storeFriendKey(username, Integer.toString(i), decryptedKey);
-			
-			previousKey = decryptedKey;
-			
-		}
-		
-	}
 	
 	/* TODO implement on server side */
 	public static void ignoreFriendRequest(String username) {
@@ -201,7 +161,7 @@ public class CentralAuthority {
 		ServerComms.toServer(DOWNLOAD_FILE);
 		
 		String rev = processDownload(fileName, DOWNLOAD_LOCATION);
-		
+		System.out.println(rev);
 		/* Send file information to the server */
 		ServerComms.toServer(rev);
 		
@@ -333,7 +293,7 @@ public class CentralAuthority {
 		}
 			
 		/* Generate new keys */
-		Register.generateSymmetricVariables(securityLevelOfUser);
+		updateSymmetricVariables(securityLevelOfUser);
 		
 		/* Get number of friends to notify */
 		int numFriends = Integer.parseInt(ServerComms.fromServer());
@@ -485,7 +445,7 @@ public class CentralAuthority {
 		int numUpdates = Integer.parseInt(ServerComms.fromServer());
 		
 		/* Retrieve this user's private key */
-		byte[] privateKeyBytes = KeyStoreOperations.retrieveOwnKey("private");
+		byte[] privateKeyBytes = KeyStoreOperations.retrievePrivateKey();
 		PrivateKey privateKey = SecurityVariables.ConvertBytesToPrivateKey(privateKeyBytes);
 		
 		for (int i = 0; i < numUpdates; i++) {
@@ -496,9 +456,53 @@ public class CentralAuthority {
 			 * you have access to) and its security level from the server */
 			String securityLevel = ServerComms.fromServer();
 			
-			deriveKeys(username, privateKey, securityLevel);
+			KeyDerivation.deriveKeys(username, privateKey, securityLevel);
 			
 		}
+		
+	}
+	
+	
+	/* Encrypted keys is 1 smaller than generated keys. */
+	private static void updateSymmetricVariables (int highestSecurityLevel) {
+		
+		int numLevels = SecurityVariables.getNumberLevels();
+		int numKeys = numLevels - highestSecurityLevel + 1;;
+		
+		byte[][] keys = SecurityVariables.generateKeys(numKeys);		
+		byte[][] ivs = SecurityVariables.generateIVs(numLevels);
+		
+		/* Store the keys in the key store */
+		for (int i = 0; i < numKeys; i++)
+			KeyStoreOperations.storeOwnKey(Integer.toString(highestSecurityLevel + i), keys[i]);
+		
+		byte[][] keysToEncrypt;
+		if (numKeys == numLevels) {
+			keysToEncrypt = keys;
+		 	ivs = SecurityVariables.generateIVs(numKeys);
+		} else {
+			keysToEncrypt = new byte[numKeys + 1][];
+			ivs = SecurityVariables.generateIVs(numKeys + 1);
+			keysToEncrypt[0] = KeyStoreOperations.retrieveOwnKey(Integer.toString(highestSecurityLevel - 1));
+			for (int i = 1; i < numKeys + 1; i++)
+				keysToEncrypt[i] = keys[i - 1];
+		}
+		
+		EncryptedKey[] encryptedKeys = FileOperations.encryptKeys(keysToEncrypt, ivs);
+		
+		for (int i = 0; i < encryptedKeys.length; i++) {
+			byte[] encryptedKey = encryptedKeys[i].getEncryptedKey();
+			ServerComms.sendBytes(encryptedKey, encryptedKey.length);
+			System.out.println(encryptedKey);
+			ServerComms.getInt();
+			
+			byte[] iv = encryptedKeys[i].getIV();
+			ServerComms.sendBytes(iv, iv.length);
+			System.out.println(iv);
+			ServerComms.getInt();
+		}
+		
+		keys = null;
 		
 	}
 

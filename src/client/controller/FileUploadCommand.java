@@ -2,7 +2,7 @@ package client.controller;
 
 import java.io.File;
 
-import client.model.CentralAuthority;
+import client.model.Actions;
 import client.view.MyFilesPanel;
 import client.view.UploadFileFrame;
 
@@ -24,7 +24,7 @@ public class FileUploadCommand implements Command {
 		
 		int securityLevel = frame.getSecurityLevel();
 		
-		String newFileName = CentralAuthority.uploadFile(fileLocation, securityLevel);
+		String newFileName = Actions.uploadFile(fileLocation, securityLevel);
 
 		Object[] fileInfo = {newFileName, securityLevel};
 		panel.addElementToTable(fileInfo);

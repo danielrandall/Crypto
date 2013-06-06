@@ -3,22 +3,15 @@ package server.operations;
 import java.util.List;
 import java.util.Map;
 
-import ciphers.AESGNUCipher;
-import ciphers.SymmetricCipher;
-
 import server.ClientComms;
 import server.ServerFile;
 import server.databases.H2Files;
-import server.databases.H2Requests;
-import server.encryption.KeyDerivation;
 
 
 
 public class ServerFileOperations {
 	
 	private static H2Files database = new H2Files();
-	
-	private static SymmetricCipher cipher = new AESGNUCipher();
 	
 	public static void addFile(int securityLevel, String username,
 			ClientComms comms, byte[] iv, String rev) {

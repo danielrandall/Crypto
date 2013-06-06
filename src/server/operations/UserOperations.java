@@ -102,8 +102,7 @@ public class UserOperations {
 		
 	}
 	
-	/* Given the number of keys it is to receive.
-	 * The variable update indicates whether the keys are being updated - false for new entry, true for update. */
+	/* Given the number of keys it is to receive. */
 	public static void storeSymmetricKeys(String username,
 			int highestSecurityLevel, boolean update, ClientComms comms) {
 		
@@ -115,7 +114,13 @@ public class UserOperations {
 		
 		for (int i = 0; i < numKeys; i++) {
 			encryptedKeys[i] = comms.getBytes();
+			System.out.println(encryptedKeys[i]);
+			comms.sendInt(1);
+			
 			ivs[i] = comms.getBytes();
+			System.out.println(ivs[i]);
+			comms.sendInt(1);
+			
 			securityLevels[i] = highestSecurityLevel + i;
 		}
 		

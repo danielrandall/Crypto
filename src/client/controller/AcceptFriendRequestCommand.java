@@ -1,6 +1,6 @@
 package client.controller;
 
-import client.model.CentralAuthority;
+import client.model.Actions;
 import client.view.FriendRequestsPanel;
 
 public class AcceptFriendRequestCommand implements Command {
@@ -17,7 +17,7 @@ public class AcceptFriendRequestCommand implements Command {
 		if (info != null) {
 			
 			String username = (String) info[0];
-			CentralAuthority.acceptFriendRequest(username);
+			Actions.acceptFriendRequest(username);
 			
 			panel.friendAdded();
 		}

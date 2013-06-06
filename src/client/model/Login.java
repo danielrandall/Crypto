@@ -50,6 +50,7 @@ public class Login {
 			return false;
 			
 	}
+	
 
 	/* Method to acquire the necessary information to authenticate with the
 	 * Dropbox servers.

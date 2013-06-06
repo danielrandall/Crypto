@@ -1,0 +1,4 @@
+// Client
+[View]-[Controller], [Controller]-[Actions], [Controller]-[Login], [Controller]-[Register], [Login]-[DropboxOperations], [Login]-[KeyStore], [Login]-[ServerComms], [Register]-[DropboxOperations], [Register]-[KeyStore], [Register]-[SecurityVariables], [Register]-[ServerComms] [Actions]-[SecurityVariables], [Actions]-[KeyDerivation], [Actions]-[KeyStore], [Actions]-[RSACipher], [Actions]-[AESCipher], [Actions]-[ServerComms], [Actions]-[DropboxOperations], [Actions]-[FileOperations], [Actions]-[SecurityVariables], [AESCipher]-.->[Cipher], [RSACipher]-.->[Cipher]
+
+http://yuml.me/edit/04f89e4a

@@ -41,7 +41,6 @@ public class DropboxOperations {
 	
 	private static Session session;
 	
-	
 	/* Given the necessary information this method creates a Dropbox session
 	 * and stores it and returns it.
 	 */
@@ -206,28 +205,6 @@ public class DropboxOperations {
 		return null;
 	}
 	
-	/* Copies a file from the sourcePath to the targetPath. This method will primarily be used
-	 * to transfer files between accounts.
-	 * The a file/folder at the target path can not already exist. */
-	public static Entry copyBetweenAccounts(Session sourceSession, Session targetSession,
-			                           String sourcePath, String targetPath) {
-		
-		DropboxAPI<Session> sourceClient = new DropboxAPI<Session>(sourceSession);
-		DropboxAPI<Session> targetClient = new DropboxAPI<Session>(targetSession);
-		
-		Entry entry = null;
-		
-        try {
-			DropboxAPI.CreatedCopyRef cr = sourceClient.createCopyRef(sourcePath);
-			entry = targetClient.addFromCopyRef(cr.copyRef, targetPath);
-		} catch (DropboxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-        return entry;
-	}
-	
 	/* TODO: Find out how to apply delta call to just the desired folder or
 	 * find out how to use delta properly.
 	 * - Make the files are not deleted. */
@@ -313,45 +290,6 @@ public class DropboxOperations {
 		
 		return files;
 		
-	}
-	
-	/* Initially pass in a null cursor and then pass in the returned cursor in future calls.
-	 * Page limit of -1 means no limit. */
-	public static String updateCache(Session session, String cursor, int pageLimit,
-											Session targetSession) {
-		
-		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
-		int pageNum = 0;
-		
-		while (pageLimit < 0 || pageNum < pageLimit) {
-			DropboxAPI.DeltaPage<DropboxAPI.Entry> page;
-			
-			try {
-				page = client.delta(cursor);
-				pageNum++;
-			
-				if (page.reset) {
-					/* TODO: reset tree */
-				}
-            
-				/* Apply the entries one by one. */
-				for (DeltaEntry<DropboxAPI.Entry> e : page.entries) {
-				//	applyDelta(e);
-					copyBetweenAccounts(session, targetSession, e.lcPath, e.lcPath);
-				}
-            
-				cursor = page.cursor;     
-			
-				if (!page.hasMore)
-					break;
-			
-			} catch (DropboxException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
-		
-		return cursor;
 	}
 	
 	/* Given a group of revs and associated information, this function

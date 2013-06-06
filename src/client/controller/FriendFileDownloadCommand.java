@@ -1,6 +1,6 @@
 package client.controller;
 
-import client.model.CentralAuthority;
+import client.model.Actions;
 import client.view.FriendFilesPanel;
 
 public class FriendFileDownloadCommand implements Command {
@@ -17,7 +17,7 @@ public class FriendFileDownloadCommand implements Command {
 			String fileName = (String) info[0];
 			String owner = (String) info[1];
 			
-			CentralAuthority.downloadFriendFile(fileName, owner);
+			Actions.downloadFriendFile(fileName, owner);
 			
 		}
 		

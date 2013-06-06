@@ -1,6 +1,6 @@
 package client.controller;
 
-import client.model.CentralAuthority;
+import client.model.Actions;
 import client.view.MyFilesPanel;
 
 public class DeleteFileCommand implements Command {
@@ -18,7 +18,7 @@ public class DeleteFileCommand implements Command {
 			
 				
 			String fileName = (String) info[0];
-			CentralAuthority.removeFile(fileName);
+			Actions.removeFile(fileName);
 				
 		}
 			

@@ -77,13 +77,16 @@ public class FileOperations {
 	}
 
 	/* Encrypts the keys with its predecessor using the given ivs */
-	public static byte[][] encryptKeys(byte[][] keys, byte[][] ivs) {
+	public static EncryptedKey[] encryptKeys(byte[][] keys, byte[][] ivs) {
 		
 		int numKeys = keys.length - 1;
-		byte[][] encryptedKeys = new byte[numKeys][];
+		EncryptedKey[] encryptedKeys = new EncryptedKey[numKeys];
+//		byte[][] encryptedKeys = new byte[numKeys][];
 		
-		for (int i = 0; i < numKeys; i++)
-			encryptedKeys[i] = cipher.encrypt(keys[i + 1], keys[i], ivs[i]);
+		for (int i = 0; i < numKeys; i++) {
+			byte[] ciphertext = cipher.encrypt(keys[i + 1], keys[i], ivs[i]);
+			encryptedKeys[i] = new EncryptedKey(ciphertext, ivs[i]);
+		}
 		
 		return encryptedKeys;
 		

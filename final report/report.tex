@@ -35,8 +35,8 @@ Acknowledgements
 \section{Introduction}
 
 \subsection{Motivation}
-The internet has caused an explosion in the number of ways to share files. People are now, more than ever, relying on the internet to share data. For many years email was the platform of choice to achieve this, however recent years has seen this superseded by many specialised platforms in order to meet the differing needs in users. These have been in the form factor of file systems in Dropbox, document collaboration in Google Drive and Microsoft SharePoint, as well as social networks in Facebook. In general, the user sharing the file has no interest in sharing it with every user of the internet and so each platform implements some variant of access control. Typically the platforms available today allows for the user to configure the access control for their files by specifying the recipients of the file they are uploading with each file uploaded. Some efforts have been made in eliminating the need to specify access control requirements for every file, this can be seen in platforms that offer `shared folders', however it is often the case that a user has more than one group they wish to share the file with. Not only does this result in having to upload the file more than once, it also results in multiple instances of the file to be managed. Our solution to the access control problem is to employ cryptography to allow the file to be `freely' available with the key which grants access being derivable to all members, in all groups you wish to access it, thus automating the entire process.
-\newline \indent The basis for this project is a relatively new field, hierarchical cryptography.
+The internet has caused an explosion in the number of ways to share files. People are now, more than ever, relying on the internet to share data. For many years email was the platform of choice to achieve this, however recent years has seen this superseded by many specialised platforms in order to meet the differing needs in users. These have been in the form factor of file systems in Dropbox, document collaboration in Google Drive and Microsoft SharePoint, as well as social networks in Facebook. In general, the user sharing the file has no interest in sharing it with every user of the internet and so each platform implements some variant of access control. Typically the platforms available today allows for the user to configure the access control for their files by specifying the recipients of the file they are uploading with each file uploaded. Some efforts have been made in eliminating the need to specify access control requirements for every file, this can be seen in platforms that offer `shared folders', however it is often the case that a user has more than one group they wish to share the file with. Not only does this result in having to upload the file more than once, it also results in multiple instances of the file to be managed. Our solution to the access control problem is a Dropbox App which employs cryptography to allow files to be `freely' available, with the key which grants access being derivable to all members, in all groups you wish to access it, thus automating the entire process. Using the readily available Dropbox API, our App automatically encrypts and stores selected files in a Dropbox folder. When the importance of the files has been indicated, it is shared with friends that are of equal or greater importance to the file. 
+\newline \indent The basis for this project is a relatively new field, hierarchical cryptography. We harness these techniques to implement access control between users on file resources.
 \newline
 \newline \indent This report begins with the background research into the technical work behind this system. This will cover the different types of access control available to us and the cryptography that shall be used to enforce this. We will then examine similar products and techniques and show the limitations in their application. In section 3 we proceed to describe the necessary components of the system and rationalise our choices of the 3rd part software to employ. We discuss the best platform to build our work on.
 
@@ -404,20 +404,36 @@ H2 at 1.5MB has a smaller footprint than Derby, 2.6MB. H2 also claims to have su
 \section{Implementation}
 In this section we shall discuss the implementations created as a result of our discussion in the previous section.
 \subsection{Structure}
-The general structure of our solution can be viewed in Figure . In this diagram we have obscured out some classes. The full class diagram can be viewed in Figure .
-\newline \indent We have many classes in our solution and it would not be sensible to discuss them all. For this reason we shall discuss many at once.
+The general structure of our solution for the client can be viewed in Figure ~\ref{fig:reducedClientClass}. In this diagram we have obscured out some classes. The full class diagram can be viewed in Figure .
+\newline \indent We have many classes in our solution and it would not be sensible to discuss them all. For this reason we shall briefly discuss many at once.
 
-\paragraph*{GUI}
-\paragraph*{Controller}
-\paragraph*{Central Authority}
-\paragraph*{User operations}
-\paragraph*{Ciphers}
-\paragraph*{Key store}
+\subsubsection{Client}
 
+\paragraph*{View} - This represents all of the classes used to create the GUI. These classes are used to display information to the user and accept actions.
+\paragraph*{Controller} - This represents the collection of classes used to translate commands from \textit{View} into logic which is held in the \textit{Model} (\textit{Actions, Register, Login})
+\paragraph*{Actions} - This class contains the majority of the logic in the client side. It communicates with the server to perform the necessary actions (such as `Add friend', `Upload file' and `Download file')
+\paragraph*{Register} - Contains the logic necessary to register the user with the server and Dropbox. If the server accepts the user the keys are created and stored in the keystore.
+\paragraph*{SecurityVariables} - This class generates our keys, for both symmetric and asymmetric cryptographic algorithms.
+\paragraph*{AESCipher} - Performs the functions of the AES algorithm we decided to include. Performs encryptions and decryptions given a key, iv and a file.
+\paragraph*{RSACipher} - Performs the functions of the RSA algorithm we decided to include. Performs encryptions and decryptions given a key and a file.
+\paragraph*{KeyStore} - This class interfaces with the keystore which holds our keys. Is used to store and retrieve our symmetric and asymmetric keys as well as our friends. Each key is stored with a label which must be referenced when we wish to retrieve it. Our own symmetric keys are stored with the label of their security level. Our asymmetric keys are stored with the label of either "public" or "private". Our friends asymmetric keys are stored with the security level along with a prefix of the friend's username. There is no need to store our friend's public keys. Due to the restrictions on levels and usernames, where we cannot of two levels or two usernames of the same name, we can not have any clashes in the keystore.
+\paragraph*{KeyDerivation} - By interacting with the server, this class performs the necessary logic to derive all of a friend's keys when granted with the key of the highest level for which the user is permitted access. It does this by iteratively decrypting each key with the key before until all keys for all levels this user can access have been acquired. All of the keys are then stored.
+\paragraph*{ServerComms} - The class which allows us to interact with the server. The class stores the port of the server and carries the streams necessary to communicate with it.
+\paragraph*{DropboxOperations} - When a user logs in the class is activated with a username and Dropbox specific keys to create a Dropbox Session. This class uses the Session to perform Dropbox related functions. These include uploading, downloading and removing files and  scanning the folder for files, 
 
-\subsection{Design}
-- Class diagram
-- Purpose of each class
+\begin{figure}
+\centerline{\includegraphics[height=5.0in,width=8in,angle=0]{client-classDiagram.pdf}}
+\caption{Reduced class diagram for the client}
+\label{fig:reducedClientClass}
+\end{figure}
+
+\subsubsection{Server}
+
+\paragraph*{CentralAuthority} - This class mirrors the \textit{Actions} class in client. The class blocks until it receives a decision on which action the client wishes to perform. The class then communicates with the client for information and calls functions necessary to complete the request.
+\paragraph*{UserOperations} - Acts as interface between the user logic and the table in the database containing user information.
+
+\paragraph*{ServerDropboxOperations} - This class performs operations on a user's Dropbox which would be too unwieldly to perform client side. These include transferring files from one user to another and removing files when a user is revoked. These are difficult to perform on the client side as the actions are invoked by users which are not online at the time. Performing them safely on the client side would involve using database storage.
+
 
 
 \subsection{Security}

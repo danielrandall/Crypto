@@ -21,7 +21,15 @@ import java.util.Map;
 
 import javax.crypto.SecretKey;
 
+import client.model.EncryptedKey;
+import client.model.FileOperations;
+import client.model.ServerComms;
+import client.model.keystore.KeyStoreOperations;
+
 public class SecurityVariables {
+	
+	private static final int NUMBER_SECURITY_LEVELS = 5;
+	private static final int HIGHEST_SECURITY_LEVEL = 1;
 	
 	/* Key size used for the cipher. Recorded in bytes. */
 	private static final int SYMMETRIC_KEY_SIZE = 32;
@@ -223,6 +231,27 @@ public class SecurityVariables {
 	}
 	
 	
+	public static byte[][] generateAllKeys() {
+		
+		return generateKeys(NUMBER_SECURITY_LEVELS);
+		
+	}
+	
+	
+	
+	public static byte[][] generateAllIVs() {
+		
+		return generateIVs(NUMBER_SECURITY_LEVELS);
+		
+	}
+	
+	
+	public static int getNumberLevels() {
+		
+		return NUMBER_SECURITY_LEVELS;
+		
+	}
+	
 	/* A hash function with a n-bit output resist collisions up to work factor 2^(n/2) at least.
 	 * If hash-mixing was not accumulating entropy up to at least n/2 bits then this could be turned
 	 * into a collision attack on the hash function.
@@ -235,6 +264,47 @@ public class SecurityVariables {
 		
 		/* Input to generateSeed(int) given in bytes */
 		return new SecureRandom().generateSeed(size);
+		
+	}
+	
+	
+	
+	/* Encrypted keys is 1 smaller than generated keys. */
+	public static void generateSymmetricVariables (int highestSecurityLevel) {
+		
+		int numKeys = NUMBER_SECURITY_LEVELS - highestSecurityLevel + 1;
+		
+		byte[][] keys = SecurityVariables.generateKeys(numKeys);
+		
+		/* Store the keys in the key store */
+		for (int i = 0; i < numKeys; i++)
+			KeyStoreOperations.storeOwnKey(Integer.toString(highestSecurityLevel + i), keys[i]);
+		
+		byte[][] ivs;
+		
+		byte[][] keysToEncrypt;
+		if (highestSecurityLevel == HIGHEST_SECURITY_LEVEL) {
+			keysToEncrypt = keys;
+		 	ivs = SecurityVariables.generateIVs(numKeys);
+		} else {
+			keysToEncrypt = new byte[numKeys + 1][];
+			ivs = SecurityVariables.generateIVs(numKeys + 1);
+			keysToEncrypt[0] = KeyStoreOperations.retrieveOwnKey(Integer.toString(highestSecurityLevel - 1));
+			for (int i = 1; i < numKeys + 1; i++)
+				keysToEncrypt[i] = keys[i - 1];
+		}
+		
+		EncryptedKey[] encryptedKeys = FileOperations.encryptKeys(keysToEncrypt, ivs);
+		
+		for (int i = 0; i < encryptedKeys.length; i++) {
+			byte[] encryptedKey = encryptedKeys[i].getEncryptedKey();
+			ServerComms.sendBytes(encryptedKey, encryptedKey.length);
+			
+			byte[] iv = encryptedKeys[i].getIV();
+			ServerComms.sendBytes(iv, iv.length);
+		}
+		
+		keys = null;
 		
 	}
 

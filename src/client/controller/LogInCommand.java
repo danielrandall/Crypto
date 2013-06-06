@@ -1,6 +1,6 @@
 package client.controller;
 
-import client.model.CentralAuthority;
+import client.model.Actions;
 import client.model.Login;
 import client.view.MainFrame;
 
@@ -18,11 +18,11 @@ public class LogInCommand implements Command {
 		char[] password = frame.getPassword();
 		
 		if (Login.userLogin(username, password)) {
-			Object[][] rows = CentralAuthority.getUploadedFiles();
-			Object[][] friends = CentralAuthority.getFriends();
-			Object[][] friendRequests = CentralAuthority.getFriendRequests();
-			Object[][] friendFiles = CentralAuthority.getFriendFiles();
-			CentralAuthority.checkUpdates();
+			Object[][] rows = Actions.getUploadedFiles();
+			Object[][] friends = Actions.getFriends();
+			Object[][] friendRequests = Actions.getFriendRequests();
+			Object[][] friendFiles = Actions.getFriendFiles();
+			Actions.checkUpdates();
 			frame.login(rows, friends, friendRequests, friendFiles);
 			//Login.getRequests();
 		} else

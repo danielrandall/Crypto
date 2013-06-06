@@ -5,9 +5,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Arrays;
 
-import server.password.BCryptEncryptor;
-import server.password.PasswordEncryptor;
-
 import ciphers.SecurityVariables;
 import client.model.keystore.KeyStoreOperations;
 
@@ -19,11 +16,6 @@ public class Register {
 	/* Message constants to send to server */
 	private static final String REGISTER = "2";
 	
-	private static final int NUMBER_SECURITY_LEVELS = 5;
-	private static final int HIGHEST_SECURITY_LEVEL = 1;
-	
-	private static final PasswordEncryptor passwordEncryptor = new BCryptEncryptor();
-
 	public static boolean userRegister(String username, char[] password) {
 		
 		/* Tell the server a user wishes to register */
@@ -57,7 +49,7 @@ public class Register {
 		DropboxOperations.setUsername(username);
 		DropboxOperations.folderSetup();
 		
-		generateSymmetricVariables(HIGHEST_SECURITY_LEVEL);
+		generateSymmetricVariables();
 		
 		/* Generate public key pair */
 		KeyPair keyPair = SecurityVariables.GenerateAsymmetricKeyPair();
@@ -69,8 +61,8 @@ public class Register {
 		byte[] privateKeyBytes = privateKey.getEncoded();
 		
 		/* Store the asymmetric keys in the key store */
-		KeyStoreOperations.storeOwnKey("public", publicKeyBytes);
-		KeyStoreOperations.storeOwnKey("private", privateKeyBytes);
+		KeyStoreOperations.StorePublicKey(publicKeyBytes);
+		KeyStoreOperations.StorePrivateKey(privateKeyBytes);
 		
 		/* Send the public to the server to store */
 		ServerComms.sendBytes(publicKeyBytes, publicKeyBytes.length);
@@ -82,67 +74,32 @@ public class Register {
 		
 	}
 	
-	/* Encrypted keys is 1 smaller than generated keys. */
-	public static void generateSymmetricVariables (int highestSecurityLevel) {
+	
+	public static void generateSymmetricVariables() {
 		
-		int numKeys = NUMBER_SECURITY_LEVELS - highestSecurityLevel + 1;
-		
-		byte[][] keys = SecurityVariables.generateKeys(numKeys);
+		byte[][] keys = SecurityVariables.generateAllKeys();
+		byte[][] ivs = SecurityVariables.generateAllKeys();
 		
 		/* Store the keys in the key store */
-		for (int i = 0; i < numKeys; i++)
-			KeyStoreOperations.storeOwnKey(Integer.toString(highestSecurityLevel + i), keys[i]);
+		for (int i = 0; i < keys.length; i++)
+			KeyStoreOperations.storeOwnKey(Integer.toString(i + 1), keys[i]);
 		
-		byte[][] ivs;
-		
-		byte[][] keysToEncrypt;
-		if (highestSecurityLevel == HIGHEST_SECURITY_LEVEL) {
-			keysToEncrypt = keys;
-		 	ivs = SecurityVariables.generateIVs(numKeys);
-		} else {
-			keysToEncrypt = new byte[numKeys + 1][];
-			ivs = SecurityVariables.generateIVs(numKeys + 1);
-			keysToEncrypt[0] = KeyStoreOperations.retrieveOwnKey(Integer.toString(highestSecurityLevel - 1));
-			for (int i = 1; i < numKeys + 1; i++)
-				keysToEncrypt[i] = keys[i - 1];
-		}
-		
-		byte[][] encryptedKeys = FileOperations.encryptKeys(keysToEncrypt, ivs);
+		EncryptedKey[] encryptedKeys = FileOperations.encryptKeys(keys, ivs);
 		
 		for (int i = 0; i < encryptedKeys.length; i++) {
-			ServerComms.sendBytes(encryptedKeys[i], encryptedKeys[i].length);
-			ServerComms.sendBytes(ivs[i], ivs[i].length);
+			byte[] encryptedKey = encryptedKeys[i].getEncryptedKey();
+			ServerComms.sendBytes(encryptedKey, encryptedKey.length);
+			ServerComms.getInt();
+			
+			byte[] iv = encryptedKeys[i].getIV();
+			ServerComms.sendBytes(iv, iv.length);
+			ServerComms.getInt();
 		}
 		
 		keys = null;
 		
 	}
 	
-	/*
-	Probably not needed
-	public static void updateSymmetricVariables(int highestSecurityLevel) {
-		
-		int numKeys = NUMBER_SECURITY_LEVELS - highestSecurityLevel + 1;
-		
-		byte[][] keys = SecurityVariables.generateKeys(numKeys);
-		
-
-		for (int i = 0; i < numKeys; i++)
-			KeyStoreOperations.storeOwnKey(Integer.toString(highestSecurityLevel + i), keys[i]);
-		
-		byte[][] ivs = SecurityVariables.generateIVs(numKeys);
-		
-		byte[][] encryptedKeys = FileOperations.encryptKeys(keys, ivs);
-		
-		for (int i = 0; i < encryptedKeys.length; i++) {
-			ServerComms.sendBytes(encryptedKeys[i], encryptedKeys[i].length);
-			ServerComms.sendBytes(ivs[i], ivs[i].length);
-		}
-		
-		keys = null;
-		
-	}
-	*/
 	
 	/* Returns true if the passwords match, false otherwise */
 	public static boolean passwordCheck(char[] password, char[] reenterPassword) {

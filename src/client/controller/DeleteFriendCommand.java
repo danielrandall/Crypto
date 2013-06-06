@@ -1,6 +1,6 @@
 package client.controller;
 
-import client.model.CentralAuthority;
+import client.model.Actions;
 import client.view.FriendsPanel;
 
 public class DeleteFriendCommand implements Command {
@@ -13,7 +13,7 @@ public class DeleteFriendCommand implements Command {
 		Object[] friendInfo = panel.getSelectedRowInfo();
 		String friendName = (String) friendInfo[0];
 		
-		CentralAuthority.revokeUser(friendName);
+		Actions.revokeUser(friendName);
 		
 		panel.removeSelectedRowsFromTable();
 		

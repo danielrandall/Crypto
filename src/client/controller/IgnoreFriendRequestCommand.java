@@ -1,6 +1,6 @@
 package client.controller;
 
-import client.model.CentralAuthority;
+import client.model.Actions;
 import client.view.FriendRequestsPanel;
 
 public class IgnoreFriendRequestCommand implements Command {
@@ -15,7 +15,7 @@ public class IgnoreFriendRequestCommand implements Command {
 		if (info != null) {
 			
 			String username = (String) info[0];
-			CentralAuthority.ignoreFriendRequest(username);
+			Actions.ignoreFriendRequest(username);
 			
 			panel.friendIgnored();
 		}

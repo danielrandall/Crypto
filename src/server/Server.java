@@ -19,8 +19,6 @@ public class Server {
         try {
             serverSocket = new ServerSocket(PORT_NUMBER);
             
-            Setup.setup();
-            
             int connections = 0;
             
             while (listening) {

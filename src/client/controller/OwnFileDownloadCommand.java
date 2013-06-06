@@ -1,6 +1,6 @@
 package client.controller;
 
-import client.model.CentralAuthority;
+import client.model.Actions;
 import client.view.MyFilesPanel;
 
 
@@ -17,7 +17,7 @@ public class OwnFileDownloadCommand implements Command {
 		if (info != null) {
 			
 			String fileName = (String) info[0];
-			CentralAuthority.downloadFile(fileName);
+			Actions.downloadFile(fileName);
 		}
 		
 	}
