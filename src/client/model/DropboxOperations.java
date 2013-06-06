@@ -1,6 +1,9 @@
 package client.model;
 
 import java.awt.Desktop;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,6 +43,41 @@ public class DropboxOperations {
 	private static String username;
 	
 	private static Session session;
+	
+	
+	
+	public static void main(String[] args) {
+		
+		String[] stuff = authenticate();
+		session = makeSession(stuff[0], stuff[1]);
+		setUsername("username");
+		
+		File downloadFolder = new File("DownloadedAppFiles");
+		if (!downloadFolder.exists())
+			downloadFolder.mkdir();
+		
+		String downloadLocation = "DownloadedAppFiles" + "/" + "Costa Rican Frog.jpg";
+		
+		File file = new File(downloadLocation);
+		
+		FileOutputStream outputStream = null;
+		
+		try {
+			
+			outputStream = new FileOutputStream(file);
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		String rev = downloadFile("Costa Rican Frog.jpg", outputStream);
+		
+		System.out.println(rev);
+	}
+	
 	
 	/* Given the necessary information this method creates a Dropbox session
 	 * and stores it and returns it.

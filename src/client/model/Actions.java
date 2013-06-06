@@ -411,6 +411,13 @@ public class Actions {
 	/* Creates an output stream and requests Dropbox to download the file there */
 	private static String processDownload(String fileName, String folderLocation) {
 		
+		try {
+			Thread.sleep(1);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		File downloadFolder = new File(folderLocation);
 		if (!downloadFolder.exists())
 			downloadFolder.mkdir();
@@ -434,7 +441,9 @@ public class Actions {
 		}
 		
 		/* Returns file info */
-		return DropboxOperations.downloadFile(fileName, outputStream);
+		String rev = DropboxOperations.downloadFile(fileName, outputStream);
+		
+		return rev;
 		
 	}
 

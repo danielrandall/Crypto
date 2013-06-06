@@ -1,12 +1,5 @@
 package client.model;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-
-import server.password.BCryptEncryptor;
-import server.password.PasswordEncryptor;
-
 import client.model.keystore.KeyStoreOperations;
 
 public class Login {
@@ -16,8 +9,6 @@ public class Login {
 	
 	/* Meaning of messages from the Client */
 	private static final String LOGIN = "1";
-	
-	private static final PasswordEncryptor passwordEncryptor = new BCryptEncryptor();
 	
 	/* Given the username and password check it with server
 	 * TODO: Send the password encrypted.
