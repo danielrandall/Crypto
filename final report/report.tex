@@ -41,7 +41,7 @@ The internet has caused an explosion in the number of ways to share files. Peopl
 \newline \indent This report begins with the background research into the technical work behind this system. This will cover the different types of access control available to us and the cryptography that shall be used to enforce this. We will then examine similar products and techniques and show the limitations in their application. In section 3 we proceed to describe the necessary components of the system and rationalise our choices of the 3rd part software to employ. We discuss the best platform to build our work on.
 
 \subsection{Objectives}
-
+The objectives for this project is design a system which automatically share a files with many people at once, and also do this consistently without sacrificing the desired access control. Users can do this by labelling each file with a security level and each friend with a security level. Our system would deal with the cryptography `under the hood' without troubling the user with technical requests. Our system would ideally run at a high speed, similar to alternative file-sharing platforms.
 
 \section{Background Research}
 \subsection{Overview}
@@ -51,9 +51,9 @@ The internet has caused an explosion in the number of ways to share files. Peopl
 While protecting sensitive data from adversaries has been a concern for hundreds of years it was not until the First World War that the field of cryptography received serious academic attention however from then on the majority of the work was carried out secretively by states.\cite{appliedCryptoBook} Cryptography was only employed by the military until the 1970s where cheaper hardware reduced ``the design limitations of mechanical computing and brought the cost of high grade cryptographic devices down to where they can be used in such commercial applications as remote cash dispensers and computer terminals."\cite{newCryptoDirections} And new methods of sharing keys such that they could be transferred over insecure channels and thus eliminate the need for physical contact (ie. couriers) before secure communication became possible. One such technique was a \textit{public key cryptosystem}, in which two distinct asymmetric keys are used. One for encrypting, which is made publically available, and one for decrypting, which is kept private, thus anyone can encrypt messages with the public key but only the owner of the private key may decrypt the messages. The 1970s also saw the development of major publically known symmetric key ciphers such as Data Encryption Standard (DES). Since then improvements on such algorithms have been designed and cryptography has become an integral part of many businesses who use it, not only for privacy but for many different reasons, such as: ``authentication (bank cards, wireless telephone, e-commerce, pay-TV), access control (car lock systems, ski lifts), payment (prepaid telephone, e-cash)."\cite{classicalCryptoBook}
 
 \subsubsection*{Symmetric cryptography}
-A symmetric-key algorithm is a algorithm which uses the same key for the encryption of plaintext as it does decryption of ciphertext. Symmetric-key algorithms can be either block ciphers or stream ciphers. Block ciphers (such as DES) are a type of symmetric key algorithms used to encrypt data. They map $n$-bit plain-text blocks to $n$-bit cipher-text blocks where $n$ is the length of the block. This mapping is one-to-one and thus invertible. The encryption function takes ``a $k$-bit key $K$, taking values from a subset $K$ (the key space) of the set of all $k$-bit vectors $V_{k}$." \cite{blockCiphers} Block ciphers are deterministic and so with the same key and the same plain-text, one should receive the same cipher-text.
+A symmetric-key algorithm is a algorithm which uses the same key for the encryption of plaintext as it does decryption of ciphertext. Symmetric-key algorithms can be either block ciphers or stream ciphers. Block ciphers (such as DES) are a type of symmetric key algorithms used to encrypt data. They map $n$-bit plain-text blocks to $n$-bit cipher-text blocks where $n$ is the length of the block. This mapping is one-to-one and thus invertible. The encryption function takes ``a $k$-bit key $K$, taking values from a subset $K$ (the key space) of the set of all $k$-bit vectors $V_{k}$." \cite{blockCiphers} Block ciphers are deterministic and so with the same key and the same plain-text, one should receive the same cipher-text every time the plain-text is encrypted.
 \newline \indent Block ciphers attempt to obscure information using a process know as \textit{confusion and diffusion}, where confusion refers to the process of creating a complex (non-linear) relationship between the ciphertext and, both, the plaintext and key. Diffusion refers to process of each plaintext and key bit affecting many different ciphertext bits.
-\newline \indent Stream ciphers work by creating a keystream
+\newline \indent Stream ciphers work by using the key to create a \textit{keystream}. The keystream is then used to encrypt the plaintext, often by XORing.
 
 \subsubsection*{Asymmetric cryptography}
 Relies on \textit{Trapdoor functions}. Trapdoor functions are functions which are simple to perform but difficult to invert. For instance, RSA relies on the difficulty of inverting
@@ -62,7 +62,7 @@ f(m) = m^e (\bmod N)
 \end{align*}
 where m is the message to be encrypted, e is the value of the public key and N is the modulus.
 \newline It necessary to rely on trapdoor functions as the encryption key is public and so without them the message would be easily derivable.
-\newline \indent Asymmetric cryptography is generally slower at performing encryption and decryption when compared to symmetric. The reason for this is that typically symmetric algorithms use `CPU-friendly' operations such as XOR (DES, Blowfish, AES) and table-lookups (DES, AES),.
+\newline \indent Asymmetric cryptography is generally slower at performing encryption and decryption when compared to symmetric. The reason for this is that typically symmetric algorithms use `CPU-friendly' operations such as XOR (DES, Blowfish, AES) and table-lookups (DES, AES), while asymmetric algorithms often rely on complex Mathematics and employ costly operations such as exponentiation (RSA).
 \newline \indent Asymmetric cryptography often results in a much larger ciphertext:plaintext ration than symmetric cryptography. For instance, with RSA as described by PKCS\#1, with a 1024-bit key, you can encrypt a data element only up to 117 bytes, yielding a 128-byte value.\footnote{http://www.rsa.com/rsalabs/node.asp?id=2125} Over a large plaintext, such as file, this would add up quickly.
 \newline \indent Due to the speed of encryption and size of the cipher text, typically asymmetric cryptography is used to encrypt a symmetric key which in turn is used to encrypt substantial information.
 
@@ -210,12 +210,21 @@ In order for our users to safely upload our files into a `public' domain they ne
 
 \subsubsection{Key exchange}
 Given a key a user will be able to derive any key with a security level below that for a given user. However assuming that a user wishes to grant another user access to a maximum of some level the key for that level needs to transferred to the other user for without any other user being able to observe it. This is the type of scenario which public key cryptography was designed. In order to achieve this behaviour using public key cryptography, each user can generate their own public and private key pair and send the public key only the server to be stored publicly. When a user wishes to share their files with another user they can then request the public key of the user in question and then encrypt the symmetric of the highest level they wish to share at then send that to the server for storage. The receiving user can decrypt the key using their private key which they have stored.
+\newline \indent A visual representation of this can be seen in Figure~\ref{fig:rsaKeyExchange}.
+
+\footnotetext{http://technet.microsoft.com/en-us/library/cc962035.aspx}
+\begin{figure}[!htb]
+\centerline{\includegraphics[height=2.5in,width=4in,angle=0]{images/rsaKeyExchange.pdf}}
+\caption[Caption for LOF]{A depiction of two users exchanging keys using RSA. The secret key represents a symmetric key owned by the sender.\protect\footnote{http://technet.microsoft.com/en-us/library/cc962035.aspx}}
+\label{fig:rsaKeyExchange}
+\end{figure}
+
 
 \subsubsection{Friends}
 There are a few options available to us in how we handle the adding of friends. We could allow for either the owner of files to request to share the files with another user or for a users to request access to another user's files. There are no real positives or negatives associated with either method but it makes more sense for the owner of the files to decide who has access, rather than rely on the correct people to request access.
 \newline \indent When the owner of files decides another user is entitled to access some of them we shall post a request to that using stating the owner whishes to share files with them. The reason for this is that without requests the user may be subject to un-wanted or potentially malicious files which they would have no way of preventing. It may also be the case that the underlying network charges for the amount of space used and the users may wish to be selective on who can share files with them.
 \newline \indent As all of the files are encrypted, when a user is granted access to some owners files at some level we have the option on which files we share with them. Of course the files they have been granted access to should be be shared with them, however we could simply share all of the files the owner has uploaded with them. This is acceptable as the user is only able to decrypt ones for which they have been able to derive keys for. The benefit of this method is if in the future the user's access level is increased by the owner no further change is needed in regards to the files shared with them. The downside is the user can see the file names of the files they do not have access to, all files uploaded in the future by the owner which they do not have access to has to be shared with them and unnecessary space is taken by files the user is not interested in. For this reason we shall only share the owner's files for which the user has access to.
-In summary, in our system an owner of files will be able to request to share their files with a users at some level. With the request shall be the symmetric key representing the highest level the user wishes to share with the potential friend. The key shall be encrypted with the potential friend's public key. If the potential friend accepts the request, while all uploaded files are considered to be in the public domain, we will only share files directly to the new friend for which they will be able to decrypt (ie. if the levels available are 1-5 and this users is permitted for levels <= 3 then we shall share files labelled <= 3 but not > 3.)
+In summary, in our system an owner of files will be able to request to share their files with a users at some level. With the request shall be the symmetric key representing the highest level the user wishes to share with the potential friend. The key shall be encrypted with the potential friend's public key. If the potential friend accepts the request, while all uploaded files are considered to be in the public domain, we will only share files directly to the new friend for which they will be able to decrypt (ie. if the levels available are 1-5 and this users is permitted for levels $<= 3$ then we shall share files labelled $<= 3$ but not $> 3$.)
 
 \subsubsection{Key revocation}
 There may come a point when a user no longer wishes for a friend to be able to access their files. We are able to implement this feature in one of two ways, as previously describe - immediate or lazy. The computational requirement for both is the same, however lazy key revocation spreads the computation needed over time. Lazy key revocation requires much more complex logic and so due to the time constraints on this project we shall implement immediate key revocation. 
@@ -409,6 +418,12 @@ The general structure of our solution for the client can be viewed in Figure ~\r
 
 \subsubsection{Client}
 
+\begin{figure}
+\centerline{\includegraphics[height=5.0in,width=8in,angle=0]{client-classDiagram.pdf}}
+\caption{Reduced class diagram for the client}
+\label{fig:reducedClientClass}
+\end{figure}
+
 \paragraph*{View} - This represents all of the classes used to create the GUI. These classes are used to display information to the user and accept actions.
 \paragraph*{Controller} - This represents the collection of classes used to translate commands from \textit{View} into logic which is held in the \textit{Model} (\textit{Actions, Register, Login})
 \paragraph*{Actions} - This class contains the majority of the logic in the client side. It communicates with the server to perform the necessary actions (such as `Add friend', `Upload file' and `Download file')
@@ -421,13 +436,15 @@ The general structure of our solution for the client can be viewed in Figure ~\r
 \paragraph*{ServerComms} - The class which allows us to interact with the server. The class stores the port of the server and carries the streams necessary to communicate with it.
 \paragraph*{DropboxOperations} - When a user logs in the class is activated with a username and Dropbox specific keys to create a Dropbox Session. This class uses the Session to perform Dropbox related functions. These include uploading, downloading and removing files and  scanning the folder for files, 
 
+\subsubsection{Server}
+
 \begin{figure}
-\centerline{\includegraphics[height=5.0in,width=8in,angle=0]{client-classDiagram.pdf}}
-\caption{Reduced class diagram for the client}
-\label{fig:reducedClientClass}
+\centerline{\includegraphics[height=5.0in,width=8in,angle=0]{server-classDiagram.pdf}}
+\caption{Reduced class diagram for the server}
+\label{fig:reducedServerClass}
 \end{figure}
 
-\subsubsection{Server}
+\paragraph*{Protocol} - The first class which interacts the user. It blocks until a log in or registration attempt it made and passes the attempts on to be evaluated. Once log in has been successful it passes the user on.
 
 \paragraph*{CentralAuthority} - This class mirrors the \textit{Actions} class in client. The class blocks until it receives a decision on which action the client wishes to perform. The class then communicates with the client for information and calls functions necessary to complete the request.
 \paragraph*{UserOperations} - Acts as interface between the user logic and the table in the database containing user information.
@@ -463,22 +480,49 @@ Creating a folder for a user of which they have access at no level can only have
 \section{Testing}
 
 
-
+\section{Benchmarking}
+In this section we shall evaluate the speed at which our solution can perform certain tasks. These tasks include: log in, file upload, file download, sending a friend request, accepting a friend request and revoking a user.
 
 \section{Evaluation}
 
 \subsection{User stories}
+In this section we shall attempt to evaluate how useful our solution is when applied to an `everyday' environment. To do this we will allow members of the public to use our solution. In order to evaluate it as accurately as possible we shall attempt to conduct our tests on an audience with a large variety of technical ability.
+\newline \indent Each test involves a single user and is divided into three sections: firstly at the beginning of each test we shall conduct a `cold' run, that is with little help the test subject will be allowed to use the solution as they see fit. Secondly we shall guide the test subject through solution, telling them exactly what to do where necessary. Lastly we shall ask the user questions. The questions will differ on each test and shall be asked as a reaction to the difficulties and confusion the user has while using the solution.
+\newline \indent Before the beginning of a test the subject will be briefed on what our solution is trying to achieve. There will be little talk of the implementation and the brief will be much like the introduction to this paper.
+\newline \indent Once we have described the results of each test we will discuss our findings and what they mean in relation to our work.
+
+\subsubsection{Test 1}
+Technical ability: Advanced
+
+\subsubsection{Test 2}
+Technical ability: Basic
+
+
+\subsubsection{What we have learnt}
+From the tests it is quite clear that the GUI is a limiting factor for user experience. This is to be expected. Our solution was not intended as an out-of-the-box commercial product and so little attention was paid to the user interface. The fact this was the largest complaint is a positive sign.
+\newline \indent All test subjects struggled to place an intuitive meaning on the security levels. They were not fond of the current labels (1..5) as there was little connection between the number 3 and a particular friend. This was a fair complaint. In order to solve this problem we may allow for users to change the name of their security levels. iFor instance, we could allow a mapping between the security level 3 and the label ``family friends.'' This would place a strong intuitive link between the security levels and their friends.
+\newline \indent We must note that we can not take these tests as a conclusively indicator of the usefulness of our solution. Due to the constraints on time our sample space is incredibly small and we can not confidently extrapolate that to the general public, or even a specific group of people. There is also a clear limitation on our testing environment, it can not be said that our test environment is representative of any real-life scenario. For instance, in no situation would a user have an observer making notes.
 
 \subsection{What I would have done differently}
-Replacing keys automatically after a set period of time. (ie. they expire)
-\\ Implement adjustable lower bounds as per Jason Crampton's algorithm.
-\\ Employ a more lazy key revocation scheme.
 
 \section{Conclusion}
+Our solution undoubtably achieves greater automation in file sharing without sacrificing any access control. However it does not come without constraints. It requires the user to order the people they wish to share their files with in a fairly strict hierarchy. The degree to which people can adopt this into their lives is yet to be seen and thorough case studies, or a release, would have to be done before we can know for sure.
 
 \subsection{Achievements}
 
 \subsection{Future work}
+\subsubsection*{User experience}
+\paragraph*{Customisable bounds} It may be the case that the user requires more or less than 5 security levels. Increasing the number of levels after they have already been created would not be difficult, it would be little different to creating the keys at registration as we do now. However the extra keys created would have to be either the lowest or highest security levels to be done without fuss. If the level required to be added was in the middle the key one below would have to be re-encrypted with the new key and re-sent to the server. Reducing the number of levels could be done by simply discarding the files associated with that level, removing that key from the server and re-encrypting the key one level down from the level to be removed by the key one level up from the level to be removed.
+\paragraph*{Adjustable friend security levels} At this point in time, if a user wishes to change the security level of a friend they would have to revoke the friend entirely and add him again. This is involves unecessary work for what may be a computationally simple task. If the friends permissions are to be increased this could be done in the same way a friend is added now, that is send the friend the key for the new highest level they can access, encrypted with their public key, and allow them to derive any keys inbetween their new level and their old level. If the friend's level is to be lowered, all keys between their new level and old level have to be revoked, new keys generated and distributed and files associated with those levels have to be re-encrypted.
+\paragraph*{Adjustable lower bounds for friends} Currently a user can only state an upper bound for a friend. However it may be the case that the user only wishes to share a certain interval or that the friend is not interested in their low-level files. This could be achieved by using Jason Crampton's method as explained in the background section.
+\paragraph*{Lazy computation} Currently our solution attempts to do as much work as possible when the work arrives. This often causes delays which the user must wait out before they can continue using our application. This is most evident when registering a new account and revoking a user.
+\paragraph*{User interface} The user interface at this point in time is lacking. It is not particularly aesthetically pleasing and has little in the way of instructions. An introductory page which explains the functionality at a high level and gives guidance on how the user may best use the features on offer would be necessary before our solution could be publicly released.
+
+\subsubsection*{Security}
+\paragraph*{Automatic key replacement} Every time a key is used to encrypt a file it produces ciphertext. An attacker can store these ciphertexts and perform cryptanalysis. The larger the number of ciphertexts the attacker has the easier it is for them to do this. For this reason the same key should not be used for long periods of time. In our current solution the public/private key pair are never replaced and the symmetric keys are only replaced when a friend is revoked access. Future work to improve security would be to automatically replace the keys after they have been active for a set period of time or after they have produced a certain number of ciphertexts. Having a time limit on keys would likely be superior options as it would simpler to measure and no invasive information would have to be stored.
+\\ Implement adjustable lower bounds as per Jason Crampton's algorithm.
+\\ Employ a more lazy key revocation scheme.
+
 
 \begin{thebibliography}{10}
 
