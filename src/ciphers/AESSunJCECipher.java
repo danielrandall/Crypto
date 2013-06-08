@@ -18,10 +18,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class AESSunJCECipher {
+public class AESSunJCECipher implements Ciphers {
 	
 	private static final String ALGORITHM = "AES";
-	private static final String MODE = "CFB";
+	private static final String MODE = "CBC";
 	private static final String PADDING = "PKCS5PADDING";
 	private static final String PROVIDER = "SunJCE";
 	
@@ -34,7 +34,7 @@ public class AESSunJCECipher {
 		AESSunJCECipher cipher = new AESSunJCECipher();
 		
 		/* Read file */
-		String fileLocation = "testfiles/multipage111.pdf";
+		String fileLocation = "testfiles/200MB.zip";
 		File file = new File(fileLocation);
 		
 		try {
@@ -56,7 +56,7 @@ public class AESSunJCECipher {
 		/* Test */
 		long startTime = 0;// = System.nanoTime();
 		
-		for (int i = -1000; i < 1000; i++) {
+		for (int i = -100; i < 100; i++) {
 			if (i == 0)
 				startTime = System.nanoTime();;
 			byte[] encryptedFile = cipher.encrypt(fileContents, key, iv);

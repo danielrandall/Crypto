@@ -25,7 +25,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 public class AESBCCipher {
 	
 	private static final String ALGORITHM = "AES";
-	private static final String MODE = "CFB";
+	private static final String MODE = "CBC";
 	private static final String PADDING = "PKCS5PADDING";
 	private static final String PROVIDER = "BC";
 	
@@ -38,7 +38,7 @@ public class AESBCCipher {
 		AESBCCipher cipher = new AESBCCipher();
 		
 		/* Read file */
-		String fileLocation = "testfiles/multipage111.pdf";
+		String fileLocation = "testfiles/200MB.zip";
 		File file = new File(fileLocation);
 		
 		try {
@@ -60,7 +60,7 @@ public class AESBCCipher {
 		/* Test */
 		long startTime = 0;// = System.nanoTime();
 		
-		for (int i = -1000; i < 1000; i++) {
+		for (int i = -100; i < 100; i++) {
 			if (i == 0)
 				startTime = System.nanoTime();;
 			byte[] encryptedFile = cipher.encrypt(fileContents, key, iv);

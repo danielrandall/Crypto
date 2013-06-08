@@ -49,7 +49,6 @@ public class Actions {
 	
 		/* Send username to server */
 		ServerComms.toServer(usernameToAdd);
-		System.out.println(usernameToAdd);
 			
 		/* Receive response */
 		response = ServerComms.fromServer();
@@ -77,7 +76,7 @@ public class Actions {
 				securityLevel);
 		
 		/* Encrypt the highest key with the user to add's public key */
-		byte[] encryptedKey = FileOperations.asymmetricEncrypt(keyToSend, SecurityVariables.ConvertBytesToPublicKey(usersPublicKey));
+		byte[] encryptedKey = FileOperations.asymmetricEncrypt(keyToSend, usersPublicKey);
 		
 		/* Send key to the server */
 		ServerComms.sendBytes(encryptedKey, encryptedKey.length);
@@ -97,9 +96,8 @@ public class Actions {
 		
 		/* Retrieve this user's private key */
 		byte[] privateKeyBytes = KeyStoreOperations.retrievePrivateKey();
-		PrivateKey privateKey = SecurityVariables.ConvertBytesToPrivateKey(privateKeyBytes);
 		
-		KeyDerivation.deriveKeys(username, privateKey, securityLevel);
+		KeyDerivation.deriveKeys(username, privateKeyBytes, securityLevel);
 		
 	}
 	
@@ -161,7 +159,6 @@ public class Actions {
 		ServerComms.toServer(DOWNLOAD_FILE);
 		
 		String rev = processDownload(fileName, DOWNLOAD_LOCATION);
-		System.out.println(rev);
 		/* Send file information to the server */
 		ServerComms.toServer(rev);
 		
@@ -188,8 +185,6 @@ public class Actions {
 		/* Receive back the IV and security level needed for decryption */
 		byte[] iv = ServerComms.getBytes();
 		String securityLevel  = ServerComms.fromServer();
-		
-		//System.out.println(securityLevel);
 		
 		String downloadFolderLocation = FRIEND_FILE_DOWNLOAD_LOCATION + "/" + owner;
 		
@@ -455,7 +450,6 @@ public class Actions {
 		
 		/* Retrieve this user's private key */
 		byte[] privateKeyBytes = KeyStoreOperations.retrievePrivateKey();
-		PrivateKey privateKey = SecurityVariables.ConvertBytesToPrivateKey(privateKeyBytes);
 		
 		for (int i = 0; i < numUpdates; i++) {
 			
@@ -465,7 +459,7 @@ public class Actions {
 			 * you have access to) and its security level from the server */
 			String securityLevel = ServerComms.fromServer();
 			
-			KeyDerivation.deriveKeys(username, privateKey, securityLevel);
+			KeyDerivation.deriveKeys(username, privateKeyBytes, securityLevel);
 			
 		}
 		
@@ -502,12 +496,10 @@ public class Actions {
 		for (int i = 0; i < encryptedKeys.length; i++) {
 			byte[] encryptedKey = encryptedKeys[i].getEncryptedKey();
 			ServerComms.sendBytes(encryptedKey, encryptedKey.length);
-			System.out.println(encryptedKey);
 			ServerComms.getInt();
 			
 			byte[] iv = encryptedKeys[i].getIV();
 			ServerComms.sendBytes(iv, iv.length);
-			System.out.println(iv);
 			ServerComms.getInt();
 		}
 		

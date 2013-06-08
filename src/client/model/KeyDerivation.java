@@ -7,7 +7,7 @@ import client.model.keystore.KeyStoreOperations;
 public class KeyDerivation {
 	
 	
-	public static void deriveKeys(String username, PrivateKey privateKey, String securityLevel) {
+	public static void deriveKeys(String username, byte[] privateKey, String securityLevel) {
 		
 		/* Retrieve the most influential key (ie. the highest security level
 		 * you have access to) and its security level from the server */

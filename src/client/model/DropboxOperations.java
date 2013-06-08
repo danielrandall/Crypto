@@ -45,7 +45,7 @@ public class DropboxOperations {
 	private static Session session;
 	
 	
-	
+	/*
 	public static void main(String[] args) {
 		
 		String[] stuff = authenticate();
@@ -77,17 +77,16 @@ public class DropboxOperations {
 		
 		System.out.println(rev);
 	}
+	*/
 	
 	
 	/* Given the necessary information this method creates a Dropbox session
 	 * and stores it and returns it.
 	 */
-    public static Session makeSession(String key, String secret) {
+    public static void makeSession(String key, String secret) {
     	
     	AccessTokenPair atp = new AccessTokenPair(key, secret);
     	session = new WebAuthSession(KEY_PAIR, ACCESS_TYPE, atp);
-    	
-    	return session;
     	
     }
 

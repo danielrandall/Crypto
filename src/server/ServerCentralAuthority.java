@@ -133,7 +133,6 @@ public class ServerCentralAuthority {
 		boolean userExists = false;
 		
 		String usernameToAdd = comms.fromClient();
-		System.out.println(usernameToAdd);
 			
 		userExists = UserOperations.checkUserExists(usernameToAdd);
 			
@@ -288,10 +287,8 @@ public class ServerCentralAuthority {
 	private static void uploadEncryptedFile(String username,
 			Session session, ClientComms comms) {
 		
-		System.out.println("in");
 		
 		int securityLevel = Integer.parseInt(comms.fromClient());
-		System.out.println(securityLevel);
 		
 		/* Send acknowledgement */
 		comms.sendInt(1);
@@ -299,9 +296,7 @@ public class ServerCentralAuthority {
 		byte[] iv = comms.getBytes();
 		
 		String rev = comms.fromClient();
-		System.out.println(rev);
 		String fileName = comms.fromClient();
-		System.out.println(fileName);
 		
 		ServerFileOperations.addFile(securityLevel, username, comms, iv, rev);
 		
@@ -313,10 +308,7 @@ public class ServerCentralAuthority {
 
 	private static void downloadDecryptedFile(String username, ClientComms comms) {
 		
-		System.out.println("out");
-		
 		String rev = comms.fromClient();
-		System.out.println(rev);
 		
 		Object[] fileInfo = ServerFileOperations.getFileInfo(rev);
 		

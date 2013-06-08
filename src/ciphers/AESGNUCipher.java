@@ -8,7 +8,7 @@ import java.io.InputStream;
 public class AESGNUCipher extends GNUCryptoCipher {
 	
 	private static final String CIPHER_TYPE = "AES";
-	private static final String MODE_TYPE = "CFB";
+	private static final String MODE_TYPE = "CBC";
 	private static final String PADDING_SCHEME = "PKCS7";
 	/* Block size used for the cipher. Recorded in bytes. */
 	private static final int BLOCK_SIZE = 16;
@@ -30,8 +30,9 @@ public class AESGNUCipher extends GNUCryptoCipher {
 		byte[] fileContents = null;
 		
 		/* Read file */
-		String fileLocation = "testfiles/multipage111.pdf";
+		String fileLocation = "testfiles/200MB.zip";
 		File file = new File(fileLocation);
+		
 		AESGNUCipher cipher = new AESGNUCipher();
 		
 		try {
@@ -53,7 +54,7 @@ public class AESGNUCipher extends GNUCryptoCipher {
 		/* Test */
 		long startTime = 0;// = System.nanoTime();
 		
-		for (int i = -1000; i < 1000; i++) {
+		for (int i = -100; i < 100; i++) {
 			if (i == 0)
 				startTime = System.nanoTime();;
 			byte[] encryptedFile = cipher.encrypt(fileContents, key, iv);

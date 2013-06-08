@@ -114,11 +114,9 @@ public class UserOperations {
 		
 		for (int i = 0; i < numKeys; i++) {
 			encryptedKeys[i] = comms.getBytes();
-			System.out.println(encryptedKeys[i]);
 			comms.sendInt(1);
 			
 			ivs[i] = comms.getBytes();
-			System.out.println(ivs[i]);
 			comms.sendInt(1);
 			
 			securityLevels[i] = highestSecurityLevel + i;

@@ -31,8 +31,8 @@ public class SecurityVariables {
 	private static final int NUMBER_SECURITY_LEVELS = 5;
 	private static final int HIGHEST_SECURITY_LEVEL = 1;
 	
-	/* Key size used for the cipher. Recorded in bytes. */
-	private static final int SYMMETRIC_KEY_SIZE = 32;
+	/* Key size used for the symmetric cipher. Recorded in bytes. */
+	private static final int SYMMETRIC_KEY_SIZE = 16;
 	/* Size of initialisation vector used for the cipher. Recorded in bytes.
 	 * The IV should be the size of the block_size */
 	private static final int IV_SIZE = 16;
@@ -51,6 +51,7 @@ public class SecurityVariables {
 	private static final String ASYMMETRIC_ALGORITHM = "RSA";
 	private static final String ASYMMETRIC_ALGORITHM_PROVIDER = "SUN";
 	
+	/* The key size used in the asymmetric cipher. Recorded in bits */
 	private static final int ASYMMETRIC_KEY_SIZE = 2048;
 	
 	
@@ -139,46 +140,6 @@ public class SecurityVariables {
 		}
 		
 		return keyPair;
-		
-	}
-	
-	
-	public static PublicKey ConvertBytesToPublicKey(byte[] key) {
-		
-		try {
-			
-			KeyFactory keyFactory = KeyFactory.getInstance(ASYMMETRIC_ALGORITHM);
-			return keyFactory.generatePublic(new X509EncodedKeySpec(key));
-			
-		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return null;
-		
-	}
-	
-	
-	public static PrivateKey ConvertBytesToPrivateKey(byte[] key) {
-		
-		try {
-			
-			KeyFactory keyFactory = KeyFactory.getInstance(ASYMMETRIC_ALGORITHM);
-			return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(key));
-			
-		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return null;
 		
 	}
 	

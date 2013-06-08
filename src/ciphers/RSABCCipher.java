@@ -17,7 +17,7 @@ public class RSABCCipher {
 	
 	private static final String ALGORITHM = "RSA";
 	private static final String MODE = "ECB";
-	private static final String PADDING = "PKCS1PADDING";
+	private static final String PADDING = "OAEPWITHSHA-512ANDMGF1PADDING";
 	private static final String PROVIDER = "BC";
 	
 	
@@ -25,12 +25,13 @@ public class RSABCCipher {
 		
 		Key key = SecurityVariables.GenerateAsymmetricKeyPair().getPublic();
 		byte[] fileContents = SecurityVariables.generateKey();
-		RSASunJCECipher cipher = new RSASunJCECipher();
+		
+		RSABCCipher cipher = new RSABCCipher();
 		
 		/* Test */
 		long startTime = 0;// = System.nanoTime();
 		
-		for (int i = -1000; i < 10000; i++) {
+		for (int i = -1000; i < 100000; i++) {
 			if (i == 0)
 				startTime = System.nanoTime();;
 			byte[] encryptedFile = cipher.encrypt(fileContents, key);

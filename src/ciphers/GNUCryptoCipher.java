@@ -17,7 +17,7 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class GNUCryptoCipher implements SymmetricCipher {
+public abstract class GNUCryptoCipher implements Ciphers {
 	
 	/* Returns null if the key is invalid
 	 * Cipher example: "AES"

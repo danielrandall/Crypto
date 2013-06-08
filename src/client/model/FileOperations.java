@@ -9,13 +9,14 @@ import java.security.Key;
 import java.security.PublicKey;
 
 import ciphers.AESGNUCipher;
+import ciphers.AESSunJCECipher;
 import ciphers.RSASunJCECipher;
-import ciphers.SymmetricCipher;
+import ciphers.Ciphers;
 import ciphers.SecurityVariables;
 
 public class FileOperations {
 	
-	private static SymmetricCipher cipher = new AESGNUCipher();
+	private static Ciphers cipher = new AESSunJCECipher();
 	private static RSASunJCECipher asymmetricCipher = new RSASunJCECipher();
 	
 	/* Encrypts a given file and returns encrypted file and the generated iv
@@ -101,17 +102,17 @@ public class FileOperations {
 
 
 	public static byte[] asymmetricEncrypt(byte[] content,
-			Key publicKey) {
+			byte[] publicKey) {
 	
-		return asymmetricCipher.encrypt(content, publicKey);
+		return asymmetricCipher.encrypt(content, publicKey, null);
 				
 	}
 	
 	
 	public static byte[] asymmetricDecrypt(byte[] content,
-			Key privateKey) {
+			byte[] privateKey) {
 	
-		return asymmetricCipher.decrypt(content, privateKey);
+		return asymmetricCipher.decrypt(content, privateKey, null);
 				
 	}
 
