@@ -37,13 +37,13 @@ Acknowledgements
 \section{Introduction}
 
 \subsection{Motivation}
-The internet has caused an explosion in the number of ways to share files. People are now, more than ever, relying on the internet to share data. For many years email was the platform of choice to achieve this, however recent years has seen this superseded by many specialised platforms in order to meet the differing needs in users. These have been in the form factor of file systems in Dropbox, document collaboration in Google Drive and Microsoft SharePoint, as well as social networks in Facebook. In general, the user sharing the file has no interest in sharing it with every user of the internet and so each platform implements some variant of access control. Typically the platforms available today allows for the user to configure the access control for their files by specifying the recipients of the file they are uploading with each file uploaded. Some efforts have been made in eliminating the need to specify access control requirements for every file, this can be seen in platforms that offer `shared folders', however it is often the case that a user has more than one group they wish to share the file with. Not only does this result in having to upload the file more than once, it also results in multiple instances of the file to be managed. Our solution to the access control problem is a Dropbox App which employs cryptography to allow files to be `freely' available, with the key which grants access being derivable to all members, in all groups you wish to access it, thus automating the entire process. Using the readily available Dropbox API, our App automatically encrypts and stores selected files in a Dropbox folder. When the importance of the files has been indicated, it is shared with friends that are of equal or greater importance to the file. 
+The internet has caused an explosion in the number of ways to share files. People are now, more than ever, relying on the internet to share data. For many years email was the platform of choice to achieve this, however recent years has seen this superseded by many specialised platforms in order to meet the differing needs in users. These have been in the form factor of file systems in Dropbox, document collaboration in Google Drive and Microsoft SharePoint, as well as social networks in Facebook. In general, the user sharing the file has no interest in sharing it with every user of the internet and so each platform implements some variant of access control. Typically the platforms available today allows for the user to configure the access control for their files by specifying the recipients of the file they are uploading with each time they wish to share data. Some efforts have been made in eliminating the need to specify access control requirements for every file, this can be seen in platforms that offer `shared folders', however it is often the case that a user has more than one group they wish to share the file with. Not only does this result in having to upload the file more than once, it also results in multiple instances of the file to be managed. Our solution to the access control problem is a desktop Dropbox App which employs cryptography to allow files to be `freely' available, with the key which grants access being derivable to all members, in all groups you wish to access it, thus automating the entire access control management process. Using the readily available Dropbox API, our App automatically encrypts and stores selected files in a Dropbox folder. When the importance of the files has been indicated, it is shared with friends that are of equal or greater importance to the file.
 \newline \indent The basis for this project is a relatively new field, hierarchical cryptography. We harness these techniques to implement access control between users on file resources.
 \newline
 \newline \indent This report begins with the background research into the technical work behind this system. This will cover the different types of access control available to us and the cryptography that shall be used to enforce this. We will then examine similar products and techniques and show the limitations in their application. In section 3 we proceed to describe the necessary components of the system and rationalise our choices of the 3rd part software to employ. We discuss the best platform to build our work on.
 
 \subsection{Objectives}
-The objectives for this project is design a system which automatically share a files with many people at once, and also do this consistently without sacrificing the desired access control. Users can do this by labelling each file with a security level and each friend with a security level. Our system would deal with the cryptography `under the hood' without troubling the user with technical requests. Our system would ideally run at a high speed, similar to alternative file-sharing platforms.
+The objectives for this project is to design a system which automatically shares files with many people at once, and also do this consistently without sacrificing the desired access control. Users should be able to achieve this by labelling each file with a security level and each friend with a security level. Our system would deal with the cryptography `under the hood' without troubling the user with technical requests. Our system would ideally run at a high speed, similar to alternative file-sharing platforms.
 
 \section{Background Research}
 \subsection{Overview}
@@ -340,6 +340,13 @@ NIST recommends the use of PBKDF2 in the use of the password storage.\cite{nistP
 \newline There currently exists GPUs which contain modern field-programmable gate arrays with RAM which can be used to optimise attacks on bcrypt. A new password scheme has been designed to combat this problem called scrypt\footnote{http://www.tarsnap.com/scrypt.html}, however it has only existed for a small amount of time (4 years at the time of writing) and so has not yet `stood the test of time' like that of bcrypt (nearly 14 years at the time of writing.)
 \newline For these reasons we shall use bcrypt to store passwords in our system. 
 
+\subsubsection{Random number generator}
+As we have discussed, in order to complete certain actions with our cryptography algorithms our users are going to require keys and initialisations vectors. Wen need a way to generate these when we desire. However we need to achieve this in a secure way. By secure, we mean in a manner which can not be feasibly predicted by an attacker, even given the entire past sequence of numbers generated. This important as if the generation of the keys can be predicted in any way (ie. the 1000th instance will be equal to the 1st) then the attacker would be manipulate our solution into finding our the keys for some user, thereby gaining access to their files. A similar argument can be made for predicatable initialisation vectors, if an attacker is able to predict the IVs generated then the symmetric cipher mode we have chosen for our solution, CBC, is not properly implemented and would become equivalent to ECB. A mode which we have already decided is insufficient for our requirements.
+\newline \indent Due to our requirements we can not use the most popular software random number generators (RNG) in use today. The majority of the RNG or not truly random, but are deterministic and are so called psuedo random number generators (PRNG). The majority of PRNG are based on the linear congruential generator (java.util.Random, C rand()) or the linear feedback shift register. PRNG based on linear congruential generators have been proven to be easily predictable.\cite{lcgPRNGPredictable} Thus we shall avoid all generators based upon such models.
+\newline \indent Ideally we do not wish for pseudo random numbers but for truly random numbers. This can be achieved by using hardware RNGs. Such hardware is generally based upon unpredictable physics-based events. For instance hardware RNGs based upon a Geiger–Müller counter detects and counts the radiation particles passing by it every minute.\footnote{http://www.blackcatsystems.com/GM/products/GM10GeigerCounter.html} Unfortunately there is not enough funds for this project to purchase such equipment and, even if we could, we would then have to transfer the number from the server to the client.
+\newline \indent While we can not use completely predictable PSRNGs and we cannot attain truly RNGs, a compromise can be reached. The compromise is in the form of secure PSRNGs. Secure PSRNGs extracts seeds some truly random sources, such as \textit{/dev/random} on a Linux machine, and use that to generate pseudo random numbers. To obtain as close to truly random numbers as we can we could simply use the seeds as our random numbers, but this can be a slow process as the call to /dev/random blocks when enough entropy has not been collected. However as the functioning of our solution relies on the 
+the secure generation of these numbers, there is little we can about this.
+
 
 \subsection{Algorithm providers}
 There are many different providers of cryptographic algorithms for Java, however there is little literature on the differences between them. This is problematic due to the fact our system is very likely to execute these algorithms very frequently and if the implementation is inefficient we may end up with unecessary delays. The possible ways we can differentiate between the different implementations are as follows:
@@ -418,10 +425,11 @@ We are only using the RSA algorithm for one purpose, that is to encrypt symmetri
 \end{center}
 
 \subsection{File sharing platform}
-The system we are developing needs some way to transfer files from one user to another when they desire. The are many ways in which we can do this. Preferably the method we choose allows for us to easily automate sending and receiving of the files to minimise the work the user has to conduct to assist the working of application. This requirement rules out methods such as email, Facebook and Skype.
-\newline \indent As observed by Fu, Kamara and Kohno an appropriate file transfer method for herarchical access control is a content distribution network such as BitTorrent.\cite{bittorrent} However, in our case, due to a number of different torrent clients available (Utorrent, Deluge...), many different ways to connect to a tracker (.torrent files, magnetic links...), inconsistent performance and a lack of programmable interface means that implementing and testing our system would pose a challenging task.
-\newline \indent There are many modern dedicated filesharing tools available today that we can consider. Some of these are: Dropbox, Mega and Wuala. These tools are ideal in the sense that they borrow the folder structure implemented by filesystems which naturally conform to strict hierarchy requirements. This means we have a lot of power in how we can choose to manage our files. Dropbox is incredibly popular, with over 100 million users collectively saving 1 billions files per day.\footnote{https://www.dropbox.com/news/company-info} It also has an extensive SDK for many different programming languages. Mega is a relatively new file hosting service (19 January 2013) with over 3 million members.\footnote{https://twitter.com/KimDotcom/statuses/304003119447158784} Mega  has stricter security requirements than that of Dropbox which closer match what we a trying to achieve. For instance, encryption is performed client side using AES in CBC mode with a 128-bit key.\footnote{https://mega.co.nz/\#developers} However as we are having to perform this actions ourselves, regardless, it is irrelevent to us, if not a hindrance due to wasted CPU time. At the time writing an SDK has been proposed but not released.
-\newline Due to the extremely large userbase, multi-platform support and a extensive `tried-and-tested' SDK we shall use Dropbox to transfer our files.
+The system we are developing needs some way to transfer files from one user to another when they desire. The are many ways in which we can do this. Preferably the method we choose allows for us to easily automate sending and receiving of the files to minimise the work the user has to conduct to assist the working of application. This requirement rules out methods such as email, Facebook and Skype. Ideally the platform also allows us to make the files publically available. As we intend to encrypt the files they do not need to be hidden away.
+\newline \indent As observed by Fu, Kamara and Kohno an appropriate file transfer method for herarchical access control is a content distribution network such as BitTorrent.\cite{bittorrent} However, in our case, due to a number of different torrent clients available (uTorrent, Deluge...), many different ways to connect to a tracker (.torrent files, magnetic links...), inconsistent performance this would be a challenging task to start from scratch. However there is a a Web API for uTorrent.\footnote{http://www.utorrent.com/community/developers/webapi} Unfortunately there are limitiations to the uTorrent API. It only provides as way to proccess a .torrent and so we would still need a centralised BitTorrent tracker. This could be achieved by using a public tracker such as The Pirate Bay, however we would still need some way of uploading the torrents to the tracker websites, as well as a way of keeping track of the files uploaded and who they have been uploaded by. The uTorrent API is also does not allow of us to control where individual files are downloaded, this means that using the API requires us to download the files in the same location as files that have been downloaded using uTorrent outside of our system. Lastly uTorrent as an application is also only available on Windows, thereby limiting our development and deployment platforms.
+\newline \indent There are many modern dedicated filesharing tools available today that we can consider. Some of these are: Dropbox, Mega and Wuala. These tools are ideal in the sense that they borrow the folder structure implemented by filesystems which naturally conform to strict hierarchy requirements. This means we have a lot of power in how we can choose to manage our files. Dropbox is incredibly popular, with over 100 million users collectively saving 1 billions files per day.\footnote{https://www.dropbox.com/news/company-info} It also has an extensive SDK for many different programming languages. However with the discontinuation of its `public folder'\footnote{https://www.dropbox.com/developers/blog/19} we have no way of making our encrypted files publically available.
+\newline \indent Mega is a relatively new file hosting service (19 January 2013) with over 3 million members.\footnote{https://twitter.com/KimDotcom/statuses/304003119447158784} Mega  has stricter security requirements than that of Dropbox which closer match what we a trying to achieve. For instance, encryption is performed client side using AES in CBC mode with a 128-bit key.\footnote{https://mega.co.nz/\#developers} However as we are having to perform this actions ourselves, regardless, it is irrelevent to us, if not a hindrance due to wasted CPU time. But it does allow us to controler what degree of access a user has, such as `read', or `read/write' which will be useful to us. However at the time of writing an SDK for Mega has been proposed but not released.
+\newline \indent As we just described, there is there no existing platform which meets all of needs, which means we will have to make sacrifices. The closest storage for our solution is BitTorrent as well will be able to make the files public. However the SDK available for it has a number of limitations and the time constraints on this project mean that is not feasible to create solutions for them all. Therefore, due to the extremely large userbase, multi-platform support and a extensive `tried-and-tested' SDK we shall use Dropbox to transfer our files.
 
 \subsection{Platform and programming language}
 Dropbox has a choice of SDKs which can be used for this project: the options for desktop development are written in Python, Java and Ruby, while for mobile development there are options for Android and iOS development.
@@ -446,6 +454,16 @@ Some popular embedded Java database we could use are:
 H2 at 1.5MB has a smaller footprint than Derby, 2.6MB. H2 also claims to have superior performance when compared to Derby for simple queries.\footnote{www.h2database.com/html/performance.html} It is unlikely that we will have to execute more complex queries beyond simple SELECT... FROM ... WHEREs meaning that the tests likely to be highly relevant to our situation.
 \newline \indent Hibernate is a database framework designed to be able to make Object/Relational Mapping easier. The only object that would be convenient to store in the database is the `friends list' we intend to design. Considering the use of Hibernate comes with an overhead and in order to use the latest stable version (v. 4.2.2) we have to include 8 .jar files totalling 6.3MB, it would seem overkill to use solely for a single object. Instead it may be more sensible to simply use the Java \textit{serialization} process and store that in a `simple' database.
 \newline \indent For these reasons we shall employ the H2Database in our system without the Hibernate framework.
+
+\subsection{Random number generator}
+We need to generate random numbers for the following:
+\begin{itemize}
+	\item \textbf{AES keys}
+	\item \textbf{Initialisation vectors for AES}
+	\item \textbf{Public/private key pair for RSA}
+\end{itemize}
+The default PSRNG implementations for the \textit{SecureRandom} Java class are NativePRNG for Linux, which uses /dev/random to seed, and SHA1PRNG for Windows, which uses CryptoGenRandom to seed.
+\newline \indent The RSA public/private key related to each in a mathematical way, therefore generating two random numbers is not sufficient. It would seem unnecessary, as well as the introduction for possible error, for us to conduct the mathematic necessary to create them ourselves. Therefore we shall use a pre-existing solution. Java offers a KeyPairGenerator class which can supplemented with an algorithm provider and a PSRNG.
 
 \section{Implementation}
 In this section we shall discuss the implementations created as a result of our discussion in the previous section.
@@ -521,53 +539,126 @@ Creating a folder for a user of which they have access at no level can only have
 In this section we shall evaluate the speed at which our solution can perform certain tasks. These tasks include: log in, file upload, file download, sending a friend request, accepting a friend request and revoking a user.
 \newline \indent As shown in the section where compare the differences between different implementations of the AES algorithms, the time it takes to complete varies greatly on the size of the file used to encrypt. Thus, similar to that section, we shall run tests on files of different sizes. Where possible we shall also use the same files as in that section in order to determine how much of the running time is spent on logic/Dropbox and how much on cryptography.
 \newline \indent The benchmarks shall all be measured on the client-side. In the real world it matters how much stress the server is under due to cost, however for the sake of this project we shall concentrate on the user experience. The cryptography, and therefore vast majority of the work, is done on the client side and so ignoring the server's workload should not matter so much.
+\newline \indent There are many occasions in our solution where there is a need to generate parameters for cryptography, such as keys and initialisation vectors. To do this randomly the algorithms need to collect a lot of \textit{entropy}. To achieve this most secure algorithms collect values from the computer they are running on such as the temperature of the CPU, mouse movements and keyboard strokes. Because of this these algorithms are able to run faster when the user is actively using the computer. For this reason, when we are testing an action which requires this, we shall show the time the actions take at different levels of user activity.
 
 \subsection{Uploading a file}
 These tests for uploading a file are run from the beginning of the \textit{Controller} for this action on the client-side until it returns. This means we are ignoring the time taken for the controller and GUI to interacting, to extract the user's request and to update the display, but this should be minimal.
-\newline \indent The results of the test can be seen in Table~\ref{tab:uploadBenchmark}. It takes 4 seconds on average to upload a 1.3MB pdf. As we saw before it took on average 0.011 seconds to encrypt the same file using AES. In this case the bottleneck is not the cryptography.
+\newline \indent The results of the test can be seen in Table~\ref{tab:uploadBenchmark}. It takes 4 seconds on average to upload a 1.3MB pdf. As we saw when looking for an AES provider, it took on average 0.011 seconds to encrypt the same file using AES. In this case the bottleneck is not the cryptography, but is likely the transfer of the file information between the client and server or uploading files to Dropbox. As can be seen from Table~\ref{tab:uploadDropboxBenchmark} uploading the files to Dropbox represents the biggest chunk of time. For instance, on average for the 1.3MB pdf, uploading the file to Dropbox takes between 86 and 93\% of the total time our solution requires. Therefore our solution adds an overage overhead of 8 between 15\%.
 
 % Time taken to upload a file
-\begin{center}
+\bigskip
 \begin{table}[h!]
-    \begin{tabular}{ | l | l | l | l |}
+\begin{center}
+    \begin{tabular}{ | l | l | l | l | l |}
     \hline
-    File & Iterations & Time taken (seconds) & Average \\ \hline
-    
-    1.3MB pdf & 100 & 417.694203792 & 4.176942 \\ \hline
+    \textbf{File} & \textbf{Entropy help} & \textbf{Iterations} & \textbf{Time taken (seconds)} & \textbf{Average} \\ \hline
+    1.3MB pdf & Wild mouse movement & 10 & 39.007998196 & 3.9 \\ \hline
+    1.3MB pdf & Casaul typing and browsing & 10 & 41.7694203792 & 4.18 \\ \hline
     
     \end{tabular}
     \caption{The time taken to upload different files using our solution.} \label{tab:uploadBenchmark}
-    \end{table}
-\end{center}
+    \end{center}
+\end{table}
 
-\subsection{Downloading a file}
-
-% Time taken to download a file
-\begin{center}
+% Time taken to upload a file to Dropbox
+\bigskip
 \begin{table}[h!]
+\begin{center}
     \begin{tabular}{ | l | l | l | l |}
     \hline
-    File & Iterations & Time taken (seconds) & Average \\ \hline
+    \textbf{File} & \textbf{Iterations} & \textbf{Time taken (seconds)} & \textbf{Average} \\ \hline
     
-    1.3MB pdf  & 100 &   &  \\ \hline
+    1.3MB pdf & 10 & 36.34874983 & 3.63 \\ \hline
+    2MB zip & 10 & & \\ \hline
+    
+    \end{tabular}
+    \caption{The time taken to read and upload different files to Dropbox directly, without encrypting, communicating with the server or using any logic.} \label{tab:uploadDropboxBenchmark}
+    \end{center}
+\end{table}
+
+
+
+\subsection{Downloading a file}
+The results from the test can be seen in Table~\ref{tab:downloadBenchmark}. The first thing one might notice is that there is slightly faster performance for downloading when compared to uploading. One possible explanation for this is that typically networks have a faster maximum download speed than upload speed.
+
+% Time taken to download a file
+\bigskip
+\begin{table}[h]
+\begin{center}
+    \begin{tabular}{ | l | l | l | l |}
+    \hline
+    \textbf{File} & \textbf{Iterations} & \textbf{Time taken (seconds)} & \textbf{Average} \\ \hline
+    
+    1.3MB pdf  & 100 &  334.414793942 & 3.34 \\ \hline
     
     \end{tabular}
     \caption{The time taken to download different files using our solution} \label{tab:downloadBenchmark}
+    \end{center}
     \end{table}
-\end{center}
+\bigskip
 
 
 \subsection{Log in}
+When a user logs in the client needs to contact the server to acquire information about its own files and the files friends have shared with them, such as their security level. Due to this the time it takes a user to log in will likely correlate with the number of files they currently have access to. Therefore in order to get a good idea of how long this takes we shall measure the time when the user has access to varying number of files. The results for this can be seen in Table~\ref{tab:loginBenchmark}.
+\newline \indent There is clearly a significant increase in the time it takes to log in as the number of files the user has access to increases. In Figure~\ref{fig:loginLineGraph} we can see a visual representation of the rate of increase. As we can see from the graph the rate of increase is almost linear.
+\newline \indent Applications which pull information from a server, ie. Skype, typically have longer log in times than other applications.
+
+
+
+% Time taken to log in
+\begin{table}[h]
+	\begin{center}
+    	\begin{tabular}{ | l | l | l | l |}
+    \hline
+    \textbf{Number of files} & \textbf{Iterations} & \textbf{Time taken 		(seconds)} & \textbf{Average} \\ \hline
+    
+    0  & 10 & 28.717884417 & 2.87 \\ \hline
+    5  & 10 & 37.766417567 & 3.78 \\ \hline
+    10 & 10 & 41.748590981 & 4.17 \\ \hline
+    25 & 10 & 62.00080726 & 6.20 \\ \hline
+    50 & 10 & 118.726741348 & 11.87 \\ \hline
+    
+    \end{tabular}
+    \caption{The time taken to log in using our solution with the user having access to a number of different files.}
+    \label{tab:loginBenchmark}
+   \end{center}
+\end{table}
+    
+\begin{figure}[!t]
+\centerline{\includegraphics[height=4.0in,width=7in,angle=0]{plots/login/loginTimes.pdf}}
+\caption{A line graph plotting the time the average time it takes to log in when a user has access to a different number of files.}
+\label{fig:loginLineGraph}
+\end{figure}
 
 
 \subsection{Register}
+When a user registers they have to manually log in to Dropbox and approve our application. The time it takes to do this can vary massively between different users. For this reason that part of registration is omitted from our measurements. 
+\newline \indent Registration is the part of our solution which requires the most cryptography and client/server communication. For this reason we can expect registration to be the most time consuming process in our system. This is not unusual and can be seen in similar applications such as Mega.
+\newline \indent During registration a lot of cryptography values need to be generated. This action will likely have the most variation in the amount of entropy collected by our the algorithms.
+\newline \indent The results for our tests can be seen in Table~\ref{tab:registerBenchmark}. 
+
+
+% Time taken to register
+\begin{table}[h]
+	\begin{center}
+    	\begin{tabular}{ | l | l | l | l |}
+    \hline
+     \textbf{Entropy help} & \textbf{Iterations} & \textbf{Time taken 		(seconds)} & \textbf{Average} \\ \hline
+    No mouse or keyboard movement & 10 &  &  \\ \hline
+    Wild mouse movement & 10 & 92.557535694 & 9.26 \\ \hline
+    
+    \end{tabular}
+    \caption{The time taken to register using our solution with varying levels of user activity.}
+    \label{tab:registerBenchmark}
+   \end{center}
+\end{table}
 
 
 \section{Evaluation}
 
 \subsection{User stories}
 In this section we shall attempt to evaluate how useful our solution is when applied to an `everyday' environment. To do this we will allow members of the public to use our solution. In order to evaluate it as accurately as possible we shall attempt to conduct our tests on an audience with a large variety of technical ability.
-\newline \indent Each test involves a single user and is divided into three sections: firstly at the beginning of each test we shall conduct a `cold' run, that is with little help the test subject will be allowed to use the solution as they see fit. Secondly we shall guide the test subject through solution, telling them exactly what to do where necessary. Lastly we shall ask the user questions. The questions will differ on each test and shall be asked as a reaction to the difficulties and confusion the user has while using the solution.
+\newline \indent Each test involves a single user and is divided into two sections: firstly at the beginning of each test we shall conduct a `cold' run, that is with little help the test subject will be allowed to use the solution as they see fit. Secondly we shall guide the test subject through solution, telling them exactly what to do where necessary.
 \newline \indent Before the beginning of a test the subject will be briefed on what our solution is trying to achieve. There will be little talk of the implementation and the brief will be much like the introduction to this paper.
 \newline \indent Once we have described the results of each test we will discuss our findings and what they mean in relation to our work.
 
@@ -576,6 +667,7 @@ Technical ability: Advanced
 
 \subsubsection{Test 2}
 Technical ability: Basic
+\newline \indent Once the application had started the user had no trouble navigating the interface to register her account. 
 
 
 \subsubsection{What we have learnt}
@@ -586,12 +678,18 @@ From the tests it is quite clear that the GUI is a limiting factor for user expe
 \subsection{What I would have done differently}
 
 \section{Conclusion}
-Our solution undoubtably achieves greater automation in file sharing without sacrificing any access control. However it does not come without constraints. It requires the user to order the people they wish to share their files with in a fairly strict hierarchy. The degree to which people can adopt this into their lives is yet to be seen and thorough case studies, or a release, would have to be done before we can know for sure.
+This project aims to increase the automation in file sharing with a group of friends who require different access control constraints. Our solution achieves this by using cryptography. It also is able to achieve this without troubling the users with technicalities, a user need not know what a `key' is, or how to derive and use them to access data.
+\newline \indent However it does not come without constraints. It requires the user to order the people they wish to share their files with in a fairly strict hierarchy. The degree to which people can adopt this into their lives is yet to be seen and thorough case studies, or a release, would have to be done before we can know for sure. From the \textit{User stories} section we can see that there may be some people this suits well, while others may find the lack of flexibility frustrating.
+\newline \indent It is also evident from the \textit{Benchmarking} section that our solution comes with an overhead. This is to be expected. Fortunately the biggest time consuming part of our solution, registration, only needs to be performed once. While there are 
 
 \subsection{Achievements}
 
 \subsection{Future work}
+\subsubsection*{Storage}
+\paragraph*{Public storage} Our solution uses private Dropbox folders which are accessed through an SDK. However using the techniques described and applied in this project we do not need to do this. As they are encrypted, and the encryption is not feasibly broken, they do not need to hidden and only shared with people with the key to decrypt. Thus our solution is more applicable, and may achieve superior results, with a more public domain. In this domain the files can be uploaded along with its IV and labelled with its owner, and no centralised server is needed.
 \subsubsection*{User experience}
+\paragraph*{Client-side database} In order to reduce the number the number of calls to the server we may introduce a client-side database. The database would mainly store the IVs and security levels for files that they have comes across before. This would enable the client to independently decrypt files and log in slightly quicker. This would be useful for users who frequently download the same file, or for files which are unlikely to change in the near future.
+\paragraph*{Client-side threading} We could mitigate the overhead required by our solution by executing commands on the client side in a new thread. By doing this we could allow the GUI to continue functioning. This would give the illusion that the commands are executed instantly. This would introduce concurrency issues if another command was executed before the previous one had finished. This could be prevented if we ignore, or queue, new commands until the previous command had finished executing. 
 \paragraph*{Customisable bounds} It may be the case that the user requires more or less than 5 security levels. Increasing the number of levels after they have already been created would not be difficult, it would be little different to creating the keys at registration as we do now. However the extra keys created would have to be either the lowest or highest security levels to be done without fuss. If the level required to be added was in the middle the key one below would have to be re-encrypted with the new key and re-sent to the server. Reducing the number of levels could be done by simply discarding the files associated with that level, removing that key from the server and re-encrypting the key one level down from the level to be removed by the key one level up from the level to be removed.
 \paragraph*{Adjustable friend security levels} At this point in time, if a user wishes to change the security level of a friend they would have to revoke the friend entirely and add him again. This is involves unecessary work for what may be a computationally simple task. If the friends permissions are to be increased this could be done in the same way a friend is added now, that is send the friend the key for the new highest level they can access, encrypted with their public key, and allow them to derive any keys inbetween their new level and their old level. If the friend's level is to be lowered, all keys between their new level and old level have to be revoked, new keys generated and distributed and files associated with those levels have to be re-encrypted.
 \paragraph*{Adjustable lower bounds for friends} Currently a user can only state an upper bound for a friend. However it may be the case that the user only wishes to share a certain interval or that the friend is not interested in their low-level files. This could be achieved by using Jason Crampton's method as explained in the background section.
@@ -715,6 +813,9 @@ Shay Gueron, Simon Johnson and Jesse Walker, \emph{SHA-512/256}, October 1, 2010
 \bibitem{bcryptPaper}
 Niels Provos and David Mazières, \emph{A Future-Adaptable Password Scheme}, 1999 USENIX Annual Technical Conference, June 6–11 1999,
 \\ Available at: \texttt{http://static.usenix.org/event/usenix99/provos/provos.pdf}. 
+
+\bibitem{lcgPRNGPredictable}
+Hugo Krawczyk, \emph{How to Predict Congruential Generators}, Computer Science Department, Technion, Haifa, Israel, May 1991. 
 
 \bibitem{dropboxPublicFolder}
 Dropbox API Team, \emph{``New sharing model will replace Public folder"},  15th June 2012,

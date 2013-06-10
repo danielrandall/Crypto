@@ -1,0 +1,11 @@
+#!/usr/bin/gnuplot
+ 
+set terminal postscript
+set output '| ps2pdf - loginTimes.pdf'
+
+set title "Log in times"
+set xlabel "Number of files the user has access to at log in"
+set ylabel "Average time taken to log in (seconds)"
+set ytics "1"
+plot "data" title "" with lines lt rgb "red"
+pause -1 "Hit any key to continue"
