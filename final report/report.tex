@@ -659,20 +659,45 @@ When a user registers they have to manually log in to Dropbox and approve our ap
 \subsection{User stories}
 In this section we shall attempt to evaluate how useful our solution is when applied to an `everyday' environment. To do this we will allow members of the public to use our solution. In order to evaluate it as accurately as possible we shall attempt to conduct our tests on an audience with a large variety of technical ability.
 \newline \indent Each test involves a single user and is divided into two sections: firstly at the beginning of each test we shall conduct a `cold' run, that is with little help the test subject will be allowed to use the solution as they see fit. Secondly we shall guide the test subject through solution, telling them exactly what to do where necessary.
-\newline \indent Before the beginning of a test the subject will be briefed on what our solution is trying to achieve. There will be little talk of the implementation and the brief will be much like the introduction to this paper.
-\newline \indent Once we have described the results of each test we will discuss our findings and what they mean in relation to our work.
+\newline \indent Before the beginning of a test the subject will be briefed on what our solution is trying to achieve. There will be little talk of the implementation and the brief will be much like the introduction to this paper. The subject will be given a list of people (with existing accounts) who they are able to, at their pleasure, ignore them, send friend requests to them and accept friend requests from them. The list is as follows:
+\begin{itemize}
+	\item Father
+	\item Mother
+	\item Aunt
+	\item Boss
+	\item Best friend
+	\item Friend \#1
+	\item Friend \#2
+	\item Close work colleague
+	\item Distant work colleague
+	\item Family friend	
+\end{itemize}
+Once we have described the results of each test we will discuss our findings and what they mean in relation to our work.
 
 \subsubsection{Test 1}
 Technical ability: Advanced
+\newline
+\newline \textbf{Cold run}
+\newline The user found login and registration easy and give little indication that it was taking too long. Once given the list of people he did was able to rank them fairly quickly. However the user referred to the security levels by names he designated rather than the numbers which are assigned by us.
+\newline
+\newline \textbf{Assisted run}
 
 \subsubsection{Test 2}
 Technical ability: Basic
-\newline \indent Once the application had started the user had no trouble navigating the interface to register her account. 
+\newline
+\newline \textbf{Cold run}
+\newline Once the application had started the user had no trouble navigating the interface to register her account. Given a list of people she may choose to add she had some trouble assigning them a level of security. After some time she had written some group names and placed them in there, ordering groups of people (such as family/friends) in order, rather than individuals. The user felt that she had to use all security levels by having at least one user in each one. This lead to her coming up with un-natural, or forced, ideas on what the level may represent.
+\newline \indent The user found uploading and downloading her own files simple but indicated she was unaware of where the files were downloaded to (a GUI issue.)
+\newline
+\newline \textbf{Assisted run}
+\newline After an explanation of how the security levels may be used, the user was better able to fomulate an environment which she found more intuitive. Her main improvement was not feeling the need to use all of them. However she found attempting to re-organise her friends tedious.
+\newline
+\newline The user found the overall experience positive and felt the application excelled in its simplicity, but suggested making the allocation of security levels more user-friendly.
 
 
 \subsubsection{What we have learnt}
 From the tests it is quite clear that the GUI is a limiting factor for user experience. This is to be expected. Our solution was not intended as an out-of-the-box commercial product and so little attention was paid to the user interface. The fact this was the largest complaint is a positive sign.
-\newline \indent All test subjects struggled to place an intuitive meaning on the security levels. They were not fond of the current labels (1..5) as there was little connection between the number 3 and a particular friend. This was a fair complaint. In order to solve this problem we may allow for users to change the name of their security levels. iFor instance, we could allow a mapping between the security level 3 and the label ``family friends.'' This would place a strong intuitive link between the security levels and their friends.
+\newline \indent All test subjects struggled to place an intuitive meaning on the security levels. They were not fond of the current labels (1..5) as there was little connection between the number 3 and a particular friend. This was a fair complaint. In order to solve this problem we may allow for users to change the name of their security levels. For instance, we could allow a mapping between the security level 3 and the label ``family friends.'' This would place a strong intuitive link between the security levels and their friends.
 \newline \indent We must note that we can not take these tests as a conclusively indicator of the usefulness of our solution. Due to the constraints on time our sample space is incredibly small and we can not confidently extrapolate that to the general public, or even a specific group of people. There is also a clear limitation on our testing environment, it can not be said that our test environment is representative of any real-life scenario. For instance, in no situation would a user have an observer making notes.
 
 \subsection{What I would have done differently}
