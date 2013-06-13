@@ -28,7 +28,7 @@ Abstract
 % To change the abstract heading to have a similar layout for Acknowledgements
 \renewcommand{\abstractname}{Acknowledgements}
 \begin{abstract}
-Acknowledgements
+I would like to thank my supervisor, Michael Huth, for our many meetings and for his helpful comments.
 \end{abstract}
 
 
@@ -498,8 +498,15 @@ The default PSRNG implementations for the \textit{SecureRandom} Java class are N
 \section{Implementation}
 In this section we shall discuss the implementations created as a result of our discussion in the previous section.
 \subsection{Structure}
-The general structure of our solution for the client can be viewed in Figure ~\ref{fig:reducedClientClass}. In this diagram we have obscured out some classes. The full class diagram can be viewed in Figure .
+An overview of the architecture to our solution can be seen in Figure~\ref{fig:architectureOverview}.
+\newline \indent The general structure of our solution for the client can be viewed in Figure ~\ref{fig:reducedClientClass}. In this diagram we have obscured out some classes. The full class diagram can be viewed in Figure .
 \newline \indent We have many classes in our solution and it would not be sensible to discuss them all. For this reason we shall briefly discuss many at once.
+
+\begin{figure}
+\centerline{\includegraphics[scale=0.5]{diagrams/architecture/architecure.pdf}}
+\caption{An overview of the architecture of the solution.}
+\label{fig:architectureOverview}
+\end{figure}
 
 \subsubsection{Client}
 
