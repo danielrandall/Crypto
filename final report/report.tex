@@ -8,6 +8,11 @@
 \usepackage{url}
 % For figure sources \caption*{}
 \usepackage{caption}
+% For trees
+\usepackage{tikz-qtree}
+%\usepackage{qtree}
+
+\usepackage{lscape}
 
 \title{Applications of Cryptographically Enforced Access Control}
 \author{Daniel Randall \\ Imperial College London}
@@ -188,6 +193,7 @@ The result of this procedure can be seen in Figure ~\ref{fig:binarydecomp}a for 
 To the best of my knowledge no current commercial software implements hierarchichal cryptography for use in file sharing.
 \newline \indent Established file sharing platforms such as Dropbox and Mega offer users a way to share their files with other users. This can be in the form of a single file or an entire folder. Our system could be simulated using the folder sharing, where each folder represents a security level and the folders are simply shared folders with the desired users one-by-one. Of course, this method requires a lot more work.
 \newline \indent Existing military based models such as the \textit{Bell-LaPadula model} (BLP) could be applied to create a similar environment to which we are attempting. Using BLP works by labelling each object (file) and user with a security level, such as `Unclassified' ... `Top Secret'. BLP prevents subjects from reading objects with a higher level and from writing to objects with a lower level. We could attempt to use this by assigning each user their own BLP and give them full control of labelling. However the military environment is stricter than our target environment and we are left with the unnecessary and unwanted write restriction and no method of sharing the files outside of the network the model is located is specified.
+\newline http://www.yousendit.com
 
 \section{Initial Assessments}
 
@@ -339,7 +345,30 @@ Password hashing algorithms are odd in the sense that the trait with which to se
 NIST recommends the use of PBKDF2 in the use of the password storage.\cite{nistPassword} However bcrypt has a desirable trait which PBKDF2 lacks - the computational cost of the password scheme increases as the hardware it runs on improves. It does this by requiring fast RAM which GPUs do not possess but CPUs do.\cite{bcryptPaper} What this means in a practical sense is that the algorithm is more efficient on a CPU rather than a GPU - quick for servers and slow for the attackers.
 \newline There currently exists GPUs which contain modern field-programmable gate arrays with RAM which can be used to optimise attacks on bcrypt. A new password scheme has been designed to combat this problem called scrypt\footnote{http://www.tarsnap.com/scrypt.html}, however it has only existed for a small amount of time (4 years at the time of writing) and so has not yet `stood the test of time' like that of bcrypt (nearly 14 years at the time of writing.)
 \newline For these reasons we shall use bcrypt to store passwords in our system.
-\newline \indent bcrypt requires us to choose a number of rounds (work factor). Where the number of iterations is $2^{workfactor}$. The higher the number of rounds the longer it takes to run and therefore the higher the security. Unfortunately the java implementation we are to use is slower than the C implementation that the attacker would use, meaning that we can not choose the optimal number of rounds for our hardware.
+\newline \indent bcrypt requires us to choose a number of rounds (work factor). Where the number of iterations is $2^{workfactor}$. The higher the number of rounds the longer it takes to run and therefore the higher the security. Unfortunately the java implementation we are to use is slower than the C implementation that the attacker would use, meaning that we can not choose the optimal number of rounds for our hardware. We also do not have the luxury of a powerful server to perform the hashing quickly, as will the attackers, putting us at a further disadvantage. To help us choose a work factor, benchmarks each work factor can be seen in Table~\ref{tab:bcryptWorkrates}. It is evident that as the work rate increases our hardware quickly reaches its limit, where at work rate 14 it is unable to hash a single password within a second. If we were to have a substantial user base we would be forced to have a lower work factor in order to be able to compute many hashes in a short amount of time, such as 7, which allows to compute 86 in a second. However we are unlikely to have a large user base as this current time, so for this reason we shall choose a larger one which is still low enough to not pose a significant inconvenience to our users. A work rate of 10 will likely give us significant protection, while only taking 87.7 milliseconds on average. We shall choose a work rate of 10 for bcrypt.
+
+% bcrypt times
+\begin{table}[h]
+	\begin{center}
+    	\begin{tabular}{ | l | l | l | l | l |}
+    \hline
+    \textbf{Work factor} & \textbf{Iterations} & \shortstack{\textbf{Time taken} \\ \textbf{(milliseconds)}} & \shortstack{\textbf{Average} \\ \textbf{(milliseconds)}} & \shortstack{ \textbf{Average passwords} \\ \textbf{per second}} \\ \hline
+    
+    6 & 10 & 58.584 & 5.86 & 170 \\ \hline
+    7 & 10 & 115.982 & 11.59 & 86 \\ \hline
+    8 & 10 & 221.497 & 22.15 & 45 \\ \hline
+    9 & 10 & 438.253 & 43.83 & 22 \\ \hline
+    10 & 10 & 877.052 & 87.7 & 11 \\ \hline
+    11 & 10 & 1734.642 & 173.46 & 5 \\ \hline
+    12 & 10 & 3458.536 & 345.85 & 2 \\ \hline
+    13 & 10 & 6923.244 & 692.32 & 1 \\ \hline
+    14 & 10 & 13821.333 & 1282.13 & 0 \\ \hline
+    
+    \end{tabular}
+    \caption{The time taken to hash passwords using bcrypt at varying work rates. We calculate the total time to hash 10 passwords which is in the \textit{Time taken} column, the average time to hash a single password in the \textit{Average} column and the amount of passwords our server can hash in a single second in the \textit{Average passwords per second} column.}
+    \label{tab:bcryptWorkrates}
+   \end{center}
+\end{table}
 
 \subsubsection{Random number generator}
 As we have discussed, in order to complete certain actions with our cryptography algorithms our users are going to require keys and initialisations vectors. Wen need a way to generate these when we desire. However we need to achieve this in a secure way. By secure, we mean in a manner which can not be feasibly predicted by an attacker, even given the entire past sequence of numbers generated. This important as if the generation of the keys can be predicted in any way (ie. the 1000th instance will be equal to the 1st) then the attacker would be manipulate our solution into finding our the keys for some user, thereby gaining access to their files. A similar argument can be made for predicatable initialisation vectors, if an attacker is able to predict the IVs generated then the symmetric cipher mode we have chosen for our solution, CBC, is not properly implemented and would become equivalent to ECB. A mode which we have already decided is insufficient for our requirements.
@@ -658,9 +687,10 @@ When a user registers they have to manually log in to Dropbox and approve our ap
 \section{Evaluation}
 
 \subsection{User stories}
-In this section we shall attempt to evaluate how useful our solution is when applied to an `everyday' environment. To do this we will allow members of the public to use our solution. In order to evaluate it as accurately as possible we shall attempt to conduct our tests on an audience with a large variety of technical ability.
-\newline \indent Each test involves a single user and is divided into two sections: firstly at the beginning of each test we shall conduct a `cold' run, that is with little help the test subject will be allowed to use the solution as they see fit. Secondly we shall guide the test subject through solution, telling them exactly what to do where necessary.
-\newline \indent Before the beginning of a test the subject will be briefed on what our solution is trying to achieve. There will be little talk of the implementation and the brief will be much like the introduction to this paper. The subject will be given a list of people (with existing accounts) who they are able to, at their pleasure, ignore them, send friend requests to them and accept friend requests from them. The list is as follows:
+In this section we shall attempt to evaluate how useful our solution is when applied to an `everyday' environment. There are two possible environments we can test: social and work. To do this we will allow members of the public to use our solution. In order to evaluate it as accurately as possible we shall attempt to conduct our tests on an audience with a large variety of technical ability.
+\newline \indent Each test involves a single user and is divided into two sections: firstly at the beginning of each test we shall conduct a `cold' run, that is with little help the test subject will be allowed to use the solution as they see fit. Secondly we shall guide the test subject through the solution, telling them exactly what to do where necessary.
+\newline \indent Before the beginning of a test the subject will be briefed on what our solution is trying to achieve. There will be little talk of the implementation and the brief will be much like the introduction to this paper. The subject will be given a list of people (with existing accounts) who they are able to, at their pleasure, ignore them, send friend requests to them and accept friend requests from them.
+\newline The list of existing users to give to a test subject to use in a social environment is:
 \begin{itemize}
 	\item Father
 	\item Mother
@@ -673,18 +703,33 @@ In this section we shall attempt to evaluate how useful our solution is when app
 	\item Distant work colleague
 	\item Family friend	
 \end{itemize}
-Once we have described the results of each test we will discuss our findings and what they mean in relation to our work.
+
+The list of existing users to give to a test subject to use in a work environment is:
+\begin{itemize}
+	\item Supervisor
+	\item Colleague
+	\item Trainee
+	\item Intern
+	\item Chairman
+	\item Project manager
+	\item CEO
+\end{itemize}
+Due to the difficulty of describing a generic list for a work environment the test subject will be free to define their own if ours is not suitable.
+\newline Once we have described the results of each test we will discuss our findings and what they mean in relation to our work.
 
 \subsubsection{Test 1}
 Technical ability: Advanced
+\newline Use: Social
 \newline
 \newline \textbf{Cold run}
-\newline The user found login and registration easy and give little indication that it was taking too long. Once given the list of people he did was able to rank them fairly quickly. However the user referred to the security levels by names he designated rather than the numbers which are assigned by us.
+\newline The user found login and registration easy and give little indication that it was taking too long. The user seemed to understand the concept very well and once given the list of people he did was able to rank them fairly quickly. However the user complained that there did not exist a perfect hierarchy, mainly becuase he felt his friends did not an overlap of interest in the files he would share. The user suggested that he would be better able to create a hierarchy if he was able to create more than one account and have multiple hierarchies. While ranking his friends the user referred to the security levels by names he designated rather than the numbers which are assigned by us. The user `saved' the highest security level for himself, ie. would permit not any friends to access files at that level.
 \newline
 \newline \textbf{Assisted run}
+This user required little assistance. Direction was needed to locate files he had download onto his computer as he felt the GUI did not make it clear.
 
 \subsubsection{Test 2}
 Technical ability: Basic
+\newline Use: Social
 \newline
 \newline \textbf{Cold run}
 \newline Once the application had started the user had no trouble navigating the interface to register her account. Given a list of people she may choose to add she had some trouble assigning them a level of security. After some time she had written some group names and placed them in there, ordering groups of people (such as family/friends) in order, rather than individuals. The user felt that she had to use all security levels by having at least one user in each one. This lead to her coming up with un-natural, or forced, ideas on what the level may represent.
@@ -695,32 +740,119 @@ Technical ability: Basic
 \newline
 \newline The user found the overall experience positive and felt the application excelled in its simplicity, but suggested making the allocation of security levels more user-friendly.
 
+\subsubsection{Test 3}
+Technical ability: Average
+\newline Use: Work
+\newline
+\newline \textbf{Cold run}
+\newline Registration and log in was, again, found to be a simple task. The test subject did not find the allocation of security levels as difficult as the previous two test subject. He felt that the hierarchy requirements conformed to the structure of his business environment.
+
 
 \subsubsection{What we have learnt}
 From the tests it is quite clear that the GUI is a limiting factor for user experience. This is to be expected. Our solution was not intended as an out-of-the-box commercial product and so little attention was paid to the user interface. The fact this was the largest complaint is a positive sign.
-\newline \indent All test subjects struggled to place an intuitive meaning on the security levels. They were not fond of the current labels (1..5) as there was little connection between the number 3 and a particular friend. This was a fair complaint. In order to solve this problem we may allow for users to change the name of their security levels. For instance, we could allow a mapping between the security level 3 and the label ``family friends.'' This would place a strong intuitive link between the security levels and their friends.
+\newline \indent All test subjects who used our solution struggled to place an intuitive meaning on the security levels. They were not fond of the current labels (1..5) as there was little connection between the number 3 and a particular friend. This was a fair complaint. In order to solve this problem we may allow for users to change the name of their security levels. For instance, we could allow a mapping between the security level 3 and the label ``family friends'' or ``interns'' This would place a strong intuitive link between the security levels and their friends.
+\newline \indent Not all of the test subjects found the premise of our solution to be completely intuitive without explanation but were able to understand what they needed to do after an explanation was given. This more a failure of the GUI than anything else. A simple solution to this problem would be to have a `help' or a form of introductory page which displays after registration. The purpose of this page would be to introduce the user to our solution and detail what they need to do to maximise their experience. 
+\newline \indent In these tests our solution's most promising application was in the work environment. The structure of a business tends to match our design and our test subject found that to be true in their case. The test subjects who used our solution in a social environment found that their friends do not fit naturally into a strict hierarchy. Instead having distinct groups which have little relationship with each other.
 \newline \indent We must note that we can not take these tests as a conclusively indicator of the usefulness of our solution. Due to the constraints on time our sample space is incredibly small and we can not confidently extrapolate that to the general public, or even a specific group of people. There is also a clear limitation on our testing environment, it can not be said that our test environment is representative of any real-life scenario. For instance, in no situation would a user have an observer making notes.
 
 \subsection{Security analysis}
 In this section we shall discuss possible attacks on our solution, how likely they are and how difficult they could be to perform.
+\newline \indent In our solution an attack's end goal is almost always likely to be to gain access to files they would otherwise not be permitted to access.
+\newline \indent An overview of all possible attacks to gain access to files can viewed in Figure~\ref{fig:attackTree}.
 
-\paragraph{Accessing encrypted files} Achieving this would give access to any file a user may want. This would require cracking AES encryption. Assuming the encryption has been applied correctly, this is virtually impossible.
+\begin{landscape}
+\begin{figure}
 
-\paragraph{Intercepting key exchanges} Achieving this would give the attacker access to whatever access the friend has been given. This would require cracking RSA encryption. Assuming the encryption has been applied correctly, this is virtually impossible.
+\begin{tikzpicture}[scale=0.70]
+\tikzset{level 1+/.style={level distance=66pt}}
+\Tree [.{Access files}
+            		[.{Possess key}
+            	    		[.{Extract key from key store}
+            	    			[.{Find password}
+            	    				[.{Intercept password exchange}
+            	    					[.{Crack RSA} ] ]
+            	    				[.{Social engineer} ]
+            	    				[.{ Bruteforce}
+            	    					[.{Bruteforce hash}
+            	    						[.{Obtain hash}
+            	    							[.{Infiltrate database} ] ] ]
+            	    					[.{Bruteforce at login} ] ] ]
+            	    			[.{Crack keystore}
+            	    				[.{Access friend's computer} ]
+            	    				[.{Access user's computer} ] ] ]
+            	    		[.{Intercept key exchange}
+            	    			[.{Crack RSA} ] ] ]
+            		[.{Crack AES} ]
+            ]
+\end{tikzpicture}
 
-\paragraph{Intercepting log in / register passwords} Similarly to intercepting key exchanges, this would require cracking RSA encryption.
+\caption{An attack tree representing all possible attacks to gain access to files in our solution. Each branch represents a possible route of attack. A node represents a goal for the attacker and its children}
+\label{fig:attackTree}
+\end{figure}
+\end{landscape}
 
-\paragraph{Brute force passwords} Achieving this would give you access to the user's account, therefore their keystore and all of the files they have uploaded as well as all of the files that have been shared with them. Ignoring social engineering of the passwords, this can be done by in one of two ways. Compromising the database and acquire the password hashes and proceeding to brute force the passwords, or bruteforcing the passwords via the GUI log in form. For both of these cases the time it is likely to take the attacker to bruteforce the hashes varies on the length of a user's password and whether they use dictionary words.
+\paragraph*{Cracking AES encryption} Achieving this would give access to any file a user may want. Assuming the encryption has been applied correctly, this is virtually impossible.
 
-\paragraph{Database attacks} Almost all information in the database is considered public. In our solution the only sensitive information is the key/secret pair used for the server to access a user's Dropbox. As all files in a user's Dropbox is encrypted there is little chance of information leakage, but it would be more of an annoyance, ie. a malicious user adding or removing the files.
+\paragraph*{Cracking RSA encryption} Achieving this would give the attacker access to whatever access the friend has been given. Assuming the encryption has been applied correctly, this is virtually impossible.
 
+\paragraph*{Intercepting log in / register passwords} Similarly to intercepting key exchanges, this would require cracking RSA encryption.
+
+\paragraph*{Cracking keystore} Achieving this gives the attacker access to all of the keys created by the owner of the keystore and all keys shared with them. Unfortunately keystores are quite weak. A number of `clever' brute-force solutions exists for Java Keystore, such as KeystoreBrute.\footnote{https://github.com/bes/KeystoreBrute} An estimation on the time taken to brute-force a keystore with varying password strengths using KeystoreBrute can be seen in Table~\ref{tab:keystoreBruteforce}. As can be seen a weak password can be cracked in almost no time at all, but quickly become infeasible at any password stronger than an upper/lower alphabet password 8 characters long. However bruteforcing a password of any significant strength requires prolonged access to the user's computer, meaning the user likely has greater problems than the integrity of their keystore.
+
+% Password brute-forcing
+\begin{center}
+\begin{table}[h!]
+    \begin{tabular}{ | l | l | l | l |}
+    \hline
+    \textbf{Password format} & \shortstack{\textbf{Number of} \\ \textbf{characters}} & \shortstack{\textbf{Number of} \\ \textbf{combinations}} & \shortstack{\textbf{Time to} \\ \textbf{brute-force}} \\ \hline
+    Lower case alphabet  & 4 & $26^4$ & 0.3 seconds \\ \hline
+    Upper/lower alphabet  & 4 & $52^4$ & 4.9 seconds \\ \hline
+    Upper/lower alphanumeric & 4 & $62^4$ & 9.8 seconds \\ \hline
+    \shortstack{Upper/lower alphanumeric \\ and symbols}  & 4 & $95^4$ & 54 seconds \\ \hline
+    Lower case alphabet  & 8 & $26^8$ & 1.61 days \\ \hline
+    Upper/lower alphabet  & 8 & $52^8$ & 1.13 years \\ \hline
+    Upper/lower alphanumeric & 8 & $62^8$ & 4.6 years \\ \hline
+    \shortstack{Upper/lower alphanumeric \\ and symbols}  & 8 & $95^8$ & 140 years \\ \hline
+    
+    \end{tabular}
+    \caption{The time it will take an attacker to brute-force a keystore using KeystoreBrute. We assume the attacker can attempt 1500000 per second ($10 \times$ the number recorded by the creator who used a Core2Quad.)} \label{tab:keystoreBruteforce}
+    \end{table}
+\end{center}
+
+\paragraph*{Brute-force passwords} Achieving this would give the attacker access to the user's account, therefore their keystore and all of the files they have uploaded as well as all of the files that have been shared with them. Ignoring social engineering of the passwords, this can be done by in one of two ways. Compromising the database and acquiring the password hashes and proceeding to brute force the passwords, or bruteforcing the passwords via the GUI log in form. For both of these cases the time it is likely to take the attacker to bruteforce the hashes varies on the length of a user's password and whether the user's password consists dictionary words. We are able to prevent brute forcing at the log in form by simply blocking log in attempts for a username after $n$ failed log in attempts. Brute-forcing the password once the hash has been acquired can not be prevented. Whether the attacker can find a matching password for the hash in a feasible amount of time largely depends on the user's password. An estimation on the time it will take for different non-dictionary passwords can be found in Table~\ref{tab:passwordbruteforce}. While this is a crude estimation, it can be seen that, for a longer password the attacker will find it very difficult to find a match, while a shorter password can be brute-forced in a matter of hours or days. For dictionary based passwords, or the special GPU work-arounds as described in the bcrypt analysis, the time taken to brute-force the passwords will be much lower.
+
+% Password brute-forcing
+\begin{center}
+\begin{table}[h!]
+    \begin{tabular}{ | l | l | l | l |}
+    \hline
+    \textbf{Password format} & \shortstack{\textbf{Number of} \\ \textbf{characters}} & \shortstack{\textbf{Number of} \\ \textbf{combinations}} & \shortstack{\textbf{Time to} \\ \textbf{brute-force}} \\ \hline
+    Lower case alphabet  & 4 & $26^4$ & 1 hour 6 minutes \\ \hline
+    Upper/lower alphabet  & 4 & $52^4$ & 17 hours 49 minutes \\ \hline
+    Upper/lower alphanumeric & 4 & $62^4$ & 36 hours \\ \hline
+    \shortstack{Upper/lower alphanumeric \\ and symbols}  & 4 & $95^4$ & 8 days 6 hours \\ \hline
+    Lower case alphabet  & 8 & $26^8$ & 58 years \\ \hline
+    Upper/lower alphabet  & 8 & $52^8$ & 14867 years \\ \hline
+    Upper/lower alphanumeric & 8 & $62^8$ & 60719 years \\ \hline
+    \shortstack{Upper/lower alphanumeric \\ and symbols}  & 8 & $95^8$ & 1.8 million years \\ \hline
+    
+    \end{tabular}
+    \caption{The time it will take an attacker to brute-force a matching plaintext password for a hash. We measure this for passwords of varying strength. We assume that an attacker has $10 \times$ the amount of processing power than we do, meaning they can compute a hash at an average of 8.77 milliseconds.} \label{tab:passwordbruteforce}
+    \end{table}
+\end{center}
+
+\paragraph*{Database attacks} Almost all information in the database is considered public. In our solution the only sensitive information is the key/secret pair used for the server to access a user's Dropbox. As all files in a user's Dropbox is encrypted there is little chance of using this information to access encrypted files, but it would be more of an annoyance, ie. a malicious user adding or removing the files.
+
+\subsubsection*{Security evaluation}
+From our analysis for the possible routes of attack, it appears that the user's password is the weakest link in our solution. While we can not control how safely a user keeps their password, we exert control on the strength of password they choose. Enforcing upper/lower alphanumeric passwords of at least 8 characters in length would give them significant security from brute-force attacks should their hashes become compromised.
+\newline \indent The security of the keystore is weaker than the security that the hash provides the password, however the security gained by the keystores location on the user's machine means that is likely a more difficult route of attack than acquiring hashes and brute-forcing them.
 
 \subsection{What I would have done differently}
 
 \section{Conclusion}
 This project aims to increase the automation in file sharing with a group of friends who require different access control constraints. Our solution achieves this by using cryptography. It also is able to achieve this without troubling the users with technicalities, a user need not know what a `key' is, or how to derive and use them to access data.
-\newline \indent However it does not come without constraints. It requires the user to order the people they wish to share their files with in a fairly strict hierarchy. The degree to which people can adopt this into their lives is yet to be seen and thorough case studies, or a release, would have to be done before we can know for sure. From the \textit{User stories} section we can see that there may be some people this suits well, while others may find the lack of flexibility frustrating.
-\newline \indent It is also evident from the \textit{Benchmarking} section that our solution comes with an overhead. This is to be expected. Fortunately the biggest time consuming part of our solution, registration, only needs to be performed once. While there are 
+\newline \indent However it does not come without constraints. It requires the user to order the people they wish to share their files with in a fairly strict hierarchy. The degree to which people can adopt this into their lives is yet to be seen and thorough case studies, or a release, would have to be done before we can know for sure. From the \textit{User stories} section we can see that there may be some people this suits well, while others may find the lack of flexibility frustrating. The division of these people is likely to be in the environment in which they intend to use our solution. It appears that our solution may be very useful in a business environment but may struggle to make in impact on a user who intends to use it in a social environment.
+\newline \indent It is evident from the \textit{Benchmarking} section that our solution comes with an overhead. This is to be expected. Fortunately the most time consuming parts of our solution, registration and log in, only needs to be performed rarely. The most common actions a user is likely to perform, uploading and downloading files, bears little overhead, meaning our solution is a realistic one when it comes to performance.
 
 \subsection{Achievements}
 
@@ -733,6 +865,7 @@ This project aims to increase the automation in file sharing with a group of fri
 \paragraph*{Customisable bounds} It may be the case that the user requires more or less than 5 security levels. Increasing the number of levels after they have already been created would not be difficult, it would be little different to creating the keys at registration as we do now. However the extra keys created would have to be either the lowest or highest security levels to be done without fuss. If the level required to be added was in the middle the key one below would have to be re-encrypted with the new key and re-sent to the server. Reducing the number of levels could be done by simply discarding the files associated with that level, removing that key from the server and re-encrypting the key one level down from the level to be removed by the key one level up from the level to be removed.
 \paragraph*{Adjustable friend security levels} At this point in time, if a user wishes to change the security level of a friend they would have to revoke the friend entirely and add him again. This is involves unecessary work for what may be a computationally simple task. If the friends permissions are to be increased this could be done in the same way a friend is added now, that is send the friend the key for the new highest level they can access, encrypted with their public key, and allow them to derive any keys inbetween their new level and their old level. If the friend's level is to be lowered, all keys between their new level and old level have to be revoked, new keys generated and distributed and files associated with those levels have to be re-encrypted.
 \paragraph*{Adjustable lower bounds for friends} Currently a user can only state an upper bound for a friend. However it may be the case that the user only wishes to share a certain interval or that the friend is not interested in their low-level files. This could be achieved by using Jason Crampton's method as explained in the background section.
+\paragraph*{Multiple trees} In our solution a user is only able to create a single hierarchy. This means if all of the people they want to share files with do not do fit into a perfect hierarchy (ie. the really have to hierarchies) they are forced to leave people out or have a sub-optimal solution. A potential improvement to this is to allow the user to create more than one hierarchy. That is, they will have more than one hierarchy with distinct sets of keys, distinct sets of files and distinct sets of friends. The hierarchies would not intended to be used with an overlap of users, the introduction of this feature would be intended to cover many different possible hierarchies in a user's life (ie. a freelance worker who wishes to share files with many different companies who each have their own hierarchy.)
 \paragraph*{Lazy computation} Currently our solution attempts to do as much work as possible when the work arrives. This often causes delays which the user must wait out before they can continue using our application. This is most evident when registering a new account and revoking a user.
 \paragraph*{User interface} The user interface at this point in time is lacking. It is not particularly aesthetically pleasing and has little in the way of instructions. An introductory page which explains the functionality at a high level and gives guidance on how the user may best use the features on offer would be necessary before our solution could be publicly released.
 
