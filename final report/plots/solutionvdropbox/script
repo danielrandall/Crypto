@@ -1,0 +1,21 @@
+#!/usr/bin/gnuplot
+
+reset
+
+
+fontsize = 12
+
+set terminal postscript
+set output '| ps2pdf - solutionvdropbox.pdf'
+
+set style fill solid 1.00 border 0
+set style histogram errorbars gap 2 lw 1
+set style data histogram
+set xtics rotate by -45
+set grid ytics
+set xlabel "Action"
+set ylabel "Time taken (seconds)"
+set yrange [0:*]
+set datafile separator ","
+plot 'data' using 2:3:xtic(1) ti "Solution" linecolor rgb "#FF0000", \
+'' using 4:5 ti "Dropbox" lt 1 lc rgb "#00FF00"
