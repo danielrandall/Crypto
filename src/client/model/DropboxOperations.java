@@ -89,6 +89,41 @@ public class DropboxOperations {
     	session = new WebAuthSession(KEY_PAIR, ACCESS_TYPE, atp);
     	
     }
+    
+    
+    public static String[] chunkedUpload(String path, InputStream inputStream,
+			int length) {
+    	
+    	DropboxAPI<Session> mDBApi = new DropboxAPI<Session>(session);
+		Entry newEntry = null;
+		
+		try {
+			DropboxAPI.ChunkedUploader uploader = mDBApi.getChunkedUploader(inputStream, length);
+	         int retryCounter = 0;
+	         while(!uploader.isComplete()) {
+	             try {
+	                 uploader.upload();
+	             } catch (DropboxException e) {
+	                 if (retryCounter > 10) break;  // Give up after a while.
+	                 retryCounter++;
+	                 // Maybe wait a few seconds before retrying?
+	             } catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	         }
+	         newEntry = uploader.finish(username + OWN_FILE_FOLDER + "/" + path, null);
+		} catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+		
+		String[] fileInfo = {newEntry.fileName(), newEntry.rev};
+
+		return fileInfo;
+    	
+    	
+    }
 
 	/* Uploads a file to the location dropboxPath for the current logged in user.
 	 * Will not overwrite existing file.
@@ -98,6 +133,10 @@ public class DropboxOperations {
 	 * Returns the filename and rev of the file */
 	public static String[] uploadFile(String path, InputStream inputStream,
 										int length) {
+	
+		/* All files larger than 150MB are to uploaded in chunks */
+		if (length > 1258291200)
+			return chunkedUpload(path, inputStream, length);
 		
 		DropboxAPI<Session> mDBApi = new DropboxAPI<Session>(session);
 		Entry newEntry = null;

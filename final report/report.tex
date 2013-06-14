@@ -592,12 +592,14 @@ These tests for uploading a file are run from the beginning of the \textit{Contr
     \textbf{File} & \textbf{Iterations} & \textbf{Time taken (seconds)} & \textbf{Average} \\ \hline
     203.2 kB mp3 & 10 & 26.683733288 & 2.67 \\ \hline
     1.3MB pdf & 10 & 39.007998196 & 3.9 \\ \hline
+    90.9 MB exe & 10 & 1852.5543543 & 185.32 \\ \hline
+    832.6 MB iso & 10 & 21641.2479242 & 2164.1 \\ \hline
     \end{tabular}
     \caption{The time taken to upload different files using our solution.} \label{tab:uploadBenchmark}
     \end{center}
 \end{table}
 
-% Time taken to upload a file to Dropbox
+% Time taken to upload a file to Dropbox alone
 \bigskip
 \begin{table}[h!]
 \begin{center}
@@ -607,8 +609,8 @@ These tests for uploading a file are run from the beginning of the \textit{Contr
     
     203.2 kB mp3 & 10 & 9.237756953 & 0.92 \\ \hline
     1.3MB pdf & 10 & 36.34874983 & 3.63 \\ \hline
-    90.9 MB exe & 10 & & 177.521367539 \\ \hline
-    832.6 MB iso & 10 & & \\ \hline
+    90.9 MB exe & 10 & 1775.21367539  & 177.52 \\ \hline
+    832.6 MB iso & 10 & 24259.3876920 & 2425.94 \\ \hline
     
     \end{tabular}
     \caption{The time taken to read and upload different files to Dropbox directly, without encrypting, communicating with the server or using any logic. \\ Note that the times can vary substantially on the network they were tested on and the load on the Dropbox servers at that time.} \label{tab:uploadDropboxBenchmark}
