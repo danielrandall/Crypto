@@ -6,6 +6,6 @@ set output '| ps2pdf - dropboxDownloadTimes.pdf'
 set title "Dropbox download times"
 set xlabel "The size of the file uploaded (MB)"
 set ylabel "Average time taken to upload (seconds)"
-set ytics "10"
+set ytics "50"
 plot "data" title "" with lines lt rgb "red"
 pause -1 "Hit any key to continue"

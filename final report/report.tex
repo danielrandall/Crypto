@@ -14,7 +14,7 @@
 
 \usepackage{lscape}
 
-\title{Applications of Cryptographically Enforced Access Control}
+\title{File Sharing using Cryptographically Enforced Access Control}
 \author{Daniel Randall \\ Imperial College London}
 \date{}
 
@@ -42,10 +42,11 @@ I would like to thank my supervisor, Michael Huth, for our many meetings and for
 \section{Introduction}
 
 \subsection{Motivation}
-The internet has caused an explosion in the number of ways to share files. People are now, more than ever, relying on the internet to share data. For many years email was the platform of choice to achieve this, however recent years has seen this superseded by many specialised platforms in order to meet the differing needs in users. These have been in the form of file systems in Dropbox, document collaboration in Google Drive and Microsoft SharePoint, as well as social networks in Facebook. In general, the user sharing the file has no interest in sharing it with every user of the internet and so each platform implements some variant of access control. Typically the platforms available today allows for the user to configure the access control for their files by specifying the recipients of the file they are uploading with each time they wish to share data. Some efforts have been made in eliminating the need to specify access control requirements for every file, this can be seen in platforms that offer `shared folders', however it is often the case that a user has more than one group they wish to share the file with. Not only does this result in having to upload the file more than once, it also results in multiple instances of the file to be managed. Our solution to the access control problem is a desktop Dropbox App which employs cryptography to allow files to be `freely' available, with the key which grants access being derivable to all members, in all groups you wish to access it, thus automating the entire access control management process. Using the readily available Dropbox API, our App automatically encrypts and stores selected files in a Dropbox folder. When the importance of the files has been indicated, it is shared with friends that are of equal or greater importance to the file.
-\newline \indent The basis for this project is a relatively new field, hierarchical cryptography. We harness these techniques to implement access control between users on file resources.
+The internet has caused an explosion in the number of ways to share files. People are now, more than ever, relying on the internet to share data. For many years email was the platform of choice to achieve this, however recent years has seen this superseded by many specialised platforms in order to meet the differing needs in users. These have been in the form of file systems in Dropbox, document collaboration in Google Drive and Microsoft SharePoint, as well as social networks in Facebook. In general, the user sharing the file has no interest in sharing it with every user of the internet and so each platform implements some variant of access control. Typically the platforms available today allows for the user to configure the access control for their files by specifying the recipients of the file they are uploading with each time they wish to share data. Some efforts have been made in eliminating the need to specify access control requirements for every file, this can be seen in platforms that offer `shared folders'. However it is often the case that a user has more than one group they wish to share the file with. Not only does this result in having to upload the file more than once, it also results in multiple instances of the file to be managed. Our solution to the access control problem is a desktop Dropbox App which employs cryptography to allow files to be `freely' available, with the key which grants access being derivable to all members, in all groups you wish to access it, thus automating the entire access control management process. Using the readily available Dropbox API, our App automatically encrypts and stores selected files in a Dropbox folder. When the importance of the files has been indicated, it is shared with friends that are permitted to access files of that importance.
 \newline
-\newline \indent This report begins with the background research into the technical work behind this system. This will cover the different types of access control available to us and the cryptography that shall be used to enforce this. We will then examine similar products and techniques and show the limitations in their application. In section 3 we proceed to describe the necessary components of the system and rationalise our choices of the 3rd part software to employ. We discuss the best platform to build our work on.
+\newline \indent The basis for this project is a relatively new field, hierarchical cryptography. We harness these techniques to implement access control between users on file resources. We shall describe hierarchical cryptography, the cryptography it relies on as well as general access control in section 2. We will then examine similar products and techniques and show the limitations in their application.
+\newline \indent Using the methods and techniques we described we shall begin to define our solution and evaluate the best way to solve the problems we shall face. These problems shall include how to manage friends, files and the keys to the files. Once we decide upon the best methods we shall then set about evaluating the best 3rd party we can use to achieve these tasks and why we should not implement our own solutions.
+\newline \indent Once our solution has been implemented we shall proceed to describe what we have done and begin to evaluate it. We will evaluate our implementation in three ways: speed, ease of use and security. We will benchmark our solution against an existing file sharing platform before we allow a number of the users to test drive our work. We will see in which environments our work excels and in which it fails to make an impression. The final part of our evaluation will see us criticially assess how our implementation holds up against known attacks.
 
 \subsection{Objectives}
 The objectives for this project is to design a system which automatically shares files with many people at once, and also do this consistently without sacrificing the desired access control. Users should be able to achieve this by labelling each file with a security level and each friend with a security level. Our system would deal with the cryptography `under the hood' without troubling the user with technical requests. Our system would ideally run at a high speed, similar to alternative file-sharing platforms.
@@ -126,7 +127,7 @@ A key assignment scheme (KAS) controls the information flow through the tree. Th
 as one-way hash functions.
 \item Given a key for node $v$, the key derivation for its descendant node $w$ takes \textit{l} steps, where \textit{l} is the length of the path between $v$ and $w$.
 \end{itemize}
- A few potential algorithms to test will be outlined here:
+ A few algorithms to be achieve this are:
 \begin{itemize}
 \item \textbf{Iterative key encrypting (IKE)} - For each edge in the graph the child key is encrypted with the parent key and published as public information. The user is then, using a single private key, able to iteratively derive any child key using that information\cite{lazyEncryption}. The AFB scheme by Atallah et al. is an example of this KAS, offering\cite{atallah2005}:
 \begin{itemize}
@@ -268,6 +269,7 @@ In this section we shall decide which algorithms we shall use to perform the tas
 	\item \textbf{Padding scheme} - The method to increase the size of the file to be encrypted in order to force into a multiple of the block size of that algorithm.
 \end{itemize}
 Here we will discuss which algorithms to use for this project and why.
+\newline \indent We will not consider inventing our own algorithms to perform cryptography or any security functions. One reason for this is a lack of time, another is `Schneier's Law.' Bruce Schneier wrote in 1998: ``Anyone, from the most clueless amateur to the best cryptographer, can create an algorithm that he himself can't break.''\footnote{http://www.schneier.com/crypto-gram-9810.html\#cipherdesign} This means that, we can not, in a short space of time, realistically predict and evaluate all threats and prevent them. For this reason we shall not roll out our own cryptography and security designs, and instead use pre-built and well-tested security solutions wherever possible.
 
 \subsubsection{Symmetric Algorithm}
 \begin{itemize}
@@ -580,8 +582,9 @@ In this section we shall evaluate the speed at which our solution can perform ce
 \newline \indent There are many occasions in our solution where there is a need to generate parameters for cryptography, such as keys and initialisation vectors. To do this randomly the algorithms need to collect a lot of \textit{entropy}. To achieve this most secure algorithms collect values from the computer they are running on such as the temperature of the CPU, mouse movements and keyboard strokes. Because of this these algorithms are able to run faster when the user is actively using the computer. For this reason, when we are testing an action which requires this, we shall show the time the actions take at different levels of user activity.
 
 \subsection{Uploading a file}
-These tests for uploading a file are run from the beginning of the \textit{Controller} for this action on the client-side until it returns. This means we are ignoring the time taken for the controller and GUI to interacting, to extract the user's request and to update the display, but this should be minimal.
-\newline \indent The results of the test can be seen in Table~\ref{tab:uploadBenchmark}. It takes 4 seconds on average to upload a 1.3MB pdf. As we saw when looking for an AES provider, it took on average 0.011 seconds to encrypt the same file using AES. In this case the bottleneck is not the cryptography, but is likely the transfer of the file information between the client and server or uploading files to Dropbox. As can be seen from Table~\ref{tab:uploadDropboxBenchmark} uploading the files to Dropbox represents the biggest chunk of time. For instance, on average for the 1.3MB pdf, uploading the file to Dropbox takes between 86 and 93\% of the total time our solution requires. Therefore our solution adds an overage overhead of 8 between 15\%.
+These tests for uploading a file are run from the beginning of the \textit{Controller} for this action on the client-side until it returns. This means we are ignoring the time taken for the GUI listener to detect the request and the time taken for the controller and GUI to interact and update the display. However this should be minimal and have little effect on the results.
+\newline \indent We can see the time taken for our solution to upload different files in Table~\ref{tab:uploadBenchmark}. It takes 4 seconds on average to upload a 1.3MB pdf. This time includes the encryption of the file before it is uploaded. As we saw when looking for an AES provider, it took on average of 0.011 seconds to encrypt the same file using AES. It is clear that the cryptography has little to no effect on the time this action takes to complete. The other substantial stages of uploading a file using our solution is the comunication between the client and server and uploading files to Dropbox. As we can be seen from Table~\ref{tab:uploadDropboxBenchmark} uploading the files to Dropbox represents the a considerable chunk of time. For instance, on average for the 1.3MB pdf, uploading the file to Dropbox takes ~93\% of the total time our solution requires. Therefore our solution adds an overage overhead of 8\%.
+\newline \indent The type of file we are uploading appears to make little difference. As we can see in Figure~\ref{fig:solutionUploadLineGraph} the time taken to upload the 203.2 kB mp3, 1.3MB pdf, 5.2 MB jpg and the 10.5 MB zip, appears to grow linearly with the size of the file, regardless of the type. However from our tests we can see that the Dropox API becomes considerably unreliable as the size of the file increases. One particularly noticable result is that the 832.6 MB took longer on average to upload to Dropbox alone than it did using our solution. There is no reason why this would be true and so we shall put it down to the inconsistency of the Dropbox API for large files.
 
 % Time taken to upload a file
 \bigskip
@@ -590,17 +593,25 @@ These tests for uploading a file are run from the beginning of the \textit{Contr
     \begin{tabular}{ | l | l | l | l | l |}
     \hline
     \textbf{File} & \textbf{Iterations} & \textbf{Time taken (seconds)} & \textbf{Average} \\ \hline
-    203.2 kB mp3 & 10 & 26.683733288 & 2.67 \\ \hline
-    1.3MB pdf & 10 & 39.007998196 & 3.9 \\ \hline
+    203.2 kB mp3 & 10 & 14.077261255 & 1.41 \\ \hline
+    1.3MB pdf & 10 & 38.007998196 & 3.8 \\ \hline 
+    5.2 MB jpg & 10 & 51.347427923 & 5.13 \\ \hline
+    10.5 MB zip & 10 & 79.577470975 & 7.96  \\ \hline
     90.9 MB exe & 10 & 1852.5543543 & 185.32 \\ \hline
+    209.7 MB zip & 10 & 3375.23901536 & 337.52 \\ \hline
     832.6 MB iso & 10 & 21641.2479242 & 2164.1 \\ \hline
     \end{tabular}
     \caption{The time taken to upload different files using our solution.} \label{tab:uploadBenchmark}
     \end{center}
 \end{table}
 
+\begin{figure}[!t]
+\centerline{\includegraphics[height=4.0in,width=7in,angle=0]{plots/solutionUpload/solutionUploadTimes.pdf}}
+\caption{A line graph plotting the time the average time it takes to upload a file a to Dropbox via our solution for files of varying size.}
+\label{fig:solutionUploadLineGraph}
+\end{figure}
+
 % Time taken to upload a file to Dropbox alone
-\bigskip
 \begin{table}[h!]
 \begin{center}
     \begin{tabular}{ | l | l | l | l |}
@@ -609,9 +620,11 @@ These tests for uploading a file are run from the beginning of the \textit{Contr
     
     203.2 kB mp3 & 10 & 9.237756953 & 0.92 \\ \hline
     1.3MB pdf & 10 & 36.34874983 & 3.63 \\ \hline
+	5.2 MB jpg & 10 & 42.918766407 & 4.59 \\ \hline
+    10.5 MB zip & 10 & 70.938518268 & 7.09 \\ \hline
     90.9 MB exe & 10 & 1775.21367539  & 177.52 \\ \hline
+    209.7 MB zip & 10 & 3375.23901536 & 337.52 \\ \hline
     832.6 MB iso & 10 & 24259.3876920 & 2425.94 \\ \hline
-    
     \end{tabular}
     \caption{The time taken to read and upload different files to Dropbox directly, without encrypting, communicating with the server or using any logic. \\ Note that the times can vary substantially on the network they were tested on and the load on the Dropbox servers at that time.} \label{tab:uploadDropboxBenchmark}
     \end{center}
@@ -620,13 +633,41 @@ These tests for uploading a file are run from the beginning of the \textit{Contr
 \begin{figure}[!t]
 \centerline{\includegraphics[height=4.0in,width=7in,angle=0]{plots/dropboxUpload/dropboxUploadTimes.pdf}}
 \caption{A line graph plotting the time the average time it takes to upload a file a to Dropbox directly via the SDK for files of varying size.}
-\label{fig:loginLineGraph}
+\label{fig:dropboxUploadLineGraph}
 \end{figure}
 
 
 
 \subsection{Downloading a file}
 The results from the test can be seen in Table~\ref{tab:downloadBenchmark}. The first thing one might notice is that there is slightly faster performance for downloading when compared to uploading. One possible explanation for this is that typically networks have a faster maximum download speed than upload speed.
+
+
+% Time taken to download a file using solution
+\bigskip
+\begin{table}[h]
+\begin{center}
+    \begin{tabular}{ | l | l | l | l |}
+    \hline
+    \textbf{File} & \textbf{Iterations} & \textbf{Time taken (seconds)} & \textbf{Average} \\ \hline
+    203.2 kB mp3 & 10 & 13.155384853 & 1.32 \\ \hline
+    1.3 MB pdf  & 10 & 30.473156395 & 3.05 \\ \hline
+    5.2 MB jpg & 10 & 61.894616714 & 6.19 \\ \hline
+    10.5 MB zip & 10 & 124.055083186 & 12.41 \\ \hline
+    90.9 MB exe & 10 & 1775.21367539  & 177.52 \\ \hline
+    209.7 MB zip & 10 & 2068.31832507 & 306.83 \\ \hline
+    832.6 MB iso & 10 & 8539.4238683 & 853.94 \\ \hline
+    \end{tabular}
+    \caption{The time taken to download different files using our solution} \label{tab:downloadBenchmark}
+    \end{center}
+    \end{table}
+\bigskip
+
+% Solution download plot
+\begin{figure}[!t]
+\centerline{\includegraphics[height=4.0in,width=7in,angle=0]{plots/solutionDownload/solutionDownloadTimes.pdf}}
+\caption{A line graph plotting the time the average time it takes to download a file to Dropbox via our solution for files of varying size.}
+\label{fig:dropboxDownloadLineGraph}
+\end{figure}
 
 
 % Time taken to download a file from Dropbox
@@ -638,11 +679,14 @@ The results from the test can be seen in Table~\ref{tab:downloadBenchmark}. The 
     \textbf{File} & \textbf{Iterations} & \textbf{Time taken (seconds)} & \textbf{Average} \\ \hline
     
     203.2 kB mp3 & 10 & 7.695544583 & 0.77 \\ \hline
-    1.3MB pdf & 10 & 38.603819928 & 3.86 \\ \hline
-    90.9 MB exe & 10 & 2039.98 & 203 \\ \hline
-    832.6 MB iso & 10 & & \\ \hline    
+    1.3MB pdf & 10 & 24.290205159 & 2.43 \\ \hline
+    5.2 MB jpg & 10 & 58.47502913 & 5.85 \\ \hline
+    10.5 MB zip & 10 & 94.740813236 & 9.47 \\ \hline
+    90.9 MB exe & 10 & 2039.980643 & 204 \\ \hline
+    209.7 MB zip & 10 & 3375.23901536 & 377.52 \\ \hline
+    832.6 MB iso & 10 & 7331.61753447 & 733.16 \\ \hline    
     \end{tabular}
-    \caption{The time taken to read and upload different files to Dropbox directly, without encrypting, communicating with the server or using any logic. \\ Note that the times can vary substantially on the network they were tested on and the load on the Dropbox servers at that time.} \label{tab:uploadDropboxBenchmark}
+    \caption{The time taken to download files to Dropbox directly, without encrypting, communicating with the server or using any logic. \\ Note that the times can vary substantially on the network they were tested on and the load on the Dropbox servers at that time.} \label{tab:uploadDropboxBenchmark}
     \end{center}
 \end{table}
 
@@ -650,25 +694,8 @@ The results from the test can be seen in Table~\ref{tab:downloadBenchmark}. The 
 \begin{figure}[!t]
 \centerline{\includegraphics[height=4.0in,width=7in,angle=0]{plots/dropboxDownload/dropboxDownloadTimes.pdf}}
 \caption{A line graph plotting the time the average time it takes to download a file to Dropbox directly via the SDK for files of varying size.}
-\label{fig:loginLineGraph}
+\label{fig:dropboxDownloadLineGraph}
 \end{figure}
-
-
-% Time taken to download a file using solution
-\bigskip
-\begin{table}[h]
-\begin{center}
-    \begin{tabular}{ | l | l | l | l |}
-    \hline
-    \textbf{File} & \textbf{Iterations} & \textbf{Time taken (seconds)} & \textbf{Average} \\ \hline
-    203.2 kB mp3 & 10 & 13.381796952 & 1.34 \\ \hline
-    1.3MB pdf  & 10 &  33.4414793942 & 3.34 \\ \hline
-    
-    \end{tabular}
-    \caption{The time taken to download different files using our solution} \label{tab:downloadBenchmark}
-    \end{center}
-    \end{table}
-\bigskip
 
 
 \subsection{Log in}
@@ -688,10 +715,10 @@ When a user logs in the client needs to contact the server to acquire informatio
     10 & 10 & 41.748590981 & 4.17 \\ \hline
     25 & 10 & 62.00080726 & 6.20 \\ \hline
     50 & 10 & 118.726741348 & 11.87 \\ \hline
-    100 & 10 & 167.461744273 & 16.46 \\ \hline
+    100 & 10 & 197.461744273 & 19.46 \\ \hline
     
     \end{tabular}
-    \caption{The time taken to log in using our solution with the user having access to a number of different files.}
+    \caption{The time taken to log in using our solution with the user having access to a number of different files. The files used in these tests are duplicates of a 1.3 MB pdf file.}
     \label{tab:loginBenchmark}
    \end{center}
 \end{table}
@@ -703,11 +730,10 @@ When a user logs in the client needs to contact the server to acquire informatio
 \end{figure}
 
 
-\subsection{Register}
-When a user registers they have to manually log in to Dropbox and approve our application. The time it takes to do this can vary massively between different users. For this reason that part of registration is omitted from our measurements. 
-\newline \indent Registration is the part of our solution which requires the most cryptography and client/server communication. For this reason we can expect registration to be the most time consuming process in our system. This is not unusual and can be seen in similar applications such as Mega.
-\newline \indent During registration a lot of cryptography values need to be generated. This action will likely have the most variation in the amount of entropy collected by our the algorithms.
-\newline \indent The results for our tests can be seen in Table~\ref{tab:registerBenchmark}. 
+\subsection{Registration}
+When a user registers they have to manually log in to Dropbox and approve our application through a web browser. The time it takes to do this can vary massively between different users. For this reason that part of the registration process is omitted from our measurements. 
+\newline \indent Registration is the part of our solution which requires the most generation of cryptography values and client/server communication. For this reason we can expect registration to be the most time consuming process in our system. This is not unusual and can be seen in similar applications, such as Mega.\footnote{http://images.hacktabs.com//2013/01/Mega-generating-key.png}
+\newline \indent During registration a lot of cryptography values need to be generated. This action will likely have the most variation in the amount of entropy collected by our the algorithms. For this reason we shall time the registration takes to complete with varying levels of user activity. This can be seen in Table~\ref{tab:registerBenchmark}. As we can see registration can vary massively, from 9 seconds with a lot of activity to nearly 2 minutes with no activity. This is as we predicted.
 
 
 % Time taken to register
@@ -716,23 +742,33 @@ When a user registers they have to manually log in to Dropbox and approve our ap
     	\begin{tabular}{ | l | l | l | l |}
     \hline
      \textbf{Entropy help} & \textbf{Iterations} & \textbf{Time taken 		(seconds)} & \textbf{Average} \\ \hline
-    No mouse or keyboard movement & 10 &  &  \\ \hline
+    No mouse or keyboard movement & 10 & 1145.34437768 & 114.53  \\ \hline
+	Casual browsing and typing & 10 & 152.188442492 & 15.22 \\ \hline    
     Wild mouse movement & 10 & 92.557535694 & 9.26 \\ \hline
     
     \end{tabular}
-    \caption{The time taken to register using our solution with varying levels of user activity.}
+    \caption{The time taken to register using our solution with varying levels of user activity. The \textit{Entropy help} column refers to the level of activity the user partakes in while registration is being carried out by our solution. \textit{Iterations} is the number of the times the test was conducted. \textit{Time taken} is the total amount of time all iterations take to complete. \textit{Average} is the average time taken for one iteration to complete. \\ Note that in these tests the entropy pool was unlikely to be full before registration. If the user has a full entropy pool (ie. they have not recently used any applications which require secure random number generation), before they register, they may not need to help entropy generation so much.}
     \label{tab:registerBenchmark}
    \end{center}
 \end{table}
 
 \subsection{Overhead evaluation}
-In this section we have seen a comparison.
+Having measured the times for each action, we shall now evaluate how much overhead our solution results in. We can see the results in Table~\ref{tab:overhead}. The reason for the larger overhead for downloading small files as opposed to uploading is due to Dropbox performing the task quicker for downloading and we have seen previously that, in general, as Dropbox takes longer to perform its task the overhead grows smaller. While the percentages may seem large, nearly 25\% for downloading, the reality is that the overhead is only between half a second and a second for small files.
+\newline \indent Having measured all of the actions a user can perform, it is clear that our solution does comes with a measurable overhead. For uploading and downloading small files the overhead is unlikely to be noticable by a user. However we have seen log in and registration can take a long time under certain circumstances. Fortunately these are likely to be rare actions for the vast majority of users and should not impact on the experience a great deal.
 
-\begin{figure}[!t]
-\centerline{\includegraphics[height=5.0in,width=7in,angle=0]{plots/solutionvdropbox/solutionvdropbox.pdf}}
-\caption{A bar chart comparing the times taken by our solution and by Dropbox alone.}
-\label{fig:loginLineGraph}
-\end{figure}
+% Time taken to register
+\begin{table}[h]
+	\begin{center}
+    	\begin{tabular}{ | l | l |}
+    \hline
+     \textbf{Action} & \textbf{Average overhead} \\ \hline
+      Uploading a file & 15.78\% \\ \hline
+      Downloading a file & 22.79\%	\\ \hline    
+    \end{tabular}
+    \caption{The average overhead our solution results in when compared to Dropbox alone. These have only been measured for the file sizes which displayed a consistency, those are: 203.2 kB mp3, 1.3MB pdf, 5.2 MB jpg and the 10.5 MB zip. The larger files have not been measured as we would learn very little from them. The overhead for each one has been measured, summed and then divided by the total number of files measured.}
+    \label{tab:overhead}
+   \end{center}
+\end{table}
 
 
 \section{Evaluation}
@@ -911,9 +947,10 @@ Bruce Schneiner said in \textit{Secrets \& Lies}, ``Security is a chain; it's on
 \subsection{What I would have done differently}
 
 \section{Conclusion}
-This project aims to increase the automation in file sharing with a group of friends who require different access control constraints. Our solution achieves this by using cryptography. It also is able to achieve this without troubling the users with technicalities, a user need not know what a `key' is, or how to derive and use them to access data.
-\newline \indent However it does not come without constraints. It requires the user to order the people they wish to share their files with in a fairly strict hierarchy. The degree to which people can adopt this into their lives is yet to be seen and thorough case studies, or a release, would have to be done before we can know for sure. From the \textit{User stories} section we can see that there may be some people this suits well, while others may find the lack of flexibility frustrating. The division of these people is likely to be in the environment in which they intend to use our solution. It appears that our solution may be very useful in a business environment but may struggle to make in impact on a user who intends to use it in a social environment. Due to this we can see that our solution will not displace all file-sharing products from the market. Leaving a perfectly valid market for applications such as Dropbox and Google Drive. However for some organisations which have an inherently hierarchical structure, our solution may well be a more efficient options than applications such as YouSendIt and Box.
-\newline \indent It is evident from the \textit{Benchmarking} section that our solution comes with an overhead. This is to be expected. Fortunately the most time consuming parts of our solution, registration and log in, only needs to be performed rarely. The most common actions a user is likely to perform, uploading and downloading files, bear little overhead, meaning our solution is a realistic one when it comes to performance.
+This project aims to increase the automation in file sharing with different groups of friends who require different access control constraints. Our solution achieves this by using cryptography. This is done without troubling the users with technicalities. A user need not know what a `key' is, or how to derive and use them to access files. Most actions are performed in the GUI by selecting desired files and clicking the button for the desired action.
+\newline \indent We wanted our solution to be quick enough to be usable. From the \textit{Benchmarking} section we found that our solution comes with an overhead, as to be expected. Fortunately the most time consuming parts of our solution, registration and log in, only need be performed rarely. The most common actions a user is likely to perform, uploading and downloading files, bear little overhead, meaning our solution is a realistic one when it comes to performance. A performance which was inline with Dropbox's performance.
+\newline \indent We wanted our solution to be secure, that is not to introduce any unnecessary threats to user. From the \textit{Security analysis} section we found no clear security holes in our work. With any security threats likely coming from `traditional' attacks.
+\newline \indent However our solution does not come without constraints. It requires the user to order the people they wish to share their files with in a fairly strict hierarchy. The degree to which most people can adopt this into their lives is yet to be seen and thorough case studies, or a release, would have to be done before we can know for sure. From the \textit{User stories} section we can see that there may be some people this suits well, while others may find the lack of flexibility frustrating. The division of these two sets of people is likely to be in the environment in which they intend to use our solution. It appears that our solution may be very useful in a business environment but may struggle to make an impact on a user who intends to use it in a social environment. Due to this we can see that our solution will not displace all file-sharing products from the market. Leaving a perfectly valid market for applications such as Dropbox and Google Drive. However for some organisations which have an inherently hierarchical structure, our solution may well be a more efficient option than applications such as YouSendIt and Box.
 
 \subsection{Achievements}
 
@@ -925,8 +962,9 @@ This project aims to increase the automation in file sharing with a group of fri
 \paragraph*{Client-side threading} We could mitigate the overhead required by our solution by executing commands on the client side in a new thread. By doing this we could allow the GUI to continue functioning. This would give the illusion that the commands are executed instantly. This would introduce concurrency issues if another command was executed before the previous one had finished. This could be prevented if we ignore, or queue, new commands until the previous command had finished executing. 
 \paragraph*{Customisable bounds} It may be the case that the user requires more or less than 5 security levels. Increasing the number of levels after they have already been created would not be difficult, it would be little different to creating the keys at registration as we do now. However the extra keys created would have to be either the lowest or highest security levels to be done without fuss. If the level required to be added was in the middle the key one below would have to be re-encrypted with the new key and re-sent to the server. Reducing the number of levels could be done by simply discarding the files associated with that level, removing that key from the server and re-encrypting the key one level down from the level to be removed by the key one level up from the level to be removed.
 \paragraph*{Adjustable friend security levels} At this point in time, if a user wishes to change the security level of a friend they would have to revoke the friend entirely and add him again. This is involves unecessary work for what may be a computationally simple task. If the friends permissions are to be increased this could be done in the same way a friend is added now, that is send the friend the key for the new highest level they can access, encrypted with their public key, and allow them to derive any keys inbetween their new level and their old level. If the friend's level is to be lowered, all keys between their new level and old level have to be revoked, new keys generated and distributed and files associated with those levels have to be re-encrypted.
-\paragraph*{Adjustable lower bounds for friends} Currently a user can only state an upper bound for a friend. However it may be the case that the user only wishes to share a certain interval or that the friend is not interested in their low-level files. This could be achieved by using Jason Crampton's method as explained in the background section.
 \paragraph*{Multiple trees} In our solution a user is only able to create a single hierarchy. This means if all of the people they want to share files with do not do fit into a perfect hierarchy (ie. the really have to hierarchies) they are forced to leave people out or have a sub-optimal solution. A potential improvement to this is to allow the user to create more than one hierarchy. That is, they will have more than one hierarchy with distinct sets of keys, distinct sets of files and distinct sets of friends. The hierarchies would not intended to be used with an overlap of users, the introduction of this feature would be intended to cover many different possible hierarchies in a user's life (ie. a freelance worker who wishes to share files with many different companies who each have their own hierarchy.)
+\paragraph*{Adjustable lower bounds for friends} Currently a user can only state an upper bound for a friend. However it may be the case that the user only wishes to share a certain interval or that the friend is not interested in their low-level files. This could be achieved by using Jason Crampton's method as explained in the background section. Achieving this may also allow us to efficiently implement the feature described in \textit{Multiple trees} without actually having to many different individual trees. For instance, we could allow a `inner-tree' to consume levels between an $x$ and a $y$ where any users with a lower bound $< x$ can not have a higher bound $\geq x$ and any users with a higher bound $> y$ can not have a lower bound $\leq y$. Therefore each inner-tree would be self-contained within the big tree. An advantage this brings would be that we would not have to search through the list of inner-tree in order to find the tree we would like. This would not be possible if we had a completely individual trees.
+\newline \indent Rather than presenting the user with level names which begin with a number 1 greater than the last level in their previous inner-tree. The levels within each inner-tree can then be presented to the user in a meaningful way. This way the user need not know the inner-trees are connected in any way.
 \paragraph*{Lazy computation} Currently our solution attempts to do as much work as possible when the work arrives. This often causes delays which the user must wait out before they can continue using our application. This is most evident when registering a new account and revoking a user.
 \paragraph*{User interface} The user interface at this point in time is lacking. It is not particularly aesthetically pleasing and has little in the way of instructions. An introductory page which explains the functionality at a high level and gives guidance on how the user may best use the features on offer would be necessary before our solution could be publicly released.
 
