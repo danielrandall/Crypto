@@ -1,0 +1,11 @@
+#!/usr/bin/gnuplot
+ 
+set terminal postscript
+set output '| ps2pdf - uploadOverhead.pdf'
+
+set title "Average overhead"
+set xlabel "The size of the file uploaded (MB)"
+set ylabel "Average overhead our solution causes (percent)"
+set ytics "5"
+plot "data" title "" with lines lt rgb "red"
+pause -1 "Hit any key to continue"

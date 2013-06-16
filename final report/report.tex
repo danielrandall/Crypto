@@ -1,18 +1,30 @@
 \documentclass[12pt, titlepage]{article} 
 
+% Row colours
+\usepackage[table]{xcolor}
+
+\usepackage{booktabs}
+
 \usepackage[utf8x]{inputenc}
-\usepackage{fullpage}
+
 \usepackage{graphicx}
 \usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage{url}
+
 % For figure sources \caption*{}
 \usepackage{caption}
+
 % For trees
 \usepackage{tikz-qtree}
 %\usepackage{qtree}
-
 \usepackage{lscape}
+
+% Used to position tables
+\usepackage{float}
+
+% Increase table row space
+\renewcommand{\arraystretch}{1.2}
 
 \title{File Sharing using Cryptographically Enforced Access Control}
 \author{Daniel Randall \\ Imperial College London}
@@ -22,7 +34,7 @@
 \maketitle
 
 \begin{abstract}
-File sharing an every-day activity for some. Currently files can only be shared by one group or by one individual at a time before access control requirement have to be specified again. We attempt to achieve greater automation when files are shared with many groups of people. A file sharing system such as this is ideal for the hierarchical structure of the traditional business. A basic implementation to demonstrate this has been shown and has delivered with complete security and little overhead.
+File sharing is an every-day activity for some. Currently files can only be shared by one group or by one individual at a time before access control requirement have to be specified again. We attempt to achieve greater automation when files are shared with many groups of people. A file sharing system such as this is ideal for the hierarchical structure of the traditional business. A basic implementation to demonstrate this has been shown and has delivered with no evident security holes and little overhead.
 \end{abstract}
 
 % To change the abstract heading to have a similar layout for Acknowledgements
@@ -49,7 +61,7 @@ The internet has caused an explosion in the number of ways to share files. Peopl
 \newline \indent Once our solution has been implemented we shall proceed to describe what we have done and begin to evaluate it. We will evaluate our implementation in three ways: speed, ease of use and security. We will benchmark our solution against an existing file sharing platform before we allow a number of the users to test drive our work. We will see in which environments our work excels and in which it fails to make an impression. The final part of our evaluation will see us criticially assess how our implementation holds up against known attacks.
 
 \subsection{Objectives}
-The objectives for this project is to design a system which automatically shares files with many people at once, and also do this consistently without sacrificing the desired access control. Users should be able to achieve this by labelling each file with a security level and each friend with a security level. Our system would deal with the cryptography `under the hood' without troubling the user with technical requests. Our system would ideally run at a high speed, similar to alternative file-sharing platforms.
+The objectives for this project is to design a system which automatically shares files with many people at once, and also do this consistently without sacrificing the desired access control. Users should be able to achieve this by labelling each file with a security level and each friend with a security level. Our system would deal with the cryptography `under the hood' without troubling the user with technical requests. Our system would ideally run at a high speed, similar to alternative file-sharing platforms. It is a requirment for our work not to introduce any security holes and to be relatively robust to be most of common of attacks.
 
 \section{Background Research}
 \subsection{Overview}
@@ -334,7 +346,7 @@ Therefore we wish to use the smallest, reasonable key size. A 1024-bit RSA key p
 \newline We shall use a 2048-bit RSA key.
 \\
 \\
-The PKCS\#1 v1.5 padding scheme and the OAEP padding scheme which was standardised in PKCS\#1 v2.0 are both endorsed by FIPS for use with RSA (CITATION NEEDED). OAEP was designed to overcome two weaknesses that exist with PKCS\#1 v1.5, that is to become more resilient in the face of chosen ciphertext attacks and to prove the security that it provides. While OAEP is not infallible\cite{oaepAttack}, it would seem to be an improvement on PKCS\# 1 v1.5 and so that is what we shall use.
+The PKCS\#1 v1.5 padding scheme and the OAEP padding scheme which was standardised in PKCS\#1 v2.0 are both endorsed by FIPS for use with RSA. OAEP was designed to overcome two weaknesses that exist with PKCS\#1 v1.5, that is to become more resilient in the face of chosen ciphertext attacks and to prove the security that it provides. While OAEP is not infallible\cite{oaepAttack}, it would seem to be an improvement on PKCS\# 1 v1.5 and so that is what we shall use.
 \newline \indent OAEP needs to be parameterised with a hash algorithm. While RSA labs recommends SHA-1, we know that to be outdated due to the fact it only provides 80-bits of security. Less than we required. Instead we shall use a hash algorithm with at least the same number bits of security as provided by  our asymmetric algorithm, 112-bits. All of the SHA-2 family of hash algorithms provides at least 112-bits of security. SHA-224 provides 112-bits, SHA-256 provides 192 and SHA-512 provides 256-bits. Previously we chose algorithms the lowest feasible level of security for speed reasons, however this is not the case in this scenario. SHA-512 is faster than SHA-256 on modern 64-bit CPUs. The reason why SHA-512 is performs better is because it has ``37.5\% less rounds per byte (80 rounds operating on 128 byte blocks) compared to SHA-256 (64 rounds operating on 64 byte blocks.)''\cite{sha512Faster} For this reason we shall parameterise OAEP with SHA-512.
 
 \subsubsection{Password hashing algorithm}
@@ -349,12 +361,14 @@ NIST recommends the use of PBKDF2 in the use of the password storage.\cite{nistP
 \newline For these reasons we shall use bcrypt to store passwords in our system.
 \newline \indent bcrypt requires us to choose a number of rounds (work factor). Where the number of iterations is $2^{workfactor}$. The higher the number of rounds the longer it takes to run and therefore the higher the security. Unfortunately the java implementation we are to use is slower than the C implementation that the attacker would use, meaning that we can not choose the optimal number of rounds for our hardware. We also do not have the luxury of a powerful server to perform the hashing quickly, as will the attackers, putting us at a further disadvantage. To help us choose a work factor, benchmarks each work factor can be seen in Table~\ref{tab:bcryptWorkrates}. It is evident that as the work rate increases our hardware quickly reaches its limit, where at work rate 14 it is unable to hash a single password within a second. If we were to have a substantial user base we would be forced to have a lower work factor in order to be able to compute many hashes in a short amount of time, such as 7, which allows to compute 86 in a second. However we are unlikely to have a large user base as this current time, so for this reason we shall choose a larger one which is still low enough to not pose a significant inconvenience to our users. A work rate of 10 will likely give us significant protection, while only taking 87.7 milliseconds on average. We shall choose a work rate of 10 for bcrypt.
 
+
 % bcrypt times
 \begin{table}[h]
 	\begin{center}
-    	\begin{tabular}{ | l | l | l | l | l |}
+    	\begin{tabular}{ | l | l | l | l | l | }
     \hline
-    \textbf{Work factor} & \textbf{Iterations} & \shortstack{\textbf{Time taken} \\ \textbf{(milliseconds)}} & \shortstack{\textbf{Average} \\ \textbf{(milliseconds)}} & \shortstack{ \textbf{Average passwords} \\ \textbf{per second}} \\ \hline
+    \shortstack{\textbf{Work} \\ \textbf{factor}} & \textbf{Iterations} & \shortstack{\\ \textbf{Time taken} \\ \textbf{(milliseconds)}} & \shortstack{\textbf{Average} \\ \textbf{(milliseconds)}} & \shortstack{ \\ \textbf{Average} \\ \textbf{passwords} \\ \textbf{per second}} \\
+    \hline
     
     6 & 10 & 58.584 & 5.86 & 170 \\ \hline
     7 & 10 & 115.982 & 11.59 & 86 \\ \hline
@@ -365,7 +379,6 @@ NIST recommends the use of PBKDF2 in the use of the password storage.\cite{nistP
     12 & 10 & 3458.536 & 345.85 & 2 \\ \hline
     13 & 10 & 6923.244 & 692.32 & 1 \\ \hline
     14 & 10 & 13821.333 & 1282.13 & 0 \\ \hline
-    
     \end{tabular}
     \caption{The time taken to hash passwords using bcrypt at varying work rates. We calculate the total time to hash 10 passwords which is in the \textit{Time taken} column, the average time to hash a single password in the \textit{Average} column and the amount of passwords our server can hash in a single second in the \textit{Average passwords per second} column.}
     \label{tab:bcryptWorkrates}
@@ -373,11 +386,10 @@ NIST recommends the use of PBKDF2 in the use of the password storage.\cite{nistP
 \end{table}
 
 \subsubsection{Random number generator}
-As we have discussed, in order to complete certain actions with our cryptography algorithms our users are going to require keys and initialisations vectors. Wen need a way to generate these when we desire. However we need to achieve this in a secure way. By secure, we mean in a manner which can not be feasibly predicted by an attacker, even given the entire past sequence of numbers generated. This important as if the generation of the keys can be predicted in any way (ie. the 1000th instance will be equal to the 1st) then the attacker would be manipulate our solution into finding our the keys for some user, thereby gaining access to their files. A similar argument can be made for predicatable initialisation vectors, if an attacker is able to predict the IVs generated then the symmetric cipher mode we have chosen for our solution, CBC, is not properly implemented and would become equivalent to ECB. A mode which we have already decided is insufficient for our requirements.
-\newline \indent Due to our requirements we can not use the most popular software random number generators (RNG) in use today. The majority of the RNG or not truly random, but are deterministic and are so called psuedo random number generators (PRNG). The majority of PRNG are based on the linear congruential generator (java.util.Random, C rand()) or the linear feedback shift register. PRNG based on linear congruential generators have been proven to be easily predictable.\cite{lcgPRNGPredictable} Thus we shall avoid all generators based upon such models.
-\newline \indent Ideally we do not wish for pseudo random numbers but for truly random numbers. This can be achieved by using hardware RNGs. Such hardware is generally based upon unpredictable physics-based events. For instance hardware RNGs based upon a Geiger–Müller counter detects and counts the radiation particles passing by it every minute.\footnote{http://www.blackcatsystems.com/GM/products/GM10GeigerCounter.html} Unfortunately there is not enough funds for this project to purchase such equipment and, even if we could, we would then have to transfer the number from the server to the client.
-\newline \indent While we can not use completely predictable PSRNGs and we cannot attain truly RNGs, a compromise can be reached. The compromise is in the form of secure PSRNGs. Secure PSRNGs extracts seeds some truly random sources, such as \textit{/dev/random} on a Linux machine, and use that to generate pseudo random numbers. To obtain as close to truly random numbers as we can we could simply use the seeds as our random numbers, but this can be a slow process as the call to /dev/random blocks when enough entropy has not been collected. However as the functioning of our solution relies on the 
-the secure generation of these numbers, there is little we can about this.
+As we have discussed, in order to complete certain actions with our cryptography algorithms our users are going to require keys and initialisations vectors. We need a way to generate these when we desire. However it is important that we achieve this in a secure way. By secure, we mean in a manner which can not be feasibly predicted by an attacker, even when given the entire past sequence of numbers generated. This is important becuase, if the generation of the keys can be predicted in any way (ie. the 1000th instance will be equal to the 1st,) then the attacker would be able to manipulate our solution such that they can find the keys for some user, thereby gaining access to their files. A similar argument can be made for predicatable initialisation vectors, if an attacker is able to predict the IVs generated then the symmetric cipher mode we have chosen for our solution, CBC, is not properly implemented and would become equivalent to ECB. A mode which we have already decided is insufficient to meet our requirements.
+\newline \indent Due to our requirements we can not use the most popular software random number generators (RNG) in use today. The majority of the RNGs are not truly random, but are deterministic and so are called psuedo random number generators (PRNG). The majority of PRNG are based on the linear congruential generator (java.util.Random, C rand()) or the linear feedback shift register. PRNG based on linear congruential generators have been proven to be easily predictable.\cite{lcgPRNGPredictable} Thus we shall avoid all generators based upon such models.
+\newline \indent Ideally we do not wish for pseudo random numbers but for `truly' random numbers. This can be achieved by using hardware RNGs. Such hardware is generally based upon unpredictable physics-based events. For instance hardware RNGs based upon a Geiger–Müller counter detects and counts the radiation particles passing by it every minute.\footnote{http://www.blackcatsystems.com/GM/products/GM10GeigerCounter.html} Unfortunately there is not enough funds for this project to purchase such equipment and, even if we could, we would then have to transfer the number from the server to the client.
+\newline \indent While we can not use completely predictable PSRNGs and we cannot attain truly RNGs, a compromise can be reached. The compromise is in the form of secure PSRNGs. Secure PSRNGs extracts seeds from `truly' random sources, such as \textit{/dev/random} on a Linux machine, and use that to generate pseudo random numbers. To obtain as close to `truly' random numbers as we can we could simply use the seeds as our random numbers, but this can be a slow process as the call to /dev/random blocks when enough entropy has not been collected. However as the functioning of our solution relies on the the secure generation of these numbers, there is little we can do about this.
 
 
 \subsection{Algorithm providers}
@@ -401,10 +413,10 @@ We are going to use the AES algorithm to encrypt files before they are uploaded.
 \newline \indent From these results it is quite clear that SunJCE offers the most attractive implementation for AES, offering the most fastest and most consistent performance with no import necessary and a very simple interface.
 % Comparison of AES implementation features
 \begin{center}
-\begin{table}
+\begin{table}[H]
     \begin{tabular}{ | l | l | l | l |}
     \hline
-    \textbf{Implementation} & \textbf{Import Size} & \textbf{Time taken (seconds)} & \textbf{Average} \\ \hline
+    \textbf{Implementation} & \shortstack{\\ \textbf{Import} \\ \textbf{Size}} & \shortstack{\textbf{Time taken} \\ \textbf{(seconds)}} & \textbf{Average} \\ \hline
     
     SunJCE & 0 & 11.480270937  &  0.011 \\ \hline
     
@@ -413,16 +425,16 @@ We are going to use the AES algorithm to encrypt files before they are uploaded.
     Bouncy Castle (via JCA provider) & 2.3MB & 11.25560253 & 0.011 \\ \hline
     
     \end{tabular}
-    \caption{Comparisons between different implementations of AES using PKCS5/7 for padding and a 128-bits for the key size. For each implementation a 1.3MB pdf is encrypted 1000 times. The \textit{Time taken (seconds)} column holds the time taken for the implementation to complete all 10 iterations. The \textit{Average} column is the average time taken for the implementation to encrypt the file a single time.} \label{tab:aespdfComparison}
+    \caption{Comparisons between different implementations of AES using PKCS5/7 for padding and a 128-bits for the key size. For each implementation a 1.3MB pdf is encrypted 1000 times. The \textit{Time taken (seconds)} column holds the time taken for the implementation to complete all 1000 iterations. The \textit{Average} column is the average time taken for the implementation to encrypt the file a single time.} \label{tab:aespdfComparison}
     \end{table}
 \end{center}
 
 % Comparison of AES implementation features
 \begin{center}
-\begin{table}
+\begin{table}[H]
     \begin{tabular}{ | l | l | l | l |}
     \hline
-    \textbf{Implementation} & \textbf{Import Size} & \textbf{Time taken (seconds)} & \textbf{Average} \\ \hline
+    \textbf{Implementation} & \shortstack{\\ \textbf{Import} \\ \textbf{Size}} & \shortstack{\textbf{Time taken} \\ \textbf{(seconds)}} & \textbf{Average} \\ \hline
     
     SunJCE & 0 & 185.568239816 & 1.86 \\ \hline
     
@@ -431,21 +443,22 @@ We are going to use the AES algorithm to encrypt files before they are uploaded.
     Bouncy Castle (via JCA provider) & 2.3MB & 193.091386035 & 1.93 \\ \hline
     
     \end{tabular}
-    \caption{Comparisons between different implementations of AES using PKCS5/7 for padding and a 128-bits for the key size. For each implementation a 209.7MB zip is encrypted 100 times. The \textit{Time taken (seconds)} column holds the time taken for the implementation to complete all 10 iterations. The \textit{Average} column is the average time taken for the implementation to encrypt the file a single time.} \label{tab:aeszipComparison}
+    \caption{Comparisons between different implementations of AES using PKCS5/7 for padding and a 128-bits for the key size. For each implementation a 209.7MB zip is encrypted 100 times. The \textit{Time taken (seconds)} column holds the time taken for the implementation to complete all 100 iterations. The \textit{Average} column is the average time taken for the implementation to encrypt the file a single time.} \label{tab:aeszipComparison}
     \end{table}
 \end{center}
 
+
 \subsubsection{RSA algorithm provider}
 We are only using the RSA algorithm for one purpose, that is to encrypt symmetric keys for transfer between users. For this reason it is sufficient to compare the performances of different implementations on they perform at this task. That is what we shall do here.
-\newline \indent The results from the comparisons can be seen in Table~\ref{tab:rsaComparison}. GNUCrypto does not provide an implementation of RSA and so it is omitted from the test. As can be seen there is little to seperate the two implementations, with both implementations being extremely quick.
+\newline \indent The results from the comparisons can be seen in Table~\ref{tab:rsaComparison}. GNUCrypto does not provide an implementation of RSA and so it is omitted from the test. As we can see there is little to seperate the two implementations, with both implementations performing extremely quickly.
 \newline \indent In order to avoid unnecessary imports and maintain a level of consistency in our algorithm providers we shall simply use the SunJCE implementation of the RSA algorithm.
 
 % Comparison of RSA implementation features
 \begin{center}
-\begin{table}[h!]
+\begin{table}[H]
     \begin{tabular}{ | l | l | l | l |}
     \hline
-    \textbf{Implementation} & \textbf{Import Size} & \textbf{Time taken (seconds)} & \textbf{Average} \\ \hline
+    \textbf{Implementation} & \shortstack{ \\ \textbf{Import} \\ \textbf{Size}} & \shortstack{\textbf{Time taken} \\ \textbf{(seconds)}} & \textbf{Average} \\ \hline
     
     SunJCE & 0 & 19.714574141  & 0.000197 \\ \hline
     
@@ -494,8 +507,8 @@ We need to generate random numbers for the following:
 	\item \textbf{Initialisation vectors for AES}
 	\item \textbf{Public/private key pair for RSA}
 \end{itemize}
-The default PSRNG implementations for the \textit{SecureRandom} Java class are NativePRNG for Linux, which uses /dev/random to seed, and SHA1PRNG for Windows, which uses CryptoGenRandom to seed.
-\newline \indent The RSA public/private key related to each in a mathematical way, therefore generating two random numbers is not sufficient. It would seem unnecessary, as well as the introduction for possible error, for us to conduct the mathematic necessary to create them ourselves. Therefore we shall use a pre-existing solution. Java offers a KeyPairGenerator class which can supplemented with an algorithm provider and a PSRNG.
+It will be sufficient for the the AES keys and IVs for us to use a seed from the secure PSRNG at the length we desire. The default PSRNG implementations for the \textit{SecureRandom} Java class are NativePRNG for Linux, which uses /dev/random to seed, and SHA1PRNG for Windows, which uses CryptoGenRandom to seed. Both are able to perform at sufficient level and so we shall use the defaults to create our seeds.
+\newline \indent The RSA public/private key pair are related to each in a mathematical way, therefore generating two random numbers is not sufficient. It would seem unnecessary, as well as the introduction for possible error, for us to conduct the mathematics necessary to create them ourselves. Therefore we shall use a pre-existing solution. Java offers a \textit{KeyPairGenerator} class which can be supplemented with an algorithm provider and a PSRNG. This what we shall do to create an RSA key pair.
 
 \section{Implementation}
 In this section we shall discuss the implementations created as a result of our discussion in the previous section.
@@ -572,23 +585,23 @@ Creating a folder for a user of which they have access at no level can only have
 \newline \indent When a user adds a file to a folder containing a friend's uploads our only safe option is to ignore it. To do this we must contact the server to verify the integrity of each file. Whether the file added is an encrypted file they do not have access to is not significant as they do not possess the key to decrypt it and the server can not be tricked into providing it as it does not possess any client keys.
 \newline \indent Removing a file from a folder containing a friend's uploads can be ignored, meaning that they will no longer has access to the file, at least until someone updates it. Or we could simply replace the file by copying the owner's current version of the file.
 
-\section{Testing}
-
 
 \section{Benchmarking}
 In this section we shall evaluate the speed at which our solution can perform certain tasks. These tasks include: log in, file upload, file download, sending a friend request, accepting a friend request and revoking a user.
-\newline \indent As shown in the section where compare the differences between different implementations of the AES algorithms, the time it takes to complete varies greatly on the size of the file used to encrypt. Thus, similar to that section, we shall run tests on files of different sizes. Where possible we shall also use the same files as in that section in order to determine how much of the running time is spent on logic/Dropbox and how much on cryptography.
-\newline \indent The benchmarks shall all be measured on the client-side. In the real world it matters how much stress the server is under due to cost, however for the sake of this project we shall concentrate on the user experience. The cryptography, and therefore vast majority of the work, is done on the client side and so ignoring the server's workload should not matter so much.
-\newline \indent There are many occasions in our solution where there is a need to generate parameters for cryptography, such as keys and initialisation vectors. To do this randomly the algorithms need to collect a lot of \textit{entropy}. To achieve this most secure algorithms collect values from the computer they are running on such as the temperature of the CPU, mouse movements and keyboard strokes. Because of this these algorithms are able to run faster when the user is actively using the computer. For this reason, when we are testing an action which requires this, we shall show the time the actions take at different levels of user activity.
+\newline \indent As shown in the section where compare the differences between different implementations of the AES algorithms, the time it takes to complete varies greatly on the size of the files we are encrypting. Thus, similar to that section, we shall run tests on files of different sizes. Where possible we shall also use the same files as in that section in order to determine how much of the running time is spent on logic/Dropbox and how much on cryptography.
+\newline \indent The benchmarks shall all be measured on the client-side. In the real world it matters how much stress the server is under due to cost and ability to serve all clients, however for the sake of this project we shall concentrate on the user experience. The cryptography, and therefore the vast majority of our work, is done on the client side and so ignoring the server's workload should not matter so much.
+\newline \indent There are many occasions in our solution where there is a need to generate parameters for cryptography, such as keys and initialisation vectors. To do this randomly the algorithms need to collect a lot of \textit{entropy}. To achieve this most secure algorithms collect values from the computer they are running on, such as the temperature of the CPU, mouse movements and keyboard strokes. Because of this these algorithms are able to run faster when the user is actively using the computer. For this reason, when we are testing an action which requires this, we shall show the time the actions take at different levels of user activity.
 
 \subsection{Uploading a file}
 These tests for uploading a file are run from the beginning of the \textit{Controller} for this action on the client-side until it returns. This means we are ignoring the time taken for the GUI listener to detect the request and the time taken for the controller and GUI to interact and update the display. However this should be minimal and have little effect on the results.
-\newline \indent We can see the time taken for our solution to upload different files in Table~\ref{tab:uploadBenchmark}. It takes 4 seconds on average to upload a 1.3MB pdf. This time includes the encryption of the file before it is uploaded. As we saw when looking for an AES provider, it took on average of 0.011 seconds to encrypt the same file using AES. It is clear that the cryptography has little to no effect on the time this action takes to complete. The other substantial stages of uploading a file using our solution is the comunication between the client and server and uploading files to Dropbox. As we can be seen from Table~\ref{tab:uploadDropboxBenchmark} uploading the files to Dropbox represents the a considerable chunk of time. For instance, on average for the 1.3MB pdf, uploading the file to Dropbox takes ~93\% of the total time our solution requires. Therefore our solution adds an overage overhead of 8\%.
-\newline \indent The type of file we are uploading appears to make little difference. As we can see in Figure~\ref{fig:solutionUploadLineGraph} the time taken to upload the 203.2 kB mp3, 1.3MB pdf, 5.2 MB jpg and the 10.5 MB zip, appears to grow linearly with the size of the file, regardless of the type. However from our tests we can see that the Dropox API becomes considerably unreliable as the size of the file increases. One particularly noticable result is that the 832.6 MB took longer on average to upload to Dropbox alone than it did using our solution. There is no reason why this would be true and so we shall put it down to the inconsistency of the Dropbox API for large files.
+\newline \indent We can see the time taken for our solution to upload different files in Table~\ref{tab:uploadBenchmark}. It takes 4 seconds on average to upload a 1.3MB pdf. This time includes the encryption of the file before it is uploaded. As we saw when looking for an AES provider, it took on average of 0.011 seconds to encrypt the same file using AES. It is clear that the cryptography has little to no effect on the time this action takes to complete. The other substantial stages of uploading a file using our solution is the comunication between the client and server and uploading files to Dropbox.
+\newline \indent As we can be seen from Table~\ref{tab:uploadDropboxBenchmark} uploading the files to Dropbox represents the a considerable chunk of time. For instance, on average for the 1.3MB pdf, uploading the file to Dropbox takes on average 96\% of the total time our solution requires. Therefore our solution adds an overage overhead of only 4\% for the uploading of this file. However an interesting point is that the average overhead of our solution for the 203.2 kB mp3 is 35\%. This is likely due to the uploading of the file being incredibly quick, meaning the reasonably small amount of time the cryptography and client/server communication takes has a greater impact than it would otherwise. The tests on other files supports this argument. We can see this visually in Figure~\ref{fig:uploadOverheadLineGraph}. For very small files the overhead is fairly large but as the size of the file increases the overhead causes by our solution descends into almost nothing.
+\newline \indent The type (extension) of file we are uploading appears to make little difference. In the pictorial representation of the test for our solution, Figure~\ref{fig:solutionUploadLineGraph}, the time taken to upload the 203.2 kB mp3, 1.3MB pdf, 5.2 MB jpg and the 10.5 MB zip, appears to grow linearly with the size of the file, regardless of the type. Comparing the rate at which our solution grows in the time taken, Figure~\ref{fig:solutionUploadLineGraph}, and the rate which uploading files to Dropbox alone grows, we can see Figure~\ref{fig:dropboxUploadLineGraph}, we can see they are almost exactly the same. From this we can determine that the increase in time as the file increases is mainly caused by Dropbox.
+\newline \indent One particularly noticable result is that the 832.6 MB .iso took longer on average to upload to Dropbox alone than it did using our solution. There is no reason why this would be true and so we shall put it down to the inconsistency of the Dropbox API for large files.
 
 % Time taken to upload a file
 \bigskip
-\begin{table}[h!]
+\begin{table}[H]
 \begin{center}
     \begin{tabular}{ | l | l | l | l | l |}
     \hline
@@ -598,53 +611,61 @@ These tests for uploading a file are run from the beginning of the \textit{Contr
     5.2 MB jpg & 10 & 51.347427923 & 5.13 \\ \hline
     10.5 MB zip & 10 & 79.577470975 & 7.96  \\ \hline
     90.9 MB exe & 10 & 1852.5543543 & 185.32 \\ \hline
-    209.7 MB zip & 10 & 3375.23901536 & 337.52 \\ \hline
-    832.6 MB iso & 10 & 21641.2479242 & 2164.1 \\ \hline
+    209.7 MB zip & 10 & 3483.7958252 & 348.38 \\ \hline
+    832.6 MB iso & 10 & 21641.247924 & 2164.1 \\ \hline
     \end{tabular}
     \caption{The time taken to upload different files using our solution.} \label{tab:uploadBenchmark}
     \end{center}
 \end{table}
 
-\begin{figure}[!t]
+\begin{figure}[H]
 \centerline{\includegraphics[height=4.0in,width=7in,angle=0]{plots/solutionUpload/solutionUploadTimes.pdf}}
 \caption{A line graph plotting the time the average time it takes to upload a file a to Dropbox via our solution for files of varying size.}
 \label{fig:solutionUploadLineGraph}
 \end{figure}
 
 % Time taken to upload a file to Dropbox alone
-\begin{table}[h!]
+\begin{table}[H]
 \begin{center}
     \begin{tabular}{ | l | l | l | l |}
     \hline
     \textbf{File} & \textbf{Iterations} & \textbf{Time taken (seconds)} & \textbf{Average} \\ \hline
-    
     203.2 kB mp3 & 10 & 9.237756953 & 0.92 \\ \hline
     1.3MB pdf & 10 & 36.34874983 & 3.63 \\ \hline
 	5.2 MB jpg & 10 & 42.918766407 & 4.59 \\ \hline
     10.5 MB zip & 10 & 70.938518268 & 7.09 \\ \hline
-    90.9 MB exe & 10 & 1775.21367539  & 177.52 \\ \hline
-    209.7 MB zip & 10 & 3375.23901536 & 337.52 \\ \hline
-    832.6 MB iso & 10 & 24259.3876920 & 2425.94 \\ \hline
+    90.9 MB exe & 10 & 1775.2136753  & 177.52 \\ \hline
+    209.7 MB zip & 10 & 3375.2390153 & 337.52 \\ \hline
+    832.6 MB iso & 10 & 24259.387692 & 2425.94 \\ \hline
     \end{tabular}
     \caption{The time taken to read and upload different files to Dropbox directly, without encrypting, communicating with the server or using any logic. \\ Note that the times can vary substantially on the network they were tested on and the load on the Dropbox servers at that time.} \label{tab:uploadDropboxBenchmark}
     \end{center}
 \end{table}
 
-\begin{figure}[!t]
+
+\begin{figure}[H]
 \centerline{\includegraphics[height=4.0in,width=7in,angle=0]{plots/dropboxUpload/dropboxUploadTimes.pdf}}
 \caption{A line graph plotting the time the average time it takes to upload a file a to Dropbox directly via the SDK for files of varying size.}
 \label{fig:dropboxUploadLineGraph}
 \end{figure}
 
+\begin{figure}[H]
+\centerline{\includegraphics[height=4.0in,width=7in,angle=0]{plots/uploadOverhead/uploadOverhead.pdf}}
+\caption{A line graph plotting the time the average overhead caused by our solution when uploading a file to Dropbox using our solution. The graph plots the percentage of overhead when compared to uploading to Dropbox directly for files of varying size.}
+\label{fig:uploadOverheadLineGraph}
+\end{figure}
 
 
 \subsection{Downloading a file}
-The results from the test can be seen in Table~\ref{tab:downloadBenchmark}. The first thing one might notice is that there is slightly faster performance for downloading when compared to uploading. One possible explanation for this is that typically networks have a faster maximum download speed than upload speed.
-
+We conduct our tests for downloading files in the same way that we did for uploading files. That is, through the \textit{Controller} and not the GUI.
+\newline \indent We can see the results from the test for dowloading files using our solution in Table~\ref{tab:downloadBenchmark} and our results for downloading files straight from Dropbox in Table~\ref{tab:downloadDropboxBenchmark}. The first thing we might notice is that there is slightly faster performance for downloading when compared to uploading the same files in the previous tests. One possible explanation for this is that typically networks have a faster maximum download speed than upload speed. Another possible reason is that Dropbox may have to do more preparation when uploading files, such as generating unique identifiers and creating database entries.
+\newline \indent Similarly to the previous test, there is an anomoly in our results for the 209.7 MB zip, which downloaded quicker on average using our solution than by accessing Dropbox directly. As before, there is no reason for this be true and is further evidence that Dropbox has inconsistent performance when performing actions on large files.
+\newline \indent We can see our download tests pictorially in Figure~\ref{fig:solutionUploadLineGraph} for our solution and in Figure~\ref{fig:dropboxDownloadLineGraph} for Dropbox alone. For files under 100 MB the rate of growth in both is almost identical however they differ for files above that size due the anomoly described above. From this we can gather, like we did with uploading files, the time rate of increase in downloading time is caused largely by Dropbox.
+\newline \indent The overage overhead for our solution when downloading files can be seen in Figure~\ref{fig:downloadOverheadLineGraph}. From this we can see our results for downloading have been a more inconsistent than when uploading. Because we can not accurately measure the overhead. However we can still determine a general downward trend in overhead as the file size increases, similar to when uploading files.
 
 % Time taken to download a file using solution
 \bigskip
-\begin{table}[h]
+\begin{table}[H]
 \begin{center}
     \begin{tabular}{ | l | l | l | l |}
     \hline
@@ -652,8 +673,8 @@ The results from the test can be seen in Table~\ref{tab:downloadBenchmark}. The 
     203.2 kB mp3 & 10 & 13.155384853 & 1.32 \\ \hline
     1.3 MB pdf  & 10 & 30.473156395 & 3.05 \\ \hline
     5.2 MB jpg & 10 & 61.894616714 & 6.19 \\ \hline
-    10.5 MB zip & 10 & 124.055083186 & 12.41 \\ \hline
-    90.9 MB exe & 10 & 1775.21367539  & 177.52 \\ \hline
+    10.5 MB zip & 10 & 114.055083186 & 11.41 \\ \hline
+    90.9 MB exe & 10 & 1446.682795175  & 144.7 \\ \hline
     209.7 MB zip & 10 & 2068.31832507 & 306.83 \\ \hline
     832.6 MB iso & 10 & 8539.4238683 & 853.94 \\ \hline
     \end{tabular}
@@ -663,7 +684,7 @@ The results from the test can be seen in Table~\ref{tab:downloadBenchmark}. The 
 \bigskip
 
 % Solution download plot
-\begin{figure}[!t]
+\begin{figure}[H]
 \centerline{\includegraphics[height=4.0in,width=7in,angle=0]{plots/solutionDownload/solutionDownloadTimes.pdf}}
 \caption{A line graph plotting the time the average time it takes to download a file to Dropbox via our solution for files of varying size.}
 \label{fig:dropboxDownloadLineGraph}
@@ -672,7 +693,7 @@ The results from the test can be seen in Table~\ref{tab:downloadBenchmark}. The 
 
 % Time taken to download a file from Dropbox
 \bigskip
-\begin{table}[h!]
+\begin{table}[H]
 \begin{center}
     \begin{tabular}{ | l | l | l | l |}
     \hline
@@ -682,29 +703,36 @@ The results from the test can be seen in Table~\ref{tab:downloadBenchmark}. The 
     1.3MB pdf & 10 & 24.290205159 & 2.43 \\ \hline
     5.2 MB jpg & 10 & 58.47502913 & 5.85 \\ \hline
     10.5 MB zip & 10 & 94.740813236 & 9.47 \\ \hline
-    90.9 MB exe & 10 & 2039.980643 & 204 \\ \hline
+    90.9 MB exe & 10 & 1309.980643 & 131 \\ \hline
     209.7 MB zip & 10 & 3375.23901536 & 377.52 \\ \hline
     832.6 MB iso & 10 & 7331.61753447 & 733.16 \\ \hline    
     \end{tabular}
-    \caption{The time taken to download files to Dropbox directly, without encrypting, communicating with the server or using any logic. \\ Note that the times can vary substantially on the network they were tested on and the load on the Dropbox servers at that time.} \label{tab:uploadDropboxBenchmark}
+    \caption{The time taken to download files to Dropbox directly, without encrypting, communicating with the server or using any logic. \\ Note that the times can vary substantially on the network they were tested on and the load on the Dropbox servers at that time.} \label{tab:downloadDropboxBenchmark}
     \end{center}
 \end{table}
 
 % Dropbox download plot
-\begin{figure}[!t]
+\begin{figure}[H]
 \centerline{\includegraphics[height=4.0in,width=7in,angle=0]{plots/dropboxDownload/dropboxDownloadTimes.pdf}}
 \caption{A line graph plotting the time the average time it takes to download a file to Dropbox directly via the SDK for files of varying size.}
 \label{fig:dropboxDownloadLineGraph}
 \end{figure}
 
 
+% Download overhead
+\begin{figure}[H]
+\centerline{\includegraphics[height=4.0in,width=7in,angle=0]{plots/downloadOverhead/downloadOverhead.pdf}}
+\caption{}
+\label{fig:downloadOverheadLineGraph}
+\end{figure}
+
 \subsection{Log in}
-When a user logs in the client needs to contact the server to acquire information about its own files and the files friends have shared with them, such as their security level. Due to this the time it takes a user to log in will likely correlate with the number of files they currently have access to. Therefore in order to get a good idea of how long this takes we shall measure the time when the user has access to varying number of files. The results for this can be seen in Table~\ref{tab:loginBenchmark}.
-\newline \indent There is clearly a significant increase in the time it takes to log in as the number of files the user has access to increases. In Figure~\ref{fig:loginLineGraph} we can see a visual representation of the rate of increase. As we can see from the graph the rate of increase is almost linear.
-\newline \indent Applications which pull information from a server, ie. Skype, typically have longer log in times than other applications.
+When a user logs in the client needs to contact the server to acquire information about its own files and the files friends have shared with them. The information it needs to collect are, the file's security level (for all files) and the file's owner (for files belonging to a friend). Due to this the time it takes a user to log in will likely correlate with the number of files they currently have access to. Therefore in order to get a good idea of how long this takes we shall measure the times it takes to log in when the user has access to a varying number of files. The results for this can be seen in Table~\ref{tab:loginBenchmark}.
+\newline \indent There is clearly a significant increase in the time it takes to log in as the number of files the user has access to increases. In Figure~\ref{fig:loginLineGraph} we can see a visual representation of the rate of increase. As we can see from the graph, the rate of increase is almost linear. For a small number of files this is not much of a problem, but as the number of files the user has access to grows large the wait may become be rather tedious.
+\newline \indent Our results are not unusual; applications which pull information from a server, ie. Skype, typically have longer log in times than other applications.
 
 % Time taken to log in
-\begin{table}[h]
+\begin{table}[H]
 	\begin{center}
     	\begin{tabular}{ | l | l | l | l |}
     \hline
@@ -723,7 +751,7 @@ When a user logs in the client needs to contact the server to acquire informatio
    \end{center}
 \end{table}
     
-\begin{figure}[!t]
+\begin{figure}[H]
 \centerline{\includegraphics[height=4.0in,width=7in,angle=0]{plots/login/loginTimes.pdf}}
 \caption{A line graph plotting the time the average time it takes to log in when a user has access to a different number of files.}
 \label{fig:loginLineGraph}
@@ -733,31 +761,31 @@ When a user logs in the client needs to contact the server to acquire informatio
 \subsection{Registration}
 When a user registers they have to manually log in to Dropbox and approve our application through a web browser. The time it takes to do this can vary massively between different users. For this reason that part of the registration process is omitted from our measurements. 
 \newline \indent Registration is the part of our solution which requires the most generation of cryptography values and client/server communication. For this reason we can expect registration to be the most time consuming process in our system. This is not unusual and can be seen in similar applications, such as Mega.\footnote{http://images.hacktabs.com//2013/01/Mega-generating-key.png}
-\newline \indent During registration a lot of cryptography values need to be generated. This action will likely have the most variation in the amount of entropy collected by our the algorithms. For this reason we shall time the registration takes to complete with varying levels of user activity. This can be seen in Table~\ref{tab:registerBenchmark}. As we can see registration can vary massively, from 9 seconds with a lot of activity to nearly 2 minutes with no activity. This is as we predicted.
+\newline \indent During registration a lot of cryptography values need to be generated. For this reason registration will likely have the most variation in the time it takes to complete by the amount of entropy our algorithms are able to collect while they are running. Because of this we shall time the registration takes to complete with varying levels of user activity. This can be seen in Table~\ref{tab:registerBenchmark}. As we can see registration can vary massively, from 9 seconds with a lot of activity to nearly 2 minutes with no activity. This is as we predicted.
 
 
 % Time taken to register
-\begin{table}[h]
+\begin{table}[H]
 	\begin{center}
     	\begin{tabular}{ | l | l | l | l |}
     \hline
-     \textbf{Entropy help} & \textbf{Iterations} & \textbf{Time taken 		(seconds)} & \textbf{Average} \\ \hline
+     \textbf{Entropy help} & \textbf{Iterations} & \shortstack{\\ \textbf{Time taken} \\ \textbf{(seconds)}} & \textbf{Average} \\ \hline
     No mouse or keyboard movement & 10 & 1145.34437768 & 114.53  \\ \hline
 	Casual browsing and typing & 10 & 152.188442492 & 15.22 \\ \hline    
     Wild mouse movement & 10 & 92.557535694 & 9.26 \\ \hline
     
     \end{tabular}
-    \caption{The time taken to register using our solution with varying levels of user activity. The \textit{Entropy help} column refers to the level of activity the user partakes in while registration is being carried out by our solution. \textit{Iterations} is the number of the times the test was conducted. \textit{Time taken} is the total amount of time all iterations take to complete. \textit{Average} is the average time taken for one iteration to complete. \\ Note that in these tests the entropy pool was unlikely to be full before registration. If the user has a full entropy pool (ie. they have not recently used any applications which require secure random number generation), before they register, they may not need to help entropy generation so much.}
+    \caption{The time taken to register using our solution with varying levels of user activity. The \textit{Entropy help} column refers to the level of activity the user partakes in while registration is being carried out by our solution. \textit{Iterations} is the number of the times the test was conducted. \textit{Time taken} is the total amount of time all iterations take to complete. \textit{Average} is the average time taken for one iteration to complete. \\ Note that in these tests the entropy pool was unlikely to be full before registration. If the user has a full entropy pool (ie. they have not recently used any applications which require secure random number generation), before they register, the amount of activity they partake in will likely not have such a big difference in the time registration takes.}
     \label{tab:registerBenchmark}
    \end{center}
 \end{table}
 
 \subsection{Overhead evaluation}
 Having measured the times for each action, we shall now evaluate how much overhead our solution results in. We can see the results in Table~\ref{tab:overhead}. The reason for the larger overhead for downloading small files as opposed to uploading is due to Dropbox performing the task quicker for downloading and we have seen previously that, in general, as Dropbox takes longer to perform its task the overhead grows smaller. While the percentages may seem large, nearly 25\% for downloading, the reality is that the overhead is only between half a second and a second for small files.
-\newline \indent Having measured all of the actions a user can perform, it is clear that our solution does comes with a measurable overhead. For uploading and downloading small files the overhead is unlikely to be noticable by a user. However we have seen log in and registration can take a long time under certain circumstances. Fortunately these are likely to be rare actions for the vast majority of users and should not impact on the experience a great deal.
+\newline \indent Having measured all of the actions a user can perform, Dropbox is most definitely the bottle neck in the system. That said it is clear that our solution does comes with a measurable overhead when compared to Dropbox alone. Uploading and downloading can come with a significant overhead when the files are small, but fortunately the time they take is incredibly small so the overhead is unlikely to be noticable by the user. However we have seen log in and registration can take a long time under certain circumstances. Generally these are likely to be rare actions for the vast majority of users and should not impact on the experience a great deal.
 
 % Time taken to register
-\begin{table}[h]
+\begin{table}[H]
 	\begin{center}
     	\begin{tabular}{ | l | l |}
     \hline
@@ -774,7 +802,7 @@ Having measured the times for each action, we shall now evaluate how much overhe
 \section{Evaluation}
 
 \subsection{User stories}
-In this section we shall attempt to evaluate how useful our solution is when applied to an `everyday' environment. There are two possible environments we can test: social and work. To do this we will allow members of the public to use our solution. In order to evaluate it as accurately as possible we shall attempt to conduct our tests on an audience with a large variety of technical ability.
+In this section we shall attempt to evaluate how useful our solution is when applied to an `everyday' environment. There are two possible environments we can test: social and work. To do this we will allow members of the public to use our solution. In order to evaluate our work as accurately as possible we shall attempt to conduct our tests on an audience with a large variety of technical ability.
 \newline \indent Each test involves a single user and is divided into two sections: firstly at the beginning of each test we shall conduct a `cold' run, that is with little help the test subject will be allowed to use the solution as they see fit. Secondly we shall guide the test subject through the solution, telling them exactly what to do where necessary.
 \newline \indent Before the beginning of a test the subject will be briefed on what our solution is trying to achieve. There will be little talk of the implementation and the brief will be much like the introduction to this paper. The subject will be given a list of people (with existing accounts) who they are able to, at their pleasure, ignore them, send friend requests to them and accept friend requests from them.
 \newline The list of existing users to give to a test subject to use in a social environment is:
@@ -809,10 +837,10 @@ Technical ability: Advanced
 \newline Use: Social
 \newline
 \newline \textbf{Cold run}
-\newline The user found login and registration easy and give little indication that it was taking too long. The user seemed to understand the concept very well and once given the list of people he did was able to rank them fairly quickly. However the user complained that there did not exist a perfect hierarchy, mainly becuase he felt his friends did not an overlap of interest in the files he would share. The user suggested that he would be better able to create a hierarchy if he was able to create more than one account and have multiple hierarchies. While ranking his friends the user referred to the security levels by names he designated rather than the numbers which are assigned by us. The user `saved' the highest security level for himself, ie. would permit not any friends to access files at that level.
+\newline The user found login and registration easy and give little indication that it was taking too long. The user seemed to understand the concept very well and once given the list of people he was able to rank them, but took a while doing so. The user complained that there did not exist a perfect hierarchy, mainly becuase he felt his friends did not have an overlap of interest in the files he would share. The user suggested that he would be better able to create a a ranking for his friends if he was able to create more than one account and have multiple hierarchies. While ranking his friends the user referred to the security levels by names he designated rather than the numbers which are assigned by us. The user `saved' the highest security level for himself, ie. would permit not any friends to access files at that level. This was surprising to me, and was not a possibility I had considered.
 \newline
 \newline \textbf{Assisted run}
-This user required little assistance. Direction was needed to locate files he had download onto his computer as he felt the GUI did not make it clear.
+This user required little assistance. Direction was needed to locate files he had download onto his computer as he felt the GUI did not make the location clear.
 
 \subsubsection{Test 2}
 Technical ability: Basic
@@ -823,31 +851,29 @@ Technical ability: Basic
 \newline \indent The user found uploading and downloading her own files simple but indicated she was unaware of where the files were downloaded to (a GUI issue.)
 \newline
 \newline \textbf{Assisted run}
-\newline After an explanation of how the security levels may be used, the user was better able to fomulate an environment which she found more intuitive. Her main improvement was not feeling the need to use all of them. However she found attempting to re-organise her friends tedious.
-\newline
-\newline The user found the overall experience positive and felt the application excelled in its simplicity, but suggested making the allocation of security levels more user-friendly.
+\newline After an explanation of how the security levels may be used, the user was better able to fomulate an environment which she found more intuitive. Her main improvement was not feeling the need to use all of the security levels. Despite this she still had difficulty organising her friends into a hierarchy we was happy with. With a sub-optimal ranking and faced with the tedious task of revoking and re-adding her friends, she eventually gave up.
 
 \subsubsection{Test 3}
 Technical ability: Average
 \newline Use: Work
 \newline
 \newline \textbf{Cold run}
-\newline Registration and log in was, again, found to be a simple task. The test subject did not find the allocation of security levels as difficult as the previous two test subject. He felt that the hierarchy requirements conformed to the structure of his business environment. The user often used each security to represent a branch in his business. The subject suggested that he would like seperate hierarchies to represent branches in which he worked where there was no overlap of files shared or users to share them to.
+\newline Registration and log in was, again, found to be a simple task. The test subject did not find the allocation of security levels as difficult as the previous two test subject. He felt that the hierarchy requirements conformed to the structure of his business environment. The user often used each security level to represent a branch in his business. The subject suggested that he would like to seperate hierarchies to represent branches in which he worked where there was no overlap of files shared or users to share them to (ie. have more than list of security levels to work with.)
 \newline \textbf{Assisted run}
-The test subject required little assistance. At times the user required small comfirmations about what was expected of him, such as what tasks to complete and how. The user required small explanations on how the GUI functioned (such as where downloaded files were placed.) 
+\newline The test subject required little assistance. At times the user required small comfirmations about what was expected of him, such as what tasks to complete and how. The user required small explanations on how the GUI functioned (such as where downloaded files were placed.) 
 
 
 \subsubsection{What we have learnt}
 From the tests it is quite clear that the GUI is a limiting factor for user experience. This is to be expected. Our solution was not intended as an out-of-the-box commercial product and so little attention was paid to the user interface. The fact this was the largest complaint is a positive sign.
 \newline \indent All test subjects who used our solution struggled to place an intuitive meaning on the security levels. They were not fond of the current labels (1..5) as there was little connection between the number 3 and a particular friend. This was a fair complaint. In order to solve this problem we may allow for users to change the name of their security levels. For instance, we could allow a mapping between the security level 3 and the label ``family friends'' or ``interns'' This would place a strong intuitive link between the security levels and their friends.
 \newline \indent Not all of the test subjects found the premise of our solution to be completely intuitive without explanation but were able to understand what they needed to do after an explanation was given. This more a failure of the GUI than anything else. A simple solution to this problem would be to have a `help' or a form of introductory page which displays after registration. The purpose of this page would be to introduce the user to our solution and detail what they need to do to maximise their experience. 
-\newline \indent In these tests our solution's most promising application was in the work environment. The structure of a business tends to match our design and our test subject found that to be true in their case. The test subjects who used our solution in a social environment found that their friends do not fit naturally into a strict hierarchy. Instead having distinct groups which have little relationship with each other. From these tests it seems unlikely that our solution may have limited success in these environments.
-\newline \indent We must note that we can not take these tests as a conclusively indicator of the usefulness of our solution. Due to the constraints on time our sample space is incredibly small and we can not confidently extrapolate that to the general public, or even a specific group of people. There is also a clear limitation on our testing environment, it can not be said that our test environment is representative of any real-life scenario. For instance, in no situation would a user have an observer making notes.
+\newline \indent In these tests our solution's most promising application was in the work environment. The structure of a business tends to match our design and our test subject found that to be true in their case. The test subjects who used our solution in a social environment found that their friends do not fit naturally into a strict hierarchy. Instead having distinct groups of friends which have little relationship with each other. From these tests it seems likely that our solution may have limited success in these environments.
+\newline \indent We must note that we can not take these tests as a conclusively indicator of the usefulness of our solution. Due to the constraints on time our sample space is incredibly small and we can not confidently extrapolate that to the general public, or even a specific group of people. There is also a clear limitation on our testing environment, it can not be said that our test environment is representative of any real-life scenario. For instance, in no situation would a user have an observer making notes on what they doing with our solution.
 
 \subsection{Security analysis}
 In this section we shall discuss possible attacks on our solution, how likely they are and how difficult they could be to perform.
 \newline \indent In our solution an attack's end goal is almost always likely to be to gain access to files they would otherwise not be permitted to access.
-\newline \indent An overview of all possible attacks to gain access to files can viewed in Figure~\ref{fig:attackTree}.
+\newline \indent An overview of a number of possible attacks to gain access to files can viewed in Figure~\ref{fig:attackTree}.
 
 \begin{landscape}
 \begin{figure}
@@ -869,7 +895,8 @@ In this section we shall discuss possible attacks on our solution, how likely th
             	    				[.{Access friend's computer} ]
             	    				[.{Access user's computer} ] ] ]
             	    		[.{Extract from key exchange}
-            	    			[.{Crack RSA} ] ] ]
+            	    			[.{Intercept key exchange}
+            	    				[.{Crack RSA} ] ] ] ]
             		[.{Crack AES} ]
             ]
 \end{tikzpicture}
@@ -883,6 +910,8 @@ In this section we shall discuss possible attacks on our solution, how likely th
 
 \paragraph*{Cracking RSA encryption} Achieving this would give the attacker access to whatever access the friend has been given. Assuming the encryption has been applied correctly, this is virtually impossible.
 
+\paragraph*{Intercepting key exchange} An attacker who does this will possess a key encrypted with another user's public key. To access the key they will need to crack RSA.
+
 \paragraph*{Intercepting log in / register passwords} Similarly to intercepting key exchanges, this would require cracking RSA encryption.
 
 \paragraph*{Cracking keystore} Achieving this gives the attacker access to all of the keys created by the owner of the keystore and all keys shared with them. Unfortunately keystores are quite weak. A number of `clever' brute-force solutions exists for Java Keystore, such as KeystoreBrute.\footnote{https://github.com/bes/KeystoreBrute} An estimation on the time taken to brute-force a keystore with varying password strengths using KeystoreBrute can be seen in Table~\ref{tab:keystoreBruteforce}. As can be seen a weak password can be cracked in almost no time at all, but quickly become infeasible at any password stronger than an upper/lower alphabet password 8 characters long. However bruteforcing a password of any significant strength requires prolonged access to the user's computer, meaning the user likely has greater problems than the integrity of their keystore.
@@ -892,7 +921,7 @@ In this section we shall discuss possible attacks on our solution, how likely th
 \begin{table}[h!]
     \begin{tabular}{ | l | l | l | l |}
     \hline
-    \textbf{Password format} & \shortstack{\textbf{Number of} \\ \textbf{characters}} & \shortstack{\textbf{Number of} \\ \textbf{combinations}} & \shortstack{\textbf{Time to} \\ \textbf{brute-force}} \\ \hline
+    \textbf{Password format} & \shortstack{\textbf{Number of} \\ \textbf{characters}} & \shortstack{\\ \textbf{Number of} \\ \\ \textbf{possible} \\ \textbf{combinations}} & \shortstack{\textbf{Time to} \\ \textbf{brute-force}} \\ \hline
     Lower case alphabet  & 4 & $26^4$ & 0.3 seconds \\ \hline
     Upper/lower alphabet  & 4 & $52^4$ & 4.9 seconds \\ \hline
     Upper/lower alphanumeric & 4 & $62^4$ & 9.8 seconds \\ \hline
@@ -903,7 +932,8 @@ In this section we shall discuss possible attacks on our solution, how likely th
     \shortstack{Upper/lower alphanumeric \\ and symbols}  & 8 & $95^8$ & 140 years \\ \hline
     
     \end{tabular}
-    \caption{The time it will take an attacker to brute-force a keystore using KeystoreBrute. We assume the attacker can attempt 1500000 per second ($10 \times$ the number recorded by the creator who used a Core2Quad.)} \label{tab:keystoreBruteforce}
+    \caption{The time it will take an attacker to brute-force a keystore using KeystoreBrute. We assume the attacker can attempt 1500000 per second ($10 \times$ the number recorded by the creator who used a Core2Quad.)
+    \newline Note: Any real attacker will likely have more processing power than we have described here.} \label{tab:keystoreBruteforce}
     \end{table}
 \end{center}
 
@@ -916,7 +946,7 @@ In this section we shall discuss possible attacks on our solution, how likely th
 \begin{table}[h!]
     \begin{tabular}{ | l | l | l | l |}
     \hline
-    \textbf{Password format} & \shortstack{\textbf{Number of} \\ \textbf{characters}} & \shortstack{\textbf{Number of} \\ \textbf{combinations}} & \shortstack{\textbf{Time to} \\ \textbf{brute-force}} \\ \hline
+    \textbf{Password format} & \shortstack{\\ \textbf{Number of} \\ \textbf{characters}} & \shortstack{\\ \textbf{Number of} \\ \\ \textbf{possible} \\ \textbf{combinations}} & \shortstack{\textbf{Time to} \\ \textbf{brute-force}} \\ \hline
     Lower case alphabet  & 4 & $26^4$ & 1 hour 6 minutes \\ \hline
     Upper/lower alphabet  & 4 & $52^4$ & 17 hours 49 minutes \\ \hline
     Upper/lower alphanumeric & 4 & $62^4$ & 36 hours \\ \hline
@@ -927,7 +957,8 @@ In this section we shall discuss possible attacks on our solution, how likely th
     \shortstack{Upper/lower alphanumeric \\ and symbols}  & 8 & $95^8$ & 1.8 million years \\ \hline
     
     \end{tabular}
-    \caption{The time it will take an attacker to brute-force a matching plaintext password for a hash. We measure this for passwords of varying strength. We assume that an attacker has $10 \times$ the amount of processing power than we do, meaning they can compute a hash at an average of 8.77 milliseconds.} \label{tab:passwordbruteforce}
+    \caption{The time it will take an attacker to brute-force a matching plaintext password for a hash. We measure this for passwords of varying strength. We assume that an attacker has $10 \times$ the amount of processing power than we do, meaning they can compute a hash at an average of 8.77 milliseconds.
+    \newline Note: Any real attacker will likely have more processing power than we have described here.} \label{tab:passwordbruteforce}
     \end{table}
 \end{center}
 
@@ -937,14 +968,12 @@ In this section we shall discuss possible attacks on our solution, how likely th
 
 \paragraph*{SQL injections} We allow for user input for the username and password during log in and registration which makes them vulnerable to SQL injection attacks. An SQL injection attack is when a user inserts malicious SQL commands in a field which will then be executed in our database. However we use the Java PreparedStatement\footnote{http://docs.oracle.com/javase/6/docs/api/java/sql/PreparedStatement.html}, which automatically escapes SQL characters\footnote{https://www.owasp.org/index.php/Preventing\_SQL\_Injection\_in\_Java\#Prepared\_Statements}. Meaning that injections will fail. 
 
-\paragraph*{Unauthorised login} We do not wish for attackers to be able to access our database even if they are able to gain access to the server. For this reason we have set a username and password to access the database. The username password is required to be entered before any actions can be performed. It is concern, however, that they may be able to brute-force the password, similar to the way in which the keystore can be brute-forced. H2Database prevents against such attacks by setting a 250 millisecond delay after a failed log in attempt, which proceeds to double with each log in attempt thereafter, reaching a maximum 4 second delay.\footnote{http://www.h2database.com/html/advanced.html\#security\_protocols}. Providing we use a password of significant length, the attacker should be unable to gain access using brute-force in any reasonable length of time.
+\paragraph*{Unauthorised login} We do not wish for attackers to be able to access our database even if they are able to gain access to the server. For this reason we have set a username and password to access the database. This username and password is required to be entered before any actions can be performed. It is a concern, however, that they may be able to brute-force the password, similar to the way in which the keystore can be brute-forced. H2Database prevents against such attacks by setting a 250 millisecond delay after a failed log in attempt, which proceeds to double with each log in attempt thereafter, reaching a maximum 4 second delay.\footnote{http://www.h2database.com/html/advanced.html\#security\_protocols}. Providing we use a password of significant length, the attacker should be unable to gain access using brute-force in any reasonable length of time.
 
 \subsubsection*{Security evaluation}
 Bruce Schneiner said in \textit{Secrets \& Lies}, ``Security is a chain; it's only as secure as the weakest link.'' For this reason we shall ignore the parts of our system that are clearly robust, such as the cryptography, and base the overall security of our system on the weakest parts.
 \newline \indent From our analysis for the possible routes of attack, it appears that the user's password is the weakest link in our solution. While we can not control how safely a user keeps their password, we exert control on the strength of password they choose. Enforcing upper/lower alphanumeric passwords of at least 8 characters in length would give them significant security from brute-force attacks should their hashes become compromised.
 \newline \indent The security of the keystore is weaker than the security that the hash provides the password, however the security gained by the keystores location on the user's machine means that is likely a more difficult route of attack than acquiring hashes and brute-forcing them.
-
-\subsection{What I would have done differently}
 
 \section{Conclusion}
 This project aims to increase the automation in file sharing with different groups of friends who require different access control constraints. Our solution achieves this by using cryptography. This is done without troubling the users with technicalities. A user need not know what a `key' is, or how to derive and use them to access files. Most actions are performed in the GUI by selecting desired files and clicking the button for the desired action.
@@ -952,24 +981,26 @@ This project aims to increase the automation in file sharing with different grou
 \newline \indent We wanted our solution to be secure, that is not to introduce any unnecessary threats to user. From the \textit{Security analysis} section we found no clear security holes in our work. With any security threats likely coming from `traditional' attacks.
 \newline \indent However our solution does not come without constraints. It requires the user to order the people they wish to share their files with in a fairly strict hierarchy. The degree to which most people can adopt this into their lives is yet to be seen and thorough case studies, or a release, would have to be done before we can know for sure. From the \textit{User stories} section we can see that there may be some people this suits well, while others may find the lack of flexibility frustrating. The division of these two sets of people is likely to be in the environment in which they intend to use our solution. It appears that our solution may be very useful in a business environment but may struggle to make an impact on a user who intends to use it in a social environment. Due to this we can see that our solution will not displace all file-sharing products from the market. Leaving a perfectly valid market for applications such as Dropbox and Google Drive. However for some organisations which have an inherently hierarchical structure, our solution may well be a more efficient option than applications such as YouSendIt and Box.
 
-\subsection{Achievements}
+\subsection{What I would have done differently}
+I would not have chosen to use Dropbox as the storage for files. While it is not stated explicitly, after using the Dropbox API for some time it is clear that the API is not designed to be used in such a way. The performance is very inconsistent and most actions are quite slow.
+\newline \indent The alternatives are slim, but given the chance again, I would have chosen to use the uTorrent API. This would have been more difficult to implement and test, and it would have come with its own limitation, but the rewards may well have been greater.
 
 \subsection{Future work}
 \subsubsection*{Storage}
-\paragraph*{Public storage} Our solution uses private Dropbox folders which are accessed through an SDK. However using the techniques described and applied in this project we do not need to do this. As they are encrypted, and the encryption is not feasibly broken, they do not need to hidden and only shared with people with the key to decrypt. Thus our solution is more applicable, and may achieve superior results, with a more public domain. In this domain the files can be uploaded along with its IV and labelled with its owner, and no centralised server is needed.
+\paragraph*{Public storage} Our solution uses private Dropbox folders which are accessed through an SDK. However using the techniques described and applied in this project we do not need to do this. As they are encrypted, and the encryption is not feasibly broken, they do not need to be hidden and only shared with people with the key to decrypt. Thus our solution is more applicable, and may achieve superior results, with a more public domain. In this domain the files can be uploaded along with its IV and labelled with its owner and no centralised server is then needed.
 \subsubsection*{User experience}
 \paragraph*{Client-side database} In order to reduce the number the number of calls to the server we may introduce a client-side database. The database would mainly store the IVs and security levels for files that they have comes across before. This would enable the client to independently decrypt files and log in slightly quicker. This would be useful for users who frequently download the same file, or for files which are unlikely to change in the near future.
-\paragraph*{Client-side threading} We could mitigate the overhead required by our solution by executing commands on the client side in a new thread. By doing this we could allow the GUI to continue functioning. This would give the illusion that the commands are executed instantly. This would introduce concurrency issues if another command was executed before the previous one had finished. This could be prevented if we ignore, or queue, new commands until the previous command had finished executing. 
+\paragraph*{Client-side threading} We could mitigate the overhead required by our solution by executing commands on the client side in a new thread. By doing this we could allow the GUI to continue functioning. This would give the illusion that the commands are executed instantly. Implementing this feature would introduce concurrency issues if another command was executed before the previous one had finished. This could be prevented if we ignore, or queue, new commands until the previous command had finished executing. 
 \paragraph*{Customisable bounds} It may be the case that the user requires more or less than 5 security levels. Increasing the number of levels after they have already been created would not be difficult, it would be little different to creating the keys at registration as we do now. However the extra keys created would have to be either the lowest or highest security levels to be done without fuss. If the level required to be added was in the middle the key one below would have to be re-encrypted with the new key and re-sent to the server. Reducing the number of levels could be done by simply discarding the files associated with that level, removing that key from the server and re-encrypting the key one level down from the level to be removed by the key one level up from the level to be removed.
 \paragraph*{Adjustable friend security levels} At this point in time, if a user wishes to change the security level of a friend they would have to revoke the friend entirely and add him again. This is involves unecessary work for what may be a computationally simple task. If the friends permissions are to be increased this could be done in the same way a friend is added now, that is send the friend the key for the new highest level they can access, encrypted with their public key, and allow them to derive any keys inbetween their new level and their old level. If the friend's level is to be lowered, all keys between their new level and old level have to be revoked, new keys generated and distributed and files associated with those levels have to be re-encrypted.
 \paragraph*{Multiple trees} In our solution a user is only able to create a single hierarchy. This means if all of the people they want to share files with do not do fit into a perfect hierarchy (ie. the really have to hierarchies) they are forced to leave people out or have a sub-optimal solution. A potential improvement to this is to allow the user to create more than one hierarchy. That is, they will have more than one hierarchy with distinct sets of keys, distinct sets of files and distinct sets of friends. The hierarchies would not intended to be used with an overlap of users, the introduction of this feature would be intended to cover many different possible hierarchies in a user's life (ie. a freelance worker who wishes to share files with many different companies who each have their own hierarchy.)
 \paragraph*{Adjustable lower bounds for friends} Currently a user can only state an upper bound for a friend. However it may be the case that the user only wishes to share a certain interval or that the friend is not interested in their low-level files. This could be achieved by using Jason Crampton's method as explained in the background section. Achieving this may also allow us to efficiently implement the feature described in \textit{Multiple trees} without actually having to many different individual trees. For instance, we could allow a `inner-tree' to consume levels between an $x$ and a $y$ where any users with a lower bound $< x$ can not have a higher bound $\geq x$ and any users with a higher bound $> y$ can not have a lower bound $\leq y$. Therefore each inner-tree would be self-contained within the big tree. An advantage this brings would be that we would not have to search through the list of inner-tree in order to find the tree we would like. This would not be possible if we had a completely individual trees.
 \newline \indent Rather than presenting the user with level names which begin with a number 1 greater than the last level in their previous inner-tree. The levels within each inner-tree can then be presented to the user in a meaningful way. This way the user need not know the inner-trees are connected in any way.
-\paragraph*{Lazy computation} Currently our solution attempts to do as much work as possible when the work arrives. This often causes delays which the user must wait out before they can continue using our application. This is most evident when registering a new account and revoking a user.
+\paragraph*{Lazy computation} Currently our solution attempts to do as much work as possible when the work arrives. This often causes delays which the user must wait out before they can continue using our application. This is most evident when registering a new account and revoking a user. For registration we could create no security levels until after the account is created and the user is then prompted to state how many security levels they would like. Lazy revocation can be implemented, as described in the background research, to avoid the big delay our system causes when a user is revoked.
 \paragraph*{User interface} The user interface at this point in time is lacking. It is not particularly aesthetically pleasing and has little in the way of instructions. An introductory page which explains the functionality at a high level and gives guidance on how the user may best use the features on offer would be necessary before our solution could be publicly released.
 
 \subsubsection*{Security}
-\paragraph*{Automatic key replacement} Every time a key is used to encrypt a file it produces ciphertext. An attacker can store these ciphertexts and perform cryptanalysis. The larger the number of ciphertexts the attacker has the easier it is for them to do this. For this reason the same key should not be used for long periods of time. In our current solution the public/private key pair are never replaced and the symmetric keys are only replaced when a friend is revoked access. Future work to improve security would be to automatically replace the keys after they have been active for a set period of time or after they have produced a certain number of ciphertexts. Having a time limit on keys would likely be superior options as it would simpler to measure and no invasive information would have to be stored.
+\paragraph*{Automatic key replacement} Every time a key is used to encrypt a file it produces ciphertext. An attacker can store these ciphertexts and perform cryptanalysis. The larger the number of ciphertexts the attacker has the easier it is for them to do this. For this reason the same key should not be used for long periods of time. In our current solution the public/private key pair are never replaced and the symmetric keys are only replaced when a friend is revoked access. Future work to improve security would be to automatically replace the keys after they have been active for a set period of time or after they have produced a certain number of ciphertexts. Having a time limit on keys would likely be the superior option as it would be simpler for us to measure and we would not have to store any invasive information.
 
 
 \begin{thebibliography}{10}
