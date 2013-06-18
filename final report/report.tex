@@ -88,7 +88,7 @@ f(m) = m^e (\bmod N)
 \end{align*}
 where m is the message to be encrypted, e is the value of the public key and N is the modulus.
 \newline \indent Asymmetric cryptography is generally slower at performing encryption and decryption when compared to symmetric. The reason for this is that typically symmetric algorithms use `CPU-friendly' operations such as XOR (DES, Blowfish, AES) and table-lookups (DES, AES), while asymmetric algorithms often rely on complex Mathematics and employ costly operations such as exponentiation (RSA).
-\newline \indent Asymmetric cryptography often results in a much larger ciphertext:plaintext ratio than symmetric cryptography. For instance, as described by PKCS\#1, using RSA with a 1024-bit key, you can encrypt a data element only up to 117 bytes which yields a 128 byte ciphertext value.\footnote{http://www.rsa.com/rsalabs/node.asp?id=2125} Plaintexts larger than 177 bytes are required to be divided into many 177 byte blocks, each resulting in a 128 byte ciphertext. Over large plaintext, such as a file, this would add up quickly.
+\newline \indent Asymmetric cryptography often results in a much larger ciphertext:plaintext ratio than symmetric cryptography. For instance, as described by PKCS\#1, using RSA with a 1024-bit key, you can encrypt a data element only up to 117 bytes which yields a 128 byte ciphertext value.\cite{rsaCiphertext} Plaintexts larger than 177 bytes are required to be divided into many 177 byte blocks, each resulting in a 128 byte ciphertext. Over large plaintext, such as a file, this would add up quickly.
 \newline \indent Due to the speed of encryption and size of the cipher text, asymmetric cryptography is often used to encrypt a symmetric key, which in turn is used to encrypt substantial information.
 
 \subsubsection*{Hash algorithms}
@@ -210,9 +210,9 @@ The result of this procedure can be seen in Figure~\ref{fig:binarydecomp}a for $
 
 \subsection{Related work}
 To the best of my knowledge no current commercial software implements hierarchichal cryptography for use in file sharing.
-\newline \indent Established file sharing platforms such as Dropbox\footnote{https://www.dropbox.com/} and Mega\footnote{https://mega.co.nz/} offer users a way to share their files with other users in a social environment. This can be in the form of a single file or an entire folder. Our system could be simulated using the folder sharing, where each folder represents a security level and the folders are simply shared with the desired users one-by-one. This method requires a lot manual work.
+\newline \indent Established file sharing platforms such as Dropbox and Mega offer users a way to share their files with other users in a social environment. This can be in the form of a single file or an entire folder. Our system could be simulated using the folder sharing, where each folder represents a security level and the folders are simply shared with the desired users one-by-one. This method requires a lot manual work.
 \newline \indent For business environments, existing military based models such as the \textit{Bell-LaPadula model} (BLP) could be applied to create a similar environment to which we are attempting. BLP works by labelling each object (file) and user with a security level, such as `Unclassified' ... `Top Secret'. BLP prevents subjects from reading objects with a higher level and from writing to objects with a lower level. We could attempt to use this by assigning each user their own BLP and give them full control of labelling. However the military environment is stricter than our target environment. We are also left with the unnecessary and unwanted write restriction and no method of sharing the files outside of the network in which the model is located is specified.
-\newline \indent A number of file sharing solutions for businesses are available, such as YouSendIt\footnote{http://www.yousendit.com} and Box\footnote{https://www.box.com/business/} which offer alternatives to using FTP. Such solutions are vey similar to Dropbox and Mega, whereby each folder has no relation to each other. Access to each folder is controlled independently and options exist to send individual files. Both, YouSendIt and Box, offer the ability to password protect files and folders.
+\newline \indent A number of file sharing solutions for businesses are available, such as YouSendIt and Box which offer alternatives to using FTP. Such solutions are vey similar to Dropbox and Mega, whereby each folder has no relation to each other. Access to each folder is controlled independently and options exist to send individual files. Both, YouSendIt and Box, offer the ability to password protect files and folders.
 
 \newpage
 \section{Design}
@@ -280,8 +280,8 @@ While the system we are designing is perfectly usable in a command line window, 
 \subsection{File sharing platform}
 The system we are developing needs some way to transfer files from one user to another when they desire. The are many ways in which we can do this. Preferably the method we choose allows for us to easily automate the sending and receiving of the files to minimise the work the user has to conduct to assist the working of our application. This requirement rules out methods such as email, Facebook and Skype. Ideally the platform also allows us to make the files publicly available. As we intend to encrypt the files, they do not need to be hidden away.
 \newline \indent As observed by Fu, Kamara and Kohno an appropriate file transfer method for hierarchical access control is a content distribution network such as BitTorrent.\cite{bittorrent} However, in our case, due to a number of different torrent clients available (uTorrent, Deluge...), many different ways to connect to a tracker (.torrent files, magnetic links...) and inconsistent performance, this would be a challenging task to start from scratch. However there is a a Web API for uTorrent which allow us to interface with a BitTorrent client.\cite{http://www.utorrent.com/community/developers/webapi} Unfortunately there are limitations to the uTorrent API. It only provides a way to process a .torrent and so we would still need a centralised BitTorrent tracker. This could be achieved by using a public tracker such as The Pirate Bay, however we would still need some way of uploading the torrents to the tracker website, as well as a way of keeping track of the files uploaded and who they have been uploaded by. The uTorrent API also does not allow  us to control where individual files are downloaded, this means that using the API requires us to download the files in the same location as files that have been downloaded using uTorrent outside of our system. Lastly uTorrent as an application is also only available on Windows, thereby limiting our development and deployment platforms.
-\newline \indent There are many modern dedicated filesharing tools available today that we can consider. Some of these are: Dropbox, Mega and Wuala. These tools are ideal in the sense that they borrow the folder structure implemented by filesystems which naturally conform to strict hierarchy requirements. This means we have a lot of power in how we can choose to manage our files. Dropbox is incredibly popular, with over 100 million users collectively saving 1 billions files per day.\footnote{https://www.dropbox.com/news/company-info} It also has an extensive SDK for many different programming languages. However with the discontinuation of its `public folder'\footnote{https://www.dropbox.com/developers/blog/19} we have no way of making our encrypted files publicly available.
-\newline \indent Mega is a relatively new file hosting service (19 January 2013) with over 3 million members.\footnote{https://twitter.com/KimDotcom/statuses/304003119447158784} Mega  has stricter security requirements than that of Dropbox which closer match what we are trying to achieve. For instance, encryption is performed client side using AES in CBC mode with a 128-bit key.\footnote{https://mega.co.nz/\#developers} However as we are having to perform this actions ourselves, regardless, it is irrelevant to us, if not a hindrance due to wasted CPU time. But Mega does allow us to control what degree of access a user has, such as `read', or `read/write' which would be useful to us. However at the time of writing an SDK for Mega has been proposed but not released.
+\newline \indent There are many modern dedicated filesharing tools available today that we can consider. Some of these are: Dropbox, Mega and Wuala. These tools are ideal in the sense that they borrow the folder structure implemented by filesystems which naturally conform to strict hierarchy requirements. This means we have a lot of power in how we can choose to manage our files. Dropbox is incredibly popular, with over 100 million users collectively saving 1 billions files per day.\cite{dropboxInfo} It also has an extensive SDK for many different programming languages. However with the discontinuation of its `public folder'\cite{dropboxPublicFolder}, we have no way of making our encrypted files publicly available.
+\newline \indent Mega is a relatively new file hosting service (19 January 2013) with over 3 million members.\footnote{As reported by Kim `Dotcom': \url{https://twitter.com/KimDotcom/statuses/304003119447158784}} Mega  has stricter security requirements than that of Dropbox which closer match what we are trying to achieve. For instance, encryption is performed client side using AES in CBC mode with a 128-bit key.\cite{megaDev} However as we are having to perform this actions ourselves, regardless, it is irrelevant to us, if not a hindrance due to wasted CPU time. But Mega does allow us to control what degree of access a user has, such as `read', or `read/write' which would be useful to us. However at the time of writing an SDK for Mega has been proposed but not released.
 \newline \indent As we just described, there is there no existing platform which meets all of needs, which means we will have to make sacrifices. The closest storage which meets the needs for our solution is BitTorrent, as we will be able to make the files public. However the SDK available for it has a number of limitations and the time constraints on this project mean that is not feasible to create solutions for them all. Therefore, due to the extremely large userbase, multi-platform support and an extensive, `tried-and-tested', SDK we shall use Dropbox to transfer our files.
 
 \subsection{Programming language}
@@ -307,7 +307,7 @@ In this section we shall decide which algorithms we shall use to perform the tas
 	\item \textbf{Key size} - The size of the key used for encryption and decryption
 	\item \textbf{Padding scheme} - The method to increase the size of the file to be encrypted in order to force it into a multiple of the block size of that algorithm.
 \end{itemize}
-We will not consider inventing our own algorithms to perform cryptography or any security functions. One reason for this is a lack of time, another is `Schneier's Law.' Bruce Schneier wrote in 1998: ``Anyone, from the most clueless amateur to the best cryptographer, can create an algorithm that he himself can't break.''\footnote{http://www.schneier.com/crypto-gram-9810.html\#cipherdesign} This means that, we can not, in a short space of time, realistically predict and evaluate all threats and prevent them. For this reason we shall not roll out our own cryptography and security designs, and instead use pre-built and well-tested security solutions wherever possible.
+We will not consider inventing our own algorithms to perform cryptography or any security functions. One reason for this is a lack of time, another is `Schneier's Law.' Bruce Schneier wrote in 1998: ``Anyone, from the most clueless amateur to the best cryptographer, can create an algorithm that he himself can't break.''\cite{schneierCipherDesign} This means that, we can not, in a short space of time, realistically predict and evaluate all threats and prevent them. For this reason we shall not roll out our own cryptography and security designs, and instead use pre-built and well-tested security solutions wherever possible.
 
 \subsubsection{Symmetric Algorithm}
 \begin{itemize}
@@ -366,7 +366,7 @@ The key sizes supported by RSA are:
 	\item \textbf{3072}
 	\item \textbf{4028}
 \end{itemize}
-Similarly to the choice of the symmetric key size we could go for an exceptionally large key `just in case.' However each time we double the size of an RSA key decryption is 6-7 times slower.\footnote{\url{http://www.javamex.com/tutorials/cryptography/rsa_key_length.shtml}}
+Similarly to the choice of the symmetric key size we could go for an exceptionally large key `just in case.' However each time we double the size of an RSA key decryption is 6-7 times slower.\cite{rsaKeyLengths}
 Therefore we wish to use the smallest, reasonable key size. A 1024-bit RSA key provides 80-bits of security (pg. 64, Table 2) which is currently deprecated today (pg. 67, Table 4), meaning that this key size is currently unacceptable for use with RSA. A 2048-bit key provides 112-bits of security (pg. 64, Table 2) which is acceptable today through to 2030 which is plenty good enough for our system (pg. 67, Table 4).\cite{nistKeys}
 \newline \indent Due to how RSA works there is a limit on the size of the plaintexts we can encrypt in relation to the size of the key we choose. As we only wish to use the keys to encrypt AES keys of 128-bit in length, the limit imposed by choosing a 2048-bit RSA key, 2047-bits, is plenty for the task in hand.
 \newline We shall use a 2048-bit RSA key.
@@ -379,11 +379,11 @@ The PKCS\#1 v1.5 padding scheme and the OAEP padding scheme which was standardis
 Password hashing algorithms are odd in the sense that the trait with which to seperate them by is which is the slowest. It is desirable for a password hashing algorithm to be slow to prevent an attacker bruteforcing a password dictionary in the hope of entering the correct one into a log in form, or to allow them to quickly bruteforce the plaintext given a pre-computed hash. Making the hashing algorithm slower makes these tasks much more time consuming.
 \newline There are two password hashing algorithms commonly in use. They are:
 \begin{itemize}
-	\item \textbf{PBKDF2} - Based on hash functions.
+	\item \textbf{PBKDF2} - Based on the SHA-256 hash function (or can be used with other hash functions.)
 	\item \textbf{bcrypt} - Based on Blowfish.
 \end{itemize}
 NIST recommends the use of PBKDF2 in the use of the password storage.\cite{nistPassword} However bcrypt has a desirable trait which PBKDF2 lacks - the computational cost of the password scheme increases as the hardware it runs on improves. It does this by requiring fast RAM which GPUs do not possess but CPUs do.\cite{bcryptPaper} What this means in a practical sense is that the algorithm is more efficient on a CPU rather than a GPU - quick for servers and slow for the attackers.
-\newline \indent There currently exists GPUs which contain modern field-programmable gate arrays with RAM which can be used to optimise attacks on bcrypt. A new password scheme has been designed to combat this problem called scrypt\footnote{http://www.tarsnap.com/scrypt.html}, however it has only existed for a small amount of time (4 years at the time of writing) and so scrypt has not yet `stood the test of time' like that of bcrypt (nearly 14 years at the time of writing,) which is important for security algorithms.
+\newline \indent There currently exists GPUs which contain modern field-programmable gate arrays with RAM which can be used to optimise attacks on bcrypt. A new password scheme has been designed to combat this problem called scrypt\cite{scrypt}, however it has only existed for a small amount of time (4 years at the time of writing) and so scrypt has not yet `stood the test of time' like that of bcrypt (nearly 14 years at the time of writing,) which is important for security algorithms.
 \newline \indent For these reasons we shall use bcrypt to store passwords in our system.
 \newline 
 \newline bcrypt requires us to choose a number of rounds (work factor), where the number of iterations bcrypt has to perform is $2^{workfactor}$. The higher the number of rounds the longer it takes to run and therefore the higher the security. Unfortunately the Java implementation we are to use is slower than the C implementation that the attacker would use, meaning that we can not choose the optimal number of rounds for our hardware. We also do not have the luxury of a powerful server to perform the hashing quickly, as will the attackers, putting us at a further disadvantage. To help us choose a work factor, benchmarks for each work factor can be seen in Table~\ref{tab:bcryptWorkrates}. It is evident that as the work rate increases our hardware quickly reaches its limit, where at work rate 14 it is unable to hash a single password within a second. If we were to have a substantial user base we would be forced to have a lower work factor in order to be able to compute many hashes in a short amount of time, such as 7, which allows to compute 86 in a second. However we are unlikely to have a large user base as this current time, so for this reason we shall choose a larger one which is still low enough to not pose a significant inconvenience to our users. A work rate of 10 will likely give us significant protection, while only taking 87.7 milliseconds on average. We shall choose a work rate of 10 for bcrypt.
@@ -415,7 +415,7 @@ NIST recommends the use of PBKDF2 in the use of the password storage.\cite{nistP
 \subsubsection{Random number generator}
 As we have discussed, in order to complete certain actions with our cryptographic algorithms our users are going to require keys and initialisation vectors. We need a way to generate these when we desire. However it is important that we achieve this in a secure way. By secure, we mean in a manner which can not be feasibly predicted by an attacker, even when given the entire past sequence of numbers generated. This is important because, if the generation of the keys can be predicted in any way (e.g. the 1000th instance will be equal to the 1st,) then the attacker would be able to manipulate our solution such that they can find the keys for some user, thereby gaining access to their files. A similar argument can be made for predictable initialisation vectors, if an attacker is able to predict the IVs generated then the symmetric cipher mode we have chosen for our solution, CBC, is not properly implemented and would become equivalent to ECB. A mode which we have already decided is insufficient to meet our requirements.
 \newline \indent Due to our requirements, we can not use the most popular software random number generators (RNG) in use today. The majority of the RNGs are not truly random, but are deterministic and so are called psuedo random number generators (PRNG). The majority of PRNG are based on the linear congruential generator (java.util.Random, C rand()) or the linear feedback shift register. PRNG based on linear congruential generators have been proven to be easily predictable.\cite{lcgPRNGPredictable} Thus we shall avoid all generators based upon such models.
-\newline \indent Ideally we do not wish for pseudo random numbers but for `truly' random numbers. This can be achieved by using hardware RNGs. Such hardware is generally based upon unpredictable physics-based events. For instance hardware RNGs based upon a Geiger–Müller counter detects and counts the radiation particles passing by it every minute.\footnote{http://www.blackcatsystems.com/GM/products/GM10GeigerCounter.html} Unfortunately there is not enough funds for this project to purchase such equipment and, even if we could, we would then have to transfer the number from the server to the client.
+\newline \indent Ideally we do not wish for pseudo random numbers but for `truly' random numbers. This can be achieved by using hardware RNGs. Such hardware is generally based upon unpredictable physics-based events. For instance hardware RNGs based upon a Geiger–Müller counter detects and counts the radiation particles passing by it every minute.\cite{geigerCounter} Unfortunately there is not enough funds for this project to purchase such equipment and, even if we could, we would then have to transfer the number from the server to the client.
 \newline \indent While we can not use completely predictable PSRNGs and we cannot attain truly RNGs, a compromise can be reached. The compromise is in the form of secure PSRNGs. Secure PSRNGs extracts seeds from `truly' random sources, such as \textit{/dev/random} on a Linux machine, and use that to generate pseudo random numbers. To obtain as close to `truly' random numbers as we can we could simply use the seeds as our random numbers, but this can be a slow process as the call to /dev/random blocks when enough entropy has not been collected. However as the functioning of our solution relies on the the secure generation of these numbers, there is little we can do about this.
 
 
@@ -513,7 +513,7 @@ Some popular embedded Java database we could use are:
 	\item \textbf{Apache Derby} - A simple, popular database with an embedded JDBC driver.
 	\item \textbf{H2Database} - An open source, light-weight database promising good performance.
 \end{itemize}
-H2, at 1.5MB import, has a smaller footprint than Derby,  at 2.6MB. H2 also claims to have superior performance when compared to Derby for simple queries.\footnote{www.h2database.com/html/performance.html} It is unlikely that we will have to execute more complex queries beyond simple SELECT... FROM ... WHEREs meaning that the tests are likely to be highly relevant to our situation.
+H2, at 1.5MB import, has a smaller footprint than Derby,  at 2.6MB. H2 also claims to have superior performance when compared to Derby for simple queries.\cite{h2Performance} It is unlikely that we will have to execute more complex queries beyond simple SELECT... FROM ... WHEREs meaning that the tests are likely to be highly relevant to our situation.
 \newline \indent Hibernate is a database framework designed to be able to make Object/Relational Mapping easier. The only object that would be convenient to store in the database is the `friends list' we intend to design. Considering the use of Hibernate comes with an overhead and in order to use the latest stable version (v4.2.2) we are required to include 8 .jar files, totalling 6.3MB, it would seem overkill to use solely to store a single object. Instead it may be more sensible to simply use the Java \textit{serialization} process and store that in a `simple' database.
 \newline \indent For these reasons we shall employ the H2Database in our system without the Hibernate framework.
 
@@ -540,15 +540,25 @@ An overview of the architecture to our solution can be seen in Figure~\ref{fig:a
 \end{figure}
 
 \paragraph*{View} - This represents all of the classes used to create the GUI. These classes are used to display information to the user and accept actions which are then forwarded onto the \textit{Controller}.
+
 \paragraph*{Controller} - This represents the collection of classes used to translate commands from \textit{View} into logic which is held in the \textit{Model} (\textit{Actions, Register, Login}). After actions have been executed it receives updates from the \textit{Model} which it forwards onto the \textit{View}.
+
 \paragraph*{Actions} - This class contains the majority of the logic in the client side. It communicates with the server to perform the necessary actions (such as `Add friend', `Upload file' and `Download file')
-\paragraph*{Register} - Contains the logic necessary to register the user with the server and Dropbox. If the server accepts the user the keys are created and stored in the keystore.
-\paragraph*{SecurityVariables} - This class generates our keys, for both symmetric and asymmetric cryptographic algorithms.
+
+\paragraph*{Register} - Contains the logic necessary to register the user with the server and Dropbox. If the server accepts the user the keys for each security level are created and stored in the keystore.
+
+\paragraph*{SecurityVariables} - This class uses our PRNG to generate our keys, for both symmetric and asymmetric cryptographic algorithms.
+
 \paragraph*{AESCipher} - Performs the functions of the AES algorithm we decided to include. Performs encryptions and decryptions given a key, iv and a file.
+
 \paragraph*{RSACipher} - Performs the functions of the RSA algorithm we decided to include. Performs encryptions and decryptions given a key and a file.
+
 \paragraph*{KeyStore} - This class interfaces with the keystore which holds our keys. Is used to store and retrieve our symmetric and asymmetric keys as well as our friends. Each key is stored with a label which must be referenced when we wish to retrieve it. Our own symmetric keys are stored with the label of their security level. Our asymmetric keys are stored with the label of either ``public'' or ``private''. Our friends asymmetric keys are stored with the security level along with a prefix of the friend's username. There is no need to store our friend's public keys. Due to the restrictions on levels and usernames, where we cannot of two levels or two usernames of the same name, we can not have any clashes in the keystore.
+
 \paragraph*{KeyDerivation} - By interacting with the server, this class performs the necessary logic to derive all of a friend's keys when granted with the key of the highest level for which the user is permitted access. It does this by iteratively decrypting each key with the key before until all keys for all levels this user can access have been acquired. All of the keys are then stored in the KeyStore.
+
 \paragraph*{ServerComms} - The class which allows us to interact with the server. The class stores the port of the server and carries the streams necessary to communicate with it.
+
 \paragraph*{DropboxOperations} - When a user logs in the class is activated with a username and the Dropbox specific key and secret pair which are used to create a Dropbox \textit{Session}. This class uses the \textit{Session} to perform Dropbox related functions. These include uploading, downloading and removing files and  scanning the folder for files. This class is also queried during login to provide a list of files currently in the related Dropbox folders.
 
 \subsubsection{Server}
@@ -559,10 +569,13 @@ An overview of the architecture to our solution can be seen in Figure~\ref{fig:a
 \label{fig:reducedServerClass}
 \end{figure}
 
-\paragraph*{Protocol} - The first class which interacts the user. It blocks until a log in or registration attempt it made and passes the attempts on to be evaluated. Once log in has been successful it passes the user on to the \textit{CentralAuthority}.
+\paragraph*{ServerThread} - Creates a new each time our application opens. This allows for multiple users to communicate with our server at once. Once a thread has been created it is passed to \textit{Protocol}.
 
-\paragraph*{CentralAuthority} - This class mirrors the \textit{Actions} class in client. The class blocks until it receives a decision on which action the client wishes to perform. The class then communicates with the client for information and calls functions necessary to complete the request.
-\paragraph*{UserOperations} - Acts as an interface between the user logic and the table in the database containing user information.
+\paragraph*{Protocol} - The first class which interacts the user. It blocks until a log in or registration attempt is made. \textit{Protocol} uses the \textit{UserOperations} class to retrieve and store password hashes and user data. Once log in or registration has been successful it passes the user on to the \textit{CentralAuthority}.
+
+\paragraph*{ServerCentralAuthority} - This class mirrors the \textit{Actions} class in client. The class blocks until it receives a decision on which action the client wishes to perform. The class then communicates with the client for information and calls functions necessary to complete the request.
+
+\paragraph*{UserOperations} - Acts as an interface between the user logic and the table in the database containing user information. It stores and retrieves information relating to the user, such as usernames, password hashes and friends lists.
 
 \paragraph*{ServerDropboxOperations} - This class performs operations on a user's Dropbox which would be too unwieldy to perform client side. These include transferring files from one user to another and removing files when a user is revoked. These are difficult to perform on the client side as the actions are invoked by users which are not online at the time. Performing them safely on the client side would involve using unnecessary database storage and queries.
 
@@ -764,7 +777,7 @@ When a user logs in the client needs to contact the server to acquire informatio
 
 \subsection{Registration}
 When a user registers they are required to manually log in to Dropbox and approve our application through a web browser. The time it takes to do this can vary massively between different users and can not be accurately measured. For this reason that part of the registration process is omitted from our measurements. 
-\newline \indent Registration is the part of our solution which requires the most generation of cryptography values and client/server communication. For this reason we can expect registration to be the most time consuming process in our system. This is not unusual and can be seen in similar applications, such as Mega.\footnote{http://images.hacktabs.com//2013/01/Mega-generating-key.png}
+\newline \indent Registration is the part of our solution which requires the most generation of cryptography values and client/server communication. For this reason we can expect registration to be the most time consuming process in our system. This is not unusual and can be seen in similar applications, such as Mega.\footnote{An image of this happening can be seen at: \url{http://images.hacktabs.com//2013/01/Mega-generating-key.png}}
 \newline \indent During registration a lot of cryptography values need to be generated. For this reason registration will likely have the most variation in the time it takes to complete by the amount of entropy our algorithms are able to collect while they are running. Because of this we shall time the registration takes to complete with varying levels of user activity. This can be seen in Table~\ref{tab:registerBenchmark}. As we can see registration can vary massively, from 9 seconds with a lot of activity to nearly 2 minutes with no activity. This is as we predicted. Fortunately it is unlikely that our users will not move the mouse at all while they are registring, so the time it takes is likely to be closest to our \textit{casual browsing and typing} result of 15.22 seconds.
 
 
@@ -919,7 +932,7 @@ In this section we shall discuss possible attacks on our solution, how likely th
 
 \paragraph*{Intercepting log in / register passwords} By doing this the attacker will possess a password in encrypted with the server's public key. Similarly to intercepting key exchanges, accessing the password would require cracking RSA encryption.
 
-\paragraph*{Cracking keystore} Achieving this gives the attacker access to all of the keys created by the owner of the keystore and all keys shared with them. Unfortunately keystores are quite weak. A number of `clever' brute-force solutions exists for Java Keystore, such as KeystoreBrute.\footnote{https://github.com/bes/KeystoreBrute} An estimation on the time taken to brute-force a keystore with varying password strengths using KeystoreBrute can be seen in Table~\ref{tab:keystoreBruteforce}. As can be seen, a weak password can be cracked in almost no time at all, but bruteforcing quickly becomes infeasible for any password stronger than an upper/lower alphabet password 8 characters long. However bruteforcing a password of any significant strength requires prolonged access to the user's computer, meaning the user likely has greater problems than the integrity of their keystore.
+\paragraph*{Cracking keystore} Achieving this gives the attacker access to all of the keys created by the owner of the keystore and all keys shared with them. Unfortunately keystores are quite weak. A number of `clever' brute-force solutions exists for Java Keystore, such as KeystoreBrute.\cite{keystoreBrute} An estimation on the time taken to brute-force a keystore with varying password strengths using KeystoreBrute can be seen in Table~\ref{tab:keystoreBruteforce}. As can be seen, a weak password can be cracked in almost no time at all, but bruteforcing quickly becomes infeasible for any password stronger than an upper/lower alphabet password 8 characters long. However bruteforcing a password of any significant strength requires prolonged access to the user's computer, meaning the user likely has greater problems than the integrity of their keystore.
 
 % Password brute-forcing
 \begin{center}
@@ -942,7 +955,7 @@ In this section we shall discuss possible attacks on our solution, how likely th
     \end{table}
 \end{center}
 
-\paragraph*{Brute-force passwords} Achieving this would give the attacker access to the user's account, therefore their keystore and all of the files they have uploaded as well as all of the files that have been shared with them. Ignoring social engineering of the passwords, this can be done in one of two ways. Compromising the database and acquiring the password hashes and proceeding to brute force the passwords, or bruteforcing the passwords via the GUI log in form. For both of these cases the time it is likely to take the attacker to bruteforce the hashes varies on the length of a user's password and whether the user's password consists of dictionary words. We are able to prevent brute forcing at the log in form by simply blocking log in attempts for a username after $n$ consecutive failed log in attempts. Brute-forcing the password once the hash has been acquired can not be prevented. Whether the attacker can find a matching password for the hash in a feasible amount of time largely depends on the user's password. An estimation on the time it will take for different non-dictionary passwords can be found in Table~\ref{tab:passwordbruteforce}. While this is a crude estimation, it can be seen that, for a longer password the attacker will find it very difficult to find a match, while a shorter password can be brute-forced in a matter of hours or days. For dictionary based passwords, or the special GPU work-arounds as described in the bcrypt analysis, the time taken to brute-force the passwords will be much lower.
+\paragraph*{Brute-force passwords} Achieving this would give the attacker access to the user's account, therefore their keystore and all of the files they have uploaded as well as all of the files that have been shared with them. Ignoring social engineering of the passwords, this can be done in one of two ways. Compromising the database and acquiring the password hashes and proceeding to brute force the passwords, or bruteforcing the passwords via the GUI log in form. For both of these cases the time it is likely to take the attacker to bruteforce the hashes varies on the length of a user's password and whether the user's password consists of dictionary words. We are able to prevent brute forcing at the log in form by simply blocking log in attempts for a username after $n$ consecutive failed log in attempts. Brute-forcing the password once the hash has been acquired can not be prevented. Whether the attacker can find a matching password for the hash in a feasible amount of time largely depends on the user's password. An estimation on the time it will take for different non-dictionary passwords can be found in Table~\ref{tab:passwordbruteforce}. While this is a crude estimation, it can be seen that, for a longer password the attacker will find it very difficult to find a match, while a shorter password can be brute-forced in a matter of hours or days. For dictionary based passwords, or the hardware accelerated attacks as described in the bcrypt analysis, the time taken to brute-force the passwords will be much lower.
 
 
 
@@ -971,9 +984,9 @@ In this section we shall discuss possible attacks on our solution, how likely th
 
 \paragraph*{Database compromising} Almost all information in the database is considered public. In our solution the only sensitive information, aside from the password hashes, is the key/secret pair used for the server to access a user's Dropbox. As all files in a user's Dropbox is encrypted there is little chance of using this information to access encrypted files, but it would be more of an annoyance, e.g. a malicious user adding or removing files.
 
-\paragraph*{SQL injections} We allow for user input for the username and password during log in and registration which makes us vulnerable to SQL injection attacks. An SQL injection attack is when a user inserts malicious SQL commands in a field which will then be executed in our database. However we use the Java PreparedStatement\footnote{http://docs.oracle.com/javase/6/docs/api/java/sql/PreparedStatement.html}, which automatically escapes SQL characters\footnote{https://www.owasp.org/index.php/Preventing\_SQL\_Injection\_in\_Java\#Prepared\_Statements}. Meaning that injections will fail. 
+\paragraph*{SQL injections} We allow for user input for the username and password during log in and registration which makes us vulnerable to SQL injection attacks. An SQL injection attack is when a user inserts malicious SQL commands in a field which will then be executed in our database. However we use the Java PreparedStatement\cite{javaPreparedStatement}, which automatically escapes SQL characters\cite{owaspSQL}. Meaning that injections will fail. 
 
-\paragraph*{Unauthorised login} We do not wish for attackers to be able to access our database even if they are able to gain access to the server. For this reason we have set a username and password to access the database. This username and password is required to be entered before any actions can be performed. It is a concern that they may be able to brute-force the password, similar to the way in which the keystore can be brute-forced. H2Database prevents against such attacks by setting a 250 millisecond delay after a failed log in attempt before log in can be attempted again. This delay proceeds to double with each log in attempt thereafter, reaching a maximum 4 second delay.\footnote{http://www.h2database.com/html/advanced.html\#security\_protocols}. Providing we use a password of significant length, the attacker should be unable to gain access using brute-force in any reasonable length of time.
+\paragraph*{Unauthorised login} We do not wish for attackers to be able to access our database even if they are able to gain access to the server. For this reason we have set a username and password to access the database. This username and password is required to be entered before any actions can be performed. It is a concern that they may be able to brute-force the password, similar to the way in which the keystore can be brute-forced. H2Database prevents against such attacks by setting a 250 millisecond delay after a failed log in attempt before log in can be attempted again. This delay proceeds to double with each log in attempt thereafter, reaching a maximum 4 second delay.\cite{h2Delay}. Providing we use a password of significant length, the attacker should be unable to gain access using brute-force in any reasonable length of time.
 
 \subsubsection*{Security evaluation}
 Bruce Schneier said in \textit{Secrets \& Lies}, ``Security is a chain; it's only as secure as the weakest link.''\cite{schneierSecretsLies} For this reason we shall ignore the parts of our system that are clearly robust, such as the cryptography, and base the overall security of our system on the weakest parts.
@@ -1026,6 +1039,10 @@ S Vaudenay, \emph{``A Classical Introduction to Cryptography: Applications for C
 \bibitem{blockCiphers}
 A. Menezes, P. van Oorschot and S. Vanstone, \emph{``Handbook of Applied Cryptography"}, Chapter 7, CRC Press, 1996.
 
+\bibitem{rsaCiphertext}
+RSA Laboratories, \emph{PKCS \#1: RSA Cryptography Standard},
+\\ Available at: \texttt{\url{http://www.rsa.com/rsalabs/node.asp?id=2125}}
+
 \bibitem{accessControlPrinciples}
 Sandhu and Samarati, \emph{``Access Control: Princples and Practice"},
 IEEE Communications Magazine, September 1994.
@@ -1060,78 +1077,122 @@ YL Lin, CL Hsu, \emph{``Secure key management scheme for dynamic hierarchical ac
 Fu, Kamara and Kohno, \emph{``Key Regression$\colon$ Enabling Efficient Key Distribution for Secure Distributed Storage"}, 2005.
 
 \bibitem{uTorrentAPI}
-\emph{uTorrent Web API}
-\\ Available at: \texttt{http://www.utorrent.com/community/developers/webapi}.
+uTorrent, \emph{``uTorrent Web API''}
+\\ Available at: \texttt{\url{http://www.utorrent.com/community/developers/webapi}}
+
+\bibitem{dropboxInfo}
+Dropbox, \emph{``Company Info''},
+\\ Available at: \texttt{https://www.dropbox.com/news/company-info}
 
 \bibitem{dropboxPublicFolder}
 Dropbox API Team, \emph{``New sharing model will replace Public folder"},  15th June 2012,
-\\ Available at: \texttt{https://www.dropbox.com/developers/blog/19}.
+\\ Available at: \texttt{https://www.dropbox.com/developers/blog/19}
+
+\bibitem{megaDev}
+Mega, \emph{``Developers - 1.4 Cryptography''},
+\\ Available at: \texttt{https://mega.co.nz/\#developers}
 
 \bibitem{pyCrypto}
 Dwayne C. Litzenberger, \emph{``PyCrypto - The Python Cryptography Toolkit"},
-\\ Available at: \texttt{https://www.dlitz.net/software/pycrypto/}.
+\\ Available at: \texttt{\url{https://www.dlitz.net/software/pycrypto/}}
 
 \bibitem{javaJCA}
-\emph{``Java\texttrademark Cryptography Architecture (JCA) Reference Guide"},
-\\ Available at: \texttt{http://docs.oracle.com/javase/6/docs/technotes/guides/security/crypto/CryptoSpec.html}.
+Oracle, \emph{``Java\texttrademark Cryptography Architecture (JCA) Reference Guide"},
+\\ Available at: \texttt{\url{http://docs.oracle.com/javase/6/docs/technotes/guides/security/crypto/CryptoSpec.html}}
 
 \bibitem{bouncyCastle}
-\emph{``The Legion of the Bouncy Castle"},
-\\ Available at: \texttt{http://www.bouncycastle.org/java.html}.
+The Legion of the Bouncy Castle,
+\\ Available at: \texttt{http://www.bouncycastle.org/java.html}
 
 \bibitem{gnuCrypto}
-\emph{``The GNU Crypto project"},
-\\ Available at: \texttt{https://www.gnu.org/software/gnu-crypto/\#introduction}.
+The GNU Crypto project,
+\\ Available at: \texttt{\url{https://www.gnu.org/software/gnu-crypto/\#introduction}}
 
 \bibitem{rubyOpenSSL}
-\emph{"openssl: Ruby Standard Library Documentation"},
-\\ Available at: \texttt{http://www.ruby-doc.org/stdlib-1.9.3/libdoc/openssl/rdoc/index.html}.
+openssl: Ruby Standard Library Documentation,
+\\ Available at: \texttt{\url{http://www.ruby-doc.org/stdlib-1.9.3/libdoc/openssl/rdoc/index.html}}
 
 \bibitem{keyczar}
-\emph{"Keyczar"}, Available at: \texttt{http://www.keyczar.org/}.
+Keyczar, Available at: \texttt{http://www.keyczar.org/}.
+
+\bibitem{schneierCipherDesign}
+Bruce Schneier, \emph{``Crypto-Gram Newsletter''}, October 15th 1998.
+\\ Available at: \texttt{\url{http://www.schneier.com/crypto-gram-9810.html\#cipherdesign}}
 
 \bibitem{aesFIPSApproved}
-Randall J. Easter and Carolyn French, \emph{Approved Security Functions
-for FIPS PUB 140-2}, May 30 2012,
-\\ Available at: \texttt{http://csrc.nist.gov/publications/fips/fips140-2/fips1402annexa.pdf}.
+Randall J. Easter and Carolyn French, \emph{``Approved Security Functions
+for FIPS PUB 140-2''}, May 30 2012,
+\\ Available at: \texttt{\url{http://csrc.nist.gov/publications/fips/fips140-2/fips1402annexa.pdf}}
 
 \bibitem{aesModes}
-NIST, \emph{Recommendation for Block Cipher Modes of Operation}, 2001 Edition
-\\ Available at: \texttt{http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf}.
+NIST, \emph{``Recommendation for Block Cipher Modes of Operation''}, 2001 Edition
+\\ Available at: \texttt{\url{http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf}}
 
 \bibitem{oraclePadding}
-Juliano Rizzo and Thai Duong, \emph{Practical Padding Oracle Attacks}, May 25th 2010,
-\\ Available at: \texttt{\url{http://static.usenix.org/events/woot10/tech/full_papers/Rizzo.pdf}}.
+Juliano Rizzo and Thai Duong, \emph{``Practical Padding Oracle Attacks''}, May 25th 2010,
+\\ Available at: \texttt{\url{http://static.usenix.org/events/woot10/tech/full_papers/Rizzo.pdf}}
 
 \bibitem{nistKeys}
-Elaine Barker, William Barker, William Burr, William Polk, and Miles Smid, \emph{NIST Special Publication 800-57}, Recommendation for Key Management – Part 1: General (Revision 3), July
+Elaine Barker, William Barker, William Burr, William Polk, and Miles Smid, \emph{``NIST Special Publication 800-57''}, Recommendation for Key Management – Part 1: General (Revision 3), July
 2012,
 \\ Available at: \texttt{\url{http://csrc.nist.gov/publications/nistpubs/800-57/sp800-57_part1_rev3_general.pdf}}
 
 \bibitem{announcingAES}
-FIPS, \emph{Announcing the ADVANCED ENCRYPTION STANDARD (AES)}, November 26, 2001,
+FIPS, \emph{``Announcing the ADVANCED ENCRYPTION STANDARD (AES)''}, November 26, 2001,
 \\ Available at:
-\texttt{http://csrc.nist.gov/publications/fips/fips197/fips-197.pdf}.
+\texttt{\url{http://csrc.nist.gov/publications/fips/fips197/fips-197.pdf}.}
 
 \bibitem{nistPassword}
-Meltem Sönmez Turan, Elaine Barker, William Burr, and Lily Chen, \emph{NIST Special Publication 800-132}, Recommendation for Password-Based Key Derivation, Part 1: Storage Applications, December 2010,
-\\ Available at: \texttt{http://csrc.nist.gov/publications/nistpubs/800-132/nist-sp800-132.pdf}.
+Meltem Sönmez Turan, Elaine Barker, William Burr, and Lily Chen, \emph{``NIST Special Publication 800-132''}, Recommendation for Password-Based Key Derivation, Part 1: Storage Applications, December 2010,
+\\ Available at: \texttt{\url{http://csrc.nist.gov/publications/nistpubs/800-132/nist-sp800-132.pdf}}
+
+\bibitem{rsaKeyLength}
+Javamex, \emph{``RSA key lengths''},
+\\ Available at: \texttt{\url{http://www.javamex.com/tutorials/cryptography/rsa_key_length.shtml}}
 
 \bibitem{oaepAttack}
-James Manger, \emph{A Chosen Ciphertext Attack on RSA Optimal Asymmetric Encryption Padding (OAEP) as Standardized in PKCS \#1 v2.0}, 2001.
+James Manger, \emph{``A Chosen Ciphertext Attack on RSA Optimal Asymmetric Encryption Padding (OAEP) as Standardized in PKCS \#1 v2.0''}, 2001.
 
 \bibitem{sha512Faster}
-Shay Gueron, Simon Johnson and Jesse Walker, \emph{SHA-512/256}, October 1, 2010.
+Shay Gueron, Simon Johnson and Jesse Walker, \emph{``SHA-512/256''}, October 1, 2010.
 
 \bibitem{bcryptPaper}
-Niels Provos and David Mazières, \emph{A Future-Adaptable Password Scheme}, 1999 USENIX Annual Technical Conference, June 6–11 1999,
-\\ Available at: \texttt{http://static.usenix.org/event/usenix99/provos/provos.pdf}. 
+Niels Provos and David Mazières, \emph{``A Future-Adaptable Password Scheme''}, 1999 USENIX Annual Technical Conference, June 6–11 1999,
+\\ Available at: \texttt{\url{http://static.usenix.org/event/usenix99/provos/provos.pdf}}
+
+\bibitem{scrypt}
+Scrypt,
+\\ Available at \texttt{\url{http://www.tarsnap.com/scrypt.html}}
 
 \bibitem{lcgPRNGPredictable}
-Hugo Krawczyk, \emph{How to Predict Congruential Generators}, Computer Science Department, Technion, Haifa, Israel, May 1991. 
+Hugo Krawczyk, \emph{``How to Predict Congruential Generators''}, Computer Science Department, Technion, Haifa, Israel, May 1991. 
+
+\bibitem{geigerCounter}
+Black Cat Systems, \emph{``GM-10 Geiger Counter Radiation Detector''},
+\\ Available at: \texttt{\url{http://www.blackcatsystems.com/GM/products/GM10GeigerCounter.html}}
+
+\bibitem{h2Performance}
+H2Database, \emph{``Performance''},
+\\ Available at: \texttt{www.h2database.com/html/performance.html}
+
+\bibitem{keystoreBrute}
+Erik Zivkovic, \emph{``KeystoreBrute''},
+\\ Available at: \texttt{https://github.com/bes/KeystoreBrute}
+
+\bibitem{javaPreparedStatement}
+Java SE 6 Documentation, \emph{``PreparedStatement''},
+\\ Available at: \texttt{\url{http://docs.oracle.com/javase/6/docs/api/java/sql/PreparedStatement.html}}
+
+\bibitem{owaspSQL}
+The Open Web Application Security Project, \emph{``Preventing SQL Injection in Java''},
+\\ Available at: \texttt{\url{https://www.owasp.org/index.php/Preventing\_SQL\_Injection\_in\_Java\#Prepared\_Statements}}
+
+\bibitem{h2Delay}
+H2Database, \emph{``Security Protocols - Wrong Password / User Name Delay''},
+\\ Available at: \texttt{\url{http://www.h2database.com/html/advanced.html\#security\_protocols}}
 
 \bibitem{schneierSecretsLies}
-Bruce Schneier, \emph{Secrets and Lies: Digital Security in a Networked World},  John Wiley \& Sons, March 2011.
+Bruce Schneier, \emph{``Secrets and Lies: Digital Security in a Networked World''},  John Wiley \& Sons, March 2011.
 
 \end{thebibliography}
 
