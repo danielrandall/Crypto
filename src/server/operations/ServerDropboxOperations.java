@@ -205,5 +205,28 @@ public class ServerDropboxOperations {
 		}
 		
 	}
+
+
+	public static String updateOwnersFile(String fileName, String sourceUsername, String owner,
+			Session sourceSession, Session ownerSession) {
+		
+		DropboxAPI<Session> client = new DropboxAPI<Session>(ownerSession);
+		
+		String sourcePath = "/" + sourceUsername + FRIENDS_FILE_FOLDER + "/" + owner + "/" + fileName;
+		String destPath = "/" + owner + OWN_FILE_FOLDER +  "/" + fileName;
+			
+		try {
+			if (!client.metadata(destPath, 0, null, false, null).isDeleted)
+				client.delete(destPath);
+		} catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
+		Entry entry = copyBetweenAccounts(sourceSession, ownerSession, sourcePath, destPath);
+		
+		return entry.rev;
+		
+	}
 	
 }

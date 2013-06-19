@@ -403,5 +403,20 @@ public class DropboxOperations {
 		return files;
 		
 	}
+	
+	
+	public static void updateFile(String fileName, String owner, InputStream inputStream,
+			int length) {
+		
+		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
+		
+		try {
+			client.putFileOverwrite(username + FRIENDS_FILE_FOLDER + "/" + owner + "/" + fileName, inputStream, length, null);
+		} catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 
 }

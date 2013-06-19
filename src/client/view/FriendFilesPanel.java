@@ -18,8 +18,12 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.Box;
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class FriendFilesPanel extends JPanel {
+	
+	private UpdateFrame updateFrame = new UpdateFrame();
 	
 	private final JPanel buttonPanel = new JPanel();
 	private final JTable fileTable = new JTable();
@@ -30,6 +34,7 @@ public class FriendFilesPanel extends JPanel {
 	private final JButton btnDeleteFile = new JButton("Delete file");
 	private final JButton btnDownloadFile = new JButton("Download file");
 	private final Component rigidArea = Box.createRigidArea(new Dimension(0, 50));
+	private final JButton btnUpdate = new JButton("Update file");
 
 	/**
 	 * Create the panel.
@@ -73,11 +78,10 @@ public class FriendFilesPanel extends JPanel {
 		Object[] objects1 = {this, fileTable};
 		GridBagLayout gbl_buttonPanel = new GridBagLayout();
 		gbl_buttonPanel.columnWidths = new int[]{123, 0};
-		gbl_buttonPanel.rowHeights = new int[]{24, 24, 0, 0, 0, 0, 0};
+		gbl_buttonPanel.rowHeights = new int[]{24, 24, 0, 0, 0, 0, 0, 0, 0};
 		gbl_buttonPanel.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-		gbl_buttonPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_buttonPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		buttonPanel.setLayout(gbl_buttonPanel);
-		btnDownloadFile.addActionListener(new GenericActionListener(new FriendFileDownloadCommand(), objects1));
 		btnDeleteFile.addActionListener(new GenericActionListener(new DeleteFileCommand(), objects));
 		
 		GridBagConstraints gbc_rigidArea = new GridBagConstraints();
@@ -85,6 +89,16 @@ public class FriendFilesPanel extends JPanel {
 		gbc_rigidArea.gridx = 0;
 		gbc_rigidArea.gridy = 1;
 		buttonPanel.add(rigidArea, gbc_rigidArea);
+		btnDownloadFile.addActionListener(new GenericActionListener(new FriendFileDownloadCommand(), objects1));
+		btnDownloadFile.setFont(new Font("Dialog", Font.BOLD, 11));
+		
+		GridBagConstraints gbc_btnDownloadFile = new GridBagConstraints();
+		gbc_btnDownloadFile.insets = new Insets(0, 0, 5, 0);
+		gbc_btnDownloadFile.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnDownloadFile.anchor = GridBagConstraints.WEST;
+		gbc_btnDownloadFile.gridx = 0;
+		gbc_btnDownloadFile.gridy = 3;
+		buttonPanel.add(btnDownloadFile, gbc_btnDownloadFile);
 		btnDeleteFile.setFont(new Font("Dialog", Font.BOLD, 11));
 		
 		GridBagConstraints gbc_btnDeleteFile = new GridBagConstraints();
@@ -94,14 +108,23 @@ public class FriendFilesPanel extends JPanel {
 		gbc_btnDeleteFile.gridx = 0;
 		gbc_btnDeleteFile.gridy = 4;
 		buttonPanel.add(btnDeleteFile, gbc_btnDeleteFile);
-		btnDownloadFile.setFont(new Font("Dialog", Font.BOLD, 11));
 		
-		GridBagConstraints gbc_btnDownloadFile = new GridBagConstraints();
-		gbc_btnDownloadFile.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnDownloadFile.anchor = GridBagConstraints.WEST;
-		gbc_btnDownloadFile.gridx = 0;
-		gbc_btnDownloadFile.gridy = 5;
-		buttonPanel.add(btnDownloadFile, gbc_btnDownloadFile);
+		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
+		gbc_btnNewButton.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnNewButton.insets = new Insets(0, 0, 5, 0);
+		gbc_btnNewButton.gridx = 0;
+		gbc_btnNewButton.gridy = 5;
+		btnUpdate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String fileToBeUpdated = (String) getSelectedRowInfo()[0];
+				String owner = (String) getSelectedRowInfo()[1];
+				if (owner != null)
+					updateFrame.setFileAndOwner(fileToBeUpdated, owner);
+					updateFrame.setVisible(true);
+			}
+		});
+		btnUpdate.setFont(new Font("Dialog", Font.BOLD, 11));
+		buttonPanel.add(btnUpdate, gbc_btnNewButton);
 			
 		setVisible(true);
 		

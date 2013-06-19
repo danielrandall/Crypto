@@ -27,6 +27,7 @@ public class ServerCentralAuthority {
 	private static final String IGNORE_FRIEND_REQUEST = "6";
 	private static final String DOWNLOAD_FRIEND_FILE = "7";
 	private static final String REVOKE_USER = "8";
+	private static final String UPDATE_FILE = "9";
 	
 	private static final String GET_SECURITY_LEVEL = "50";
 	private static final String GET_FRIENDS = "51";
@@ -86,8 +87,49 @@ public class ServerCentralAuthority {
 			
 			if (decision.equals(CHECK_UPDATES))
 				checkUpdates(user.getUsername(), comms);
+			
+			if(decision.equals(UPDATE_FILE))
+				updateFile(user.getUsername(), user.getSession(), comms);
 		}
 	
+	}
+
+	private static void updateFile(String sourceUsername, Session sourceSession, ClientComms comms) {
+		
+		String fileName = comms.fromClient();
+		comms.sendInt(1);
+		
+		String owner = comms.fromClient();
+		comms.sendInt(1);
+		
+		User user = Authentication.loadUser(owner);
+		Session ownerSession = user.getSession();
+		
+		String rev = ServerDropboxOperations.getFileRev(owner, fileName, ownerSession);
+		
+		ServerFile fileInfo = ServerFileOperations.getFileInfo(rev);
+		
+		/* Check whether user has permission */
+		comms.toClient(TRUE);
+		
+		int securityLevel = fileInfo.getSecurityLevel();
+		comms.toClient(Integer.toString(securityLevel));
+		comms.getInt();
+		
+		byte[] iv = comms.getBytes();
+		comms.sendInt(1);
+		
+		/* Get acknowledgement when the file has finished uploading */
+		comms.getInt();
+		
+		String newRev = ServerDropboxOperations.updateOwnersFile(fileName, sourceUsername, owner, sourceSession, ownerSession);
+		
+		/* Remove old entry and add new one */
+		ServerFileOperations.removeFile(rev);
+		ServerFileOperations.addFile(securityLevel, owner, iv, newRev);
+		
+		/* Update other friends files */		
+		
 	}
 
 	private static void checkUpdates(String username, ClientComms comms) {
@@ -299,7 +341,7 @@ public class ServerCentralAuthority {
 		String rev = comms.fromClient();
 		String fileName = comms.fromClient();
 		
-		ServerFileOperations.addFile(securityLevel, username, comms, iv, rev);
+		ServerFileOperations.addFile(securityLevel, username, iv, rev);
 		
 		sendFiletoFriends(username, fileName, securityLevel, session, comms);
 		

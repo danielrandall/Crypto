@@ -18,7 +18,7 @@ public class ServerFileOperations {
 	private static Ciphers cipher = new RSASunJCECipher();
 	
 	public static void addFile(int securityLevel, String username,
-			ClientComms comms, byte[] iv, String rev) {
+				byte[] iv, String rev) {
 		
 		/* Add to database */
 		database.addFile(rev, username, iv, securityLevel);

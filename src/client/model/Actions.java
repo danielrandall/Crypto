@@ -26,6 +26,7 @@ public class Actions {
 	private static final String IGNORE_FRIEND_REQUEST = "6";
 	private static final String DOWNLOAD_FRIEND_FILE = "7";
 	private static final String REVOKE_USER = "8";
+	private static final String UPDATE_FILE = "9";
 	
 	private static final String GET_SECURITY_LEVEL = "50";
 	private static final String GET_FRIENDS = "51";
@@ -137,10 +138,8 @@ public class Actions {
 		File file = new File(fileLocation);
 		String fileName = file.getName();
 		
-		byte[][] encryptedFileInfo = FileOperations.encryptFile(file, fileName, key);
-		
-		byte[] encryptedFile = encryptedFileInfo[0];
-		byte[] iv = encryptedFileInfo[1];
+		byte[] iv = SecurityVariables.generateIV();
+		byte[] encryptedFile = FileOperations.encryptFile(file, key, iv);
 		
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(encryptedFile);
 		String[] fileInfo = DropboxOperations.uploadFile(fileName, inputStream, encryptedFile.length);
@@ -515,6 +514,38 @@ public class Actions {
 		}
 		
 		keys = null;
+		
+	}
+
+	public static void updateFile(String fileName, String owner, String newFileLocation) {
+		
+		ServerComms.toServer(UPDATE_FILE);
+		
+		ServerComms.toServer(fileName);
+		ServerComms.getInt();
+		ServerComms.toServer(owner);
+		ServerComms.getInt();
+		
+		if (!ServerComms.fromServer().equals(TRUE))
+			return;
+		
+		String securityLevel = ServerComms.fromServer();
+		ServerComms.sendInt(1);
+		
+		byte[] friendKey = KeyStoreOperations.retrieveFriendKey(owner, securityLevel);
+		
+		File file = new File(newFileLocation);
+		byte[] iv = SecurityVariables.generateIV();
+		byte[] encryptedFile = FileOperations.encryptFile(file, friendKey, iv);
+		
+		ServerComms.sendBytes(iv, iv.length);
+		ServerComms.sendInt(1);
+		
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(encryptedFile);
+		DropboxOperations.updateFile(fileName, owner, inputStream, encryptedFile.length);
+		
+		/* Tell server when the file has finished uploading */
+		ServerComms.sendInt(1);
 		
 	}
 

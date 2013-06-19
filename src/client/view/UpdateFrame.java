@@ -1,49 +1,43 @@
 package client.view;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import client.controller.FileUploadCommand;
+import client.controller.UpdateCommand;
 
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.factories.FormFactory;
-import javax.swing.JLabel;
-import java.awt.Font;
-import javax.swing.JFileChooser;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import java.awt.Component;
-import javax.swing.Box;
-import javax.swing.JSlider;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.awt.Color;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 
-/* TODO: Override slider defaults such that it actually goes to the value you
- * click and not just one value in that direction. */
-
-/* This frame does not implement the window listener of BaseFrame as we do not
- * wish for the application to exit when this window closes. */
-public class UploadFileFrame extends BaseFrame {
+public class UpdateFrame extends BaseFrame {
 	
-	/* Frame to send for updates if a file is uploaded */
-	private JPanel updatePanel;
+	/* File being updated */
+	private String fileToBeUpdated = "";
+	private String fileOwner = "";
 
 	private JPanel contentPane;
-	private final JLabel lblFileToUpload = new JLabel("File to upload");
+	private final JLabel lblFileToUpload = new JLabel("File to update with");
 	private final JTextField fileNameTextField = new JTextField();
 	private final JButton btnChoose = new JButton("Choose");
-	private final JLabel lblSecurityLevel = new JLabel("Security Level");
-	private final JButton btnUploadFile = new JButton("Upload file");
-	private final JLabel lblUploadFile = new JLabel("Upload a file");
+	private final JButton btnUpdateFile = new JButton("Update file");
+	private final JLabel lblUpdateFile = new JLabel();
 	private final JPanel buttonPanel = new JPanel();
 	private final JButton btnCancel = new JButton("Cancel");
 	private final Component horizontalStrut = Box.createHorizontalStrut(20);
-	private final JSlider sliderSecurityLevel = new JSlider();
 	private final Component verticalStrut = Box.createVerticalStrut(20);
 	private final Component verticalStrut_1 = Box.createVerticalStrut(5);
 
@@ -51,14 +45,15 @@ public class UploadFileFrame extends BaseFrame {
 	/**
 	 * Create the frame.
 	 */
-	public UploadFileFrame(JPanel panel) {
-		updatePanel = panel;
+	public UpdateFrame() {
+		
 		initGUI();
 	}
+	
 	private void initGUI() {
 		
-		Object[] objects = {this, updatePanel};
-		btnUploadFile.addActionListener(new GenericActionListener(new FileUploadCommand(), objects));		
+		Object[] objects = {this};
+		btnUpdateFile.addActionListener(new GenericActionListener(new UpdateCommand(), objects));		
 		
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -105,8 +100,8 @@ public class UploadFileFrame extends BaseFrame {
 		
 		contentPane.add(verticalStrut, "1, 3");
 		
-		contentPane.add(lblUploadFile, "3, 3");
-		lblUploadFile.setFont(museosans_900_18p);
+		contentPane.add(lblUpdateFile, "3, 3");
+		lblUpdateFile.setFont(museosans_900_18p);
 		lblFileToUpload.setFont(museosans_700_14p);
 		
 		contentPane.add(lblFileToUpload, "3, 7");
@@ -124,25 +119,14 @@ public class UploadFileFrame extends BaseFrame {
 		contentPane.add(btnChoose, "5, 9");
 		
 		contentPane.add(verticalStrut_1, "3, 11");
-		lblSecurityLevel.setFont(museosans_700_14p);
 		
-		contentPane.add(lblSecurityLevel, "3, 13, default, bottom");
+		contentPane.add(horizontalStrut, "6, 13, 2, 1");
 		
-		contentPane.add(horizontalStrut, "7, 13");
-		sliderSecurityLevel.setSnapToTicks(true);
-		sliderSecurityLevel.setMinimum(1);
-		sliderSecurityLevel.setMaximum(5);
-		sliderSecurityLevel.setMajorTickSpacing(1);
-		sliderSecurityLevel.setPaintTicks(true);
-		sliderSecurityLevel.setPaintLabels(true);
-		sliderSecurityLevel.setFont(museosans_500_12p);
-		
-		contentPane.add(sliderSecurityLevel, "3, 15, default, top");
 		buttonPanel.setBackground(Color.WHITE);
 		
 		contentPane.add(buttonPanel, "3, 21, 3, 1, right, fill");
-		buttonPanel.add(btnUploadFile);
-		btnUploadFile.setFont(new Font("Dialog", Font.BOLD, 11));
+		buttonPanel.add(btnUpdateFile);
+		btnUpdateFile.setFont(new Font("Dialog", Font.BOLD, 11));
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
@@ -158,7 +142,7 @@ public class UploadFileFrame extends BaseFrame {
 		
 		JFileChooser jChoose = new JFileChooser();
 
-		int returnVal = jChoose.showDialog(UploadFileFrame.this, "Select");
+		int returnVal = jChoose.showDialog(UpdateFrame.this, "Select");
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = jChoose.getSelectedFile();
             String fileName = file.getPath();
@@ -167,10 +151,9 @@ public class UploadFileFrame extends BaseFrame {
 	}
 	
 	/* Called when a file successfully uploads */
-	public void fileUploaded() {
+	public void fileUpdated() {
 		
 		fileNameTextField.setText("");
-		sliderSecurityLevel.setValue(sliderSecurityLevel.getMaximum());
 		setVisible(false);
 		
 	}
@@ -182,10 +165,31 @@ public class UploadFileFrame extends BaseFrame {
 		
 	}
 	
-	/* Returns the slider value representing the security level */
-	public int getSecurityLevel() {
+	public void setFileAndOwner(String fileToBeUpdated, String owner) {
 		
-		return sliderSecurityLevel.getValue();
+		this.fileToBeUpdated = fileToBeUpdated;
+		this.fileOwner = owner;
+		
+		lblUpdateFile.setText("Update " + this.fileOwner + "'s file: "
+				+ this.fileToBeUpdated);
+		
+	}
+	
+	public String getFileOwner() {
+		
+		return fileOwner;
+		
+	}
+	
+	public String getFileToBeUpdated() {
+		
+		return fileToBeUpdated;
+		
+	}
+
+	public String getNewFileLocation() {
+		
+		return fileNameTextField.getText();
 		
 	}
 

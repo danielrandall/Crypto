@@ -20,32 +20,25 @@ public class FileOperations {
 	
 	/* Encrypts a given file and returns encrypted file and the generated iv
 	 * which is needed for decryption */
-	public static byte[][] encryptFile(File file, String fileName, byte[] key) {
+	public static byte[] encryptFile(File file, byte[] key, byte[] iv) {
 		
 		InputStream fileStream;
-		byte[] iv = SecurityVariables.generateIV();
-		
-		byte[][] encryptedFileInfo = new byte[2][];
-		
+		byte[] fileContents = null;
+	
 		try {
 			
 			fileStream = new java.io.FileInputStream(file);
 				
-			byte[] fileContents = new byte[fileStream.available()];
+			fileContents = new byte[fileStream.available()];
 			fileStream.read(fileContents);
 			fileStream.close();
-				
-			byte[] encryptedFile = cipher.encrypt(fileContents, key, iv);
-			
-			encryptedFileInfo[0] = encryptedFile;
-			encryptedFileInfo[1] = iv;
 		    
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return encryptedFileInfo;
+		return cipher.encrypt(fileContents, key, iv);
 		
 	}
 	

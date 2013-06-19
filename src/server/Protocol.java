@@ -19,8 +19,10 @@ public class Protocol {
 			/* Recieve login or register decision */
 			String decision = comms.fromClient();
 			
-			if (decision == null || decision.equals(EXIT_CODE))
+			if (decision == null || decision.equals(EXIT_CODE)) {
+				comms.sendInt(1);
 				return;
+			}
 		
 			if (decision.equals(LOGIN))
 				user = Authentication.link(comms);
