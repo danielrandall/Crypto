@@ -27,7 +27,12 @@ public class Login {
 		/* Receive Acknowledgement */
 		ServerComms.getInt();
 	
-		ServerComms.sendBytes(passwordBytes, passwordBytes.length);
+		byte[] serverPublicKey = ServerComms.getBytes();
+		ServerComms.sendInt(1);
+		
+		byte[] encryptedPasswordBytes = FileOperations.asymmetricEncrypt(passwordBytes, serverPublicKey);
+		
+		ServerComms.sendBytes(encryptedPasswordBytes, encryptedPasswordBytes.length);
 
 		if (ServerComms.fromServer().equals(TRUE)) {
 			DropboxOperations.setUsername(username);
@@ -74,7 +79,7 @@ public class Login {
 		    passwordBytes2[2*i+1] = (byte) (chars[i]&0x00FF); 
 		}
 	*/
-	public static byte[] charArraytoByteArray(char[] chars) {
+	private static byte[] charArraytoByteArray(char[] chars) {
 		
 		byte[] bytes = new byte[chars.length * 2];
 		for (int i = 0; i < chars.length; i++) {

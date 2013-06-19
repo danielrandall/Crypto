@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.PrivateKey;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,13 +33,21 @@ public class Actions {
 	private static final String CHECK_UPDATES = "53";
 	
 	/* Locations for downloading and unencrypting files */
-	private static final String DOWNLOAD_LOCATION = "DownloadedAppFiles";	
-	private static final String FRIEND_FILE_DOWNLOAD_LOCATION = "DownloadedAppFiles/FriendFiles";
+	private static final String DOWNLOAD_LOCATION = "DownloadedAppFiles/";
+	private static final String MY_DOWNLOAD_LOCATION = "MyFiles/";
+	private static final String FRIEND_FILE_DOWNLOAD_LOCATION = "FriendFiles/";
 	
 	/* Location used to temporarily store files while they await re-encryption
 	 * after keys have been revoked */
 	private static final String TEMP_FILE_STORE = "tempstore";
-
+	
+	private static String myUsername;
+	
+	public static void setUsername(String username) {
+		
+		myUsername = username;
+		
+	}
 	
 	public static boolean friendRequest(String usernameToAdd, int lowerBound, int upperBound) {
 		
@@ -158,17 +167,25 @@ public class Actions {
 		/* Tell server a file is being downloaded */
 		ServerComms.toServer(DOWNLOAD_FILE);
 		
-		String rev = processDownload(fileName, DOWNLOAD_LOCATION);
+		String downloadLocation = DOWNLOAD_LOCATION + myUsername + "/" + MY_DOWNLOAD_LOCATION;
+		
+		String rev = processDownload(fileName, downloadLocation);
+		
 		/* Send file information to the server */
 		ServerComms.toServer(rev);
+		ServerComms.getInt();
+		
 		
 		/* Retrieve necessary information from the server */
 		byte[] iv = ServerComms.getBytes();
+		ServerComms.sendInt(1);
+		
 		String securityLevel = ServerComms.fromServer();
+		ServerComms.sendInt(1);
 		
 		byte[] key = KeyStoreOperations.retrieveOwnKey(securityLevel);
 		
-		FileOperations.decryptFile(new File(DOWNLOAD_LOCATION + "/" + fileName), iv, key);	
+		FileOperations.decryptFile(new File(downloadLocation + "/" + fileName), iv, key);	
 		
 	}
 	
@@ -186,7 +203,7 @@ public class Actions {
 		byte[] iv = ServerComms.getBytes();
 		String securityLevel  = ServerComms.fromServer();
 		
-		String downloadFolderLocation = FRIEND_FILE_DOWNLOAD_LOCATION + "/" + owner;
+		String downloadFolderLocation = DOWNLOAD_LOCATION + myUsername + "/" + FRIEND_FILE_DOWNLOAD_LOCATION + "/" + owner;
 		
 		File downloadFolder = new File(downloadFolderLocation);
 		if (!downloadFolder.exists())
@@ -197,7 +214,7 @@ public class Actions {
 		File file = new File(downloadFileLocation);
 		
 		if (file.exists()) 
-			return;
+			file.delete();
 		
 		FileOutputStream outputStream = null;
 		
@@ -339,13 +356,14 @@ public class Actions {
 
 			ServerComms.toServer(uploadedFiles[i][1]);
 			
-			String s = ServerComms.fromServer();
+			/* If file is legitimate, list it */
+			if (ServerComms.fromServer().equals(TRUE)) {
 
-			int securityLevel = Integer.parseInt(s);
+				int securityLevel = Integer.parseInt(ServerComms.fromServer());
 		
-			filesAndSecurityLevels[i][0] = uploadedFiles[i][0];
-			filesAndSecurityLevels[i][1] = securityLevel;
-			
+				filesAndSecurityLevels[i][0] = uploadedFiles[i][0];
+				filesAndSecurityLevels[i][1] = securityLevel;
+			}
 		}
 		
 		return filesAndSecurityLevels;
@@ -397,7 +415,7 @@ public class Actions {
 	}
 	
 	
-	public static Object[][] getFriendFiles() {
+	public static String[][] getFriendFiles() {
 		
 		return DropboxOperations.getFriendFiles();
 		
@@ -406,23 +424,16 @@ public class Actions {
 	/* Creates an output stream and requests Dropbox to download the file there */
 	private static String processDownload(String fileName, String folderLocation) {
 		
-		try {
-			Thread.sleep(1);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
 		File downloadFolder = new File(folderLocation);
 		if (!downloadFolder.exists())
-			downloadFolder.mkdir();
+			downloadFolder.mkdirs();
 		
-		String downloadLocation = folderLocation + "/" + fileName;
+		String downloadLocation = folderLocation + fileName;
 		
 		File file = new File(downloadLocation);
 		
 		if (file.exists()) 
-			return null;
+			file.delete();
 		
 		FileOutputStream outputStream = null;
 		

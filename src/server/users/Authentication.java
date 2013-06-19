@@ -1,6 +1,8 @@
 package server.users;
 
 import server.ClientComms;
+import server.keystore.ServerKeyStoreOperations;
+import server.operations.ServerFileOperations;
 import server.operations.UserOperations;
 import server.password.BCryptEncryptor;
 import server.password.PasswordEncryptor;
@@ -32,7 +34,14 @@ public final class Authentication {
 		
 		comms.sendInt(1);
 		
-		passwordBytes = comms.getBytes();
+		byte[] publicKeyBytes = ServerKeyStoreOperations.retrievePublicKey();
+		comms.sendBytes(publicKeyBytes, publicKeyBytes.length);
+		
+		comms.getInt();
+		
+		byte[] encryptedPasswordBytes = comms.getBytes();
+		byte[] privateKeyBytes = ServerKeyStoreOperations.retrievePrivateKey();
+		passwordBytes = ServerFileOperations.decrypt(privateKeyBytes, encryptedPasswordBytes);
 		
 		char[] passwordChars = byteArraytoCharArray(passwordBytes);
 			

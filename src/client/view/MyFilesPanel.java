@@ -66,7 +66,7 @@ public class MyFilesPanel extends JPanel {
 		tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
 		fileTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		fileTable.setModel(new DefaultTableModel(
+		fileTable.setModel(new TableModel(
 				new Object[][] {
 						
 				},
@@ -136,8 +136,10 @@ public class MyFilesPanel extends JPanel {
 	 * PRE: Element has the correct number of columns. */
 	public void addElementToTable(Object[] element) {
 		
-		DefaultTableModel tableModel = (DefaultTableModel) fileTable.getModel();
-		tableModel.addRow(element);
+		if (element[0] != null) {
+			DefaultTableModel tableModel = (DefaultTableModel) fileTable.getModel();
+			tableModel.addRow(element);
+		}
 		
 	}
 	
@@ -156,6 +158,7 @@ public class MyFilesPanel extends JPanel {
 	public Object[] getSelectedRowInfo() {
 		
 		DefaultTableModel tableModel = (DefaultTableModel) fileTable.getModel();
+
 		int[] selectedRows = fileTable.getSelectedRows();
 		Object[] info = null;
 	
@@ -176,6 +179,13 @@ public class MyFilesPanel extends JPanel {
 		
 		for (int i = 0; i < uploadedFileRows.length; i++)
 			addElementToTable(uploadedFileRows[i]);
+		
+	}
+	
+	public void exit() {
+		
+		DefaultTableModel tableModel = (DefaultTableModel) fileTable.getModel();
+		tableModel.setRowCount(0);
 		
 	}
 

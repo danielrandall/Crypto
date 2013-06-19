@@ -159,5 +159,12 @@ public class FriendFilesPanel extends JPanel {
 				addElementToTable(uploadedFileRows[i]);
 		}
 	}
+	
+	public void exit() {
+		
+		DefaultTableModel tableModel = (DefaultTableModel) fileTable.getModel();
+		tableModel.setRowCount(0);
+		
+	}
 
 }

@@ -16,11 +16,17 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.Box;
+
+import client.controller.Controller;
+
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class MenuFrame extends BaseFrame {
 	
 	/* Panels used for the tabs */
+	private final BaseFrame prevFrame;
 	private final MyFilesPanel myFilesPanel = new MyFilesPanel();
 	private final FriendsPanel friendsPanel = new FriendsPanel();
 	private final FriendRequestsPanel friendRequestsPanel =
@@ -40,8 +46,9 @@ public class MenuFrame extends BaseFrame {
 	/**
 	 * Create the frame.
 	 */
-	public MenuFrame() {
+	public MenuFrame(BaseFrame frame) {
 
+	    prevFrame = frame;
 		initGUI();
 	}
 	
@@ -84,6 +91,11 @@ public class MenuFrame extends BaseFrame {
 		gbc_rigidArea.gridx = 4;
 		gbc_rigidArea.gridy = 0;
 		buttonPanel.add(rigidArea, gbc_rigidArea);
+		btnLogOut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				close();
+			}
+		});
 		btnLogOut.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		GridBagConstraints gbc_btnLogOut = new GridBagConstraints();
 		gbc_btnLogOut.anchor = GridBagConstraints.EAST;
@@ -129,6 +141,22 @@ public class MenuFrame extends BaseFrame {
 	public void populateFriendFiles(Object[][] friendFiles) {
 		
 		friendFilesPanel.populateFriendFiles(friendFiles);
+		
+	}
+	
+	public void close() {
+		
+		this.setVisible(false);
+		
+		myFilesPanel.exit();
+		friendFilesPanel.exit();
+		friendsPanel.exit();
+		friendRequestsPanel.exit();
+		
+		Controller.exit();
+		Controller.setup();
+		
+		prevFrame.setVisible(true);
 		
 	}
 }	

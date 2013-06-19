@@ -22,8 +22,8 @@ import java.awt.Dimension;
 public class FriendRequestsPanel extends JPanel {
 	
 	private final JPanel buttonPanel = new JPanel();
-	private final JTable RequestTable = new JTable();
-	private final JScrollPane tableScrollPane = new JScrollPane(RequestTable);
+	private final JTable requestTable = new JTable();
+	private final JScrollPane tableScrollPane = new JScrollPane(requestTable);
 	
 	/* Table information */
 	private final String[] columnNames = {"Username", "Security Level"};
@@ -51,8 +51,8 @@ public class FriendRequestsPanel extends JPanel {
 		
 		tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
-		RequestTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		RequestTable.setModel(new DefaultTableModel(
+		requestTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		requestTable.setModel(new DefaultTableModel(
 				new Object[][] {
 						
 				},
@@ -113,7 +113,7 @@ public class FriendRequestsPanel extends JPanel {
 	 * PRE: Element has the correct number of columns. */
 	public void addElementToTable(Object[] element) {
 		
-		DefaultTableModel tableModel = (DefaultTableModel) RequestTable.getModel();
+		DefaultTableModel tableModel = (DefaultTableModel) requestTable.getModel();
 		tableModel.addRow(element);
 		
 	}
@@ -121,8 +121,8 @@ public class FriendRequestsPanel extends JPanel {
 	/* Removes all of the selected rows in the table */
 	public void removeSelectedRowsFromTable() {
 		
-		DefaultTableModel tableModel = (DefaultTableModel) RequestTable.getModel();
-		int[] selectedRows = RequestTable.getSelectedRows();
+		DefaultTableModel tableModel = (DefaultTableModel) requestTable.getModel();
+		int[] selectedRows = requestTable.getSelectedRows();
 		if (selectedRows.length > 0) {
             for (int i = selectedRows.length - 1; i >= 0; i--) {
                 tableModel.removeRow(selectedRows[i]);
@@ -132,8 +132,8 @@ public class FriendRequestsPanel extends JPanel {
 	
 	public Object[] getSelectedRowInfo() {
 		
-		DefaultTableModel tableModel = (DefaultTableModel) RequestTable.getModel();
-		int[] selectedRows = RequestTable.getSelectedRows();
+		DefaultTableModel tableModel = (DefaultTableModel) requestTable.getModel();
+		int[] selectedRows = requestTable.getSelectedRows();
 		Object[] info = null;
 	
 		if (selectedRows.length == 1) {
@@ -165,6 +165,13 @@ public class FriendRequestsPanel extends JPanel {
 	public void friendIgnored() {
 		
 		removeSelectedRowsFromTable();
+		
+	}
+	
+	public void exit() {
+		
+		DefaultTableModel tableModel = (DefaultTableModel) requestTable.getModel();
+		tableModel.setRowCount(0);
 		
 	}
 

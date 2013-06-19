@@ -38,7 +38,7 @@ import javax.swing.ImageIcon;
 public class MainFrame extends BaseFrame {
 	
 	/* Frame to transfer to when a user logs in */
-	private MenuFrame mFrame = new MenuFrame();
+	private MenuFrame mFrame = new MenuFrame(this);
 	/* Frame to transfer to when a user decides to register */
 	private RegisterFrame rFrame = new RegisterFrame(this);
 

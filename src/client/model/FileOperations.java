@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.security.Key;
 import java.security.PublicKey;
 
-import ciphers.AESGNUCipher;
 import ciphers.AESSunJCECipher;
 import ciphers.RSASunJCECipher;
 import ciphers.Ciphers;

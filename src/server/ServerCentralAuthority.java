@@ -215,7 +215,8 @@ public class ServerCentralAuthority {
 		List<String> permittedFiles = new ArrayList<String>();
 		
 		for (int i = 0; i < userUploads.length; i++) {
-			int fileSecurityLevel = ServerFileOperations.getSecurityLevel(userUploads[i][1]);
+			ServerFile file = ServerFileOperations.getFileInfo(userUploads[i][1]);
+			int fileSecurityLevel = file.getSecurityLevel();
 			if (fileSecurityLevel >= securityLevel)
 				permittedFiles.add(userUploads[i][0]);
 		}
@@ -309,14 +310,17 @@ public class ServerCentralAuthority {
 	private static void downloadDecryptedFile(String username, ClientComms comms) {
 		
 		String rev = comms.fromClient();
+		comms.sendInt(1);
 		
-		Object[] fileInfo = ServerFileOperations.getFileInfo(rev);
+		ServerFile fileInfo = ServerFileOperations.getFileInfo(rev);
 		
-		byte[] iv = (byte[]) fileInfo[0];
-		int securityLevel = (Integer) fileInfo[1];
+		byte[] iv = fileInfo.getIV();
+		int securityLevel = fileInfo.getSecurityLevel();
 		
 		comms.sendBytes(iv, iv.length);
+		comms.getInt();
 		comms.toClient(Integer.toString(securityLevel));
+		comms.getInt();
 		
 	}
 	
@@ -336,9 +340,15 @@ public class ServerCentralAuthority {
 		
 		String fileRev = comms.fromClient();
 		
-		int securityLevel = ServerFileOperations.getSecurityLevel(fileRev);
-
-		comms.toClient(Integer.toString(securityLevel));
+		ServerFile fileInfo = ServerFileOperations.getFileInfo(fileRev);
+		
+		if (fileInfo == null)
+			comms.toClient(FALSE);
+		else {
+			comms.toClient(TRUE);
+			int securityLevel = fileInfo.getSecurityLevel();
+			comms.toClient(Integer.toString(securityLevel));
+		}
 		
 	}
 	
@@ -411,10 +421,10 @@ public class ServerCentralAuthority {
 		
 		String rev = ServerDropboxOperations.getFileRev(owner, fileName, ownerSession);
 		
-		Object[] fileInfo = ServerFileOperations.getFileInfo(rev);
+		ServerFile fileInfo = ServerFileOperations.getFileInfo(rev);
 		
-		byte[] iv = (byte[]) fileInfo[0];
-		int securityLevel = (Integer) fileInfo[1];
+		byte[] iv = (byte[]) fileInfo.getIV();
+		int securityLevel = (Integer) fileInfo.getSecurityLevel();
 		
 		comms.sendBytes(iv, iv.length);
 		comms.toClient(Integer.toString(securityLevel));

@@ -18,6 +18,7 @@ public class LogInCommand implements Command {
 		char[] password = frame.getPassword();
 		
 		if (Login.userLogin(username, password)) {
+			Actions.setUsername(username);
 			Object[][] rows = Actions.getUploadedFiles();
 			Object[][] friends = Actions.getFriends();
 			Object[][] friendRequests = Actions.getFriendRequests();

@@ -7,6 +7,7 @@ import server.ClientComms;
 import server.databases.H2KeyUpdates;
 import server.databases.H2Requests;
 import server.databases.H2Users;
+import server.keystore.ServerKeyStoreOperations;
 import server.users.Authentication;
 import server.users.User;
 import server.users.friends.FriendsList;
@@ -85,7 +86,16 @@ public class UserOperations {
 		
 		//String password = comms.fromClient();
 		
-		byte[] passwordBytes = comms.getBytes();
+		byte[] publicKeyBytes = ServerKeyStoreOperations.retrievePublicKey();
+		comms.sendBytes(publicKeyBytes, publicKeyBytes.length);
+		
+		comms.getInt();
+		
+		byte[] encryptedPasswordBytes = comms.getBytes();
+		byte[] privateKeyBytes = ServerKeyStoreOperations.retrievePrivateKey();
+		byte[] passwordBytes = ServerFileOperations.decrypt(privateKeyBytes, encryptedPasswordBytes);
+		
+		
 		
 		String key = comms.fromClient();
 		String secret = comms.fromClient();

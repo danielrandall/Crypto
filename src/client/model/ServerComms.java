@@ -210,7 +210,7 @@ public class ServerComms {
     		out.close();
     		OOut.close();
 			OIn.close();
-			
+			dis.close();
 			socket.close();
     	
     	} catch (IOException e) {

@@ -28,9 +28,9 @@ import java.awt.Font;
 public class RegisterFrame extends BaseFrame {
 	
 	/* Frame to transfer to when a user cancels registration */
-	private Frame prevFrame;
+	private BaseFrame prevFrame;
 	/* Menu to transfer to if a user successfully completes registration */
-	private MenuFrame menuFrame = new MenuFrame();
+	private MenuFrame menuFrame = new MenuFrame(prevFrame);
 	
 
 	private JPanel contentPane;
@@ -51,7 +51,7 @@ public class RegisterFrame extends BaseFrame {
 	/**
 	 * Create the frame.
 	 */
-	public RegisterFrame(Frame frame) {
+	public RegisterFrame(BaseFrame frame) {
 		prevFrame = frame;
 		initGUI();
 	}

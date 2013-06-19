@@ -1,4 +1,4 @@
-package client.model.keystore;
+package server.keystore;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -19,7 +19,7 @@ public class JavaKeyStore implements KeyStores {
 	
 	private KeyStore keystore;
 	private  char[] keystorePassword;
-	private String keystoreLocation;
+	private final String keystoreLocation = "serverkeys";
 	
 	/* TODO: passwords for specific keys */
 	
@@ -31,6 +31,8 @@ public class JavaKeyStore implements KeyStores {
 	 */
 	
 	
+	
+	
 	public boolean checkPassword(String username, char[] password) {
 
 	    java.io.FileInputStream input = null;
@@ -40,8 +42,6 @@ public class JavaKeyStore implements KeyStores {
 	    	/* Default type does not allow for storage of non-private
 	    	 * (symmetric) keys */
 	    	keystore = KeyStore.getInstance(KEY_STORE_ALGORITHM);
-	    	
-	    	keystoreLocation = username;
 	    		    	
 	        input = new java.io.FileInputStream(keystoreLocation);
 	        
@@ -83,7 +83,6 @@ public class JavaKeyStore implements KeyStores {
 	public void createKeystore(String keystoreName, char[] password) {
 		
 	    try {
-	    	keystoreLocation = keystoreName;
 	    	
 	    	keystore = KeyStore.getInstance(KEY_STORE_ALGORITHM);
 	    	

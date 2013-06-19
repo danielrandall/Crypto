@@ -28,9 +28,14 @@ public class Register {
 		if (!ServerComms.fromServer().equals(TRUE))
 			return false;
 		
-		byte[] passwordBytes = Login.charArraytoByteArray(password);
+		byte[] passwordBytes = charArraytoByteArray(password);
 		
-		ServerComms.sendBytes(passwordBytes, passwordBytes.length);
+		byte[] serverPublicKey = ServerComms.getBytes();
+		ServerComms.sendInt(1);
+		
+		byte[] encryptedPasswordBytes = FileOperations.asymmetricEncrypt(passwordBytes, serverPublicKey);
+		
+		ServerComms.sendBytes(encryptedPasswordBytes, encryptedPasswordBytes.length);
 		
 		String[] authenticationInfo = null;
 		while (authenticationInfo == null)
@@ -106,6 +111,18 @@ public class Register {
 		
 		return Arrays.equals(password, reenterPassword);
 		
+	}
+	
+	
+	private static byte[] charArraytoByteArray(char[] chars) {
+		
+		byte[] bytes = new byte[chars.length * 2];
+		for (int i = 0; i < chars.length; i++) {
+		   bytes[i * 2] = (byte) (chars[i] >> 8);
+		   bytes[i * 2 + 1] = (byte) chars[i];
+		}
+		
+		return bytes;
 	}
 	
 

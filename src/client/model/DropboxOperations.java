@@ -94,11 +94,11 @@ public class DropboxOperations {
     public static String[] chunkedUpload(String path, InputStream inputStream,
 			int length) {
     	
-    	DropboxAPI<Session> mDBApi = new DropboxAPI<Session>(session);
+    	DropboxAPI<Session> client = new DropboxAPI<Session>(session);
 		Entry newEntry = null;
 		
 		try {
-			DropboxAPI.ChunkedUploader uploader = mDBApi.getChunkedUploader(inputStream, length);
+			DropboxAPI.ChunkedUploader uploader = client.getChunkedUploader(inputStream, length);
 	         int retryCounter = 0;
 	         while(!uploader.isComplete()) {
 	             try {
@@ -138,11 +138,11 @@ public class DropboxOperations {
 		if (length > 1258291200)
 			return chunkedUpload(path, inputStream, length);
 		
-		DropboxAPI<Session> mDBApi = new DropboxAPI<Session>(session);
+		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
 		Entry newEntry = null;
 		
 		try {
-			newEntry = mDBApi.putFile(username + OWN_FILE_FOLDER + "/" + path, inputStream, length, null, null);
+			newEntry = client.putFile(username + OWN_FILE_FOLDER + "/" + path, inputStream, length, null, null);
 		} catch (DropboxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -215,12 +215,19 @@ public class DropboxOperations {
 	 * Errors if file/folder already exists in that location. */
 	public static void folderSetup() {
 		
-		DropboxAPI<Session> mDBApi = new DropboxAPI<Session>(session);
+		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
 		
 		try {
-			mDBApi.createFolder(username + OWN_FILE_FOLDER);
-			mDBApi.createFolder(username + FRIENDS_FILE_FOLDER);
-			//newEntry = mDBApi.putFile(dropboxPath, inputStream, length, null, null);
+			Entry entry = client.metadata("/" + username + OWN_FILE_FOLDER, 0, null,
+					true, null);
+			if (entry.isDeleted)
+				client.createFolder(username + OWN_FILE_FOLDER);
+			
+			entry = client.metadata("/" + username + FRIENDS_FILE_FOLDER, 0, null,
+					true, null);
+			if (entry.isDeleted)
+			client.createFolder(username + FRIENDS_FILE_FOLDER);
+			
 		} catch (DropboxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -1,5 +1,6 @@
 package client.controller;
 
+import client.model.Actions;
 import client.model.Register;
 import client.view.RegisterFrame;
 
@@ -21,6 +22,7 @@ public class RegisterCommand implements Command {
 			frame.passwordError();
 		else
 			if (Register.userRegister(username, password)) {
+				Actions.setUsername(username);
 				frame.register();
 			} else
 				frame.usernameError();		

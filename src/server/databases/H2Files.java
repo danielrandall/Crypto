@@ -177,9 +177,9 @@ public class H2Files extends H2Database {
 		}
 	}
 	
-	
+	/* Returns null if file does not exist */
 	public Map<String, Object> getFile(String rev) {
-		
+
 		Connection conn = getConnection();
 
 	    Map<String, Object> userData = new HashMap<String, Object>(FILE_ATTRIBUTES.length - 1);
@@ -202,7 +202,8 @@ public class H2Files extends H2Database {
 				
 				int i = r.getInt(4);
 				userData.put(FILE_ATTRIBUTES[3], i);
-			}
+			} else
+				userData = null;
 
 			conn.close();
 			

@@ -3,6 +3,8 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import server.keystore.ServerKeyStoreOperations;
+
 /* If multiple users do not work then sockets/ports may be why */
 public class Server {
 	
@@ -15,6 +17,8 @@ public class Server {
     public static void main(String[] args) throws IOException {
         
         addShutdownHook();
+        
+        ServerKeyStoreOperations.login(null, "password".toCharArray());
  
         try {
             serverSocket = new ServerSocket(PORT_NUMBER);

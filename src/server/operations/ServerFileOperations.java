@@ -5,6 +5,8 @@ import java.util.Map;
 
 import server.ClientComms;
 import server.ServerFile;
+import server.ciphers.Ciphers;
+import server.ciphers.RSASunJCECipher;
 import server.databases.H2Files;
 
 
@@ -12,6 +14,8 @@ import server.databases.H2Files;
 public class ServerFileOperations {
 	
 	private static H2Files database = new H2Files();
+	
+	private static Ciphers cipher = new RSASunJCECipher();
 	
 	public static void addFile(int securityLevel, String username,
 			ClientComms comms, byte[] iv, String rev) {
@@ -30,25 +34,21 @@ public class ServerFileOperations {
 	
 	
 	/* Retrieves a files IV and security level */
-	public static Object[] getFileInfo(String rev) {
+	public static ServerFile getFileInfo(String rev) {
 		
 		Map<String, Object> data = database.getFile(rev);
 		
-		Object[] fileInfo = new Object[2];
+		if (data == null) {
+			
+			return null;
+		}
 		
 		byte[] iv = (byte[])data.get(H2Files.IV);
 		int level = (Integer)data.get(H2Files.SECURITY_LEVEL);
 		
-		fileInfo[0] = iv;
-		fileInfo[1] = level;
+		ServerFile file = new ServerFile(rev, iv, level);
 		
-		return fileInfo;
-		
-	}
-	
-	public static int getSecurityLevel(String fileRev) {
-		
-		return (Integer) getFileInfo(fileRev)[1];
+		return file;
 		
 	}
 
@@ -72,6 +72,18 @@ public class ServerFileOperations {
 		}
 		
 		return fileInfo;
+		
+	}
+	
+	public static byte[] encrypt(byte[] key, byte[] file) {
+		
+		return cipher.encrypt(file, key, null);
+		
+	}
+	
+	public static byte[] decrypt(byte[] key, byte[] file) {
+		
+		return cipher.decrypt(file, key, null);
 		
 	}
 	
