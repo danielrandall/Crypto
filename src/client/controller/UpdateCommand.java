@@ -15,6 +15,8 @@ public class UpdateCommand implements Command {
 		String owner = frame.getFileOwner();
 			
 		Actions.updateFile(fileName, owner, newFileLocation);
+		
+		frame.fileUpdated();
 			
 	}
 

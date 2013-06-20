@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.model.Actions;
+import client.view.FriendFilesPanel;
 import client.view.FriendRequestsPanel;
 
 public class AcceptFriendRequestCommand implements Command {
@@ -11,14 +12,16 @@ public class AcceptFriendRequestCommand implements Command {
 	public void execute(Object[] objects) {
 		
 		panel = (FriendRequestsPanel) objects[0];
+		FriendFilesPanel friendFilesPanel = (FriendFilesPanel) objects[1];
 		
 		Object[] info = panel.getSelectedRowInfo();
 		
 		if (info != null) {
 			
 			String username = (String) info[0];
-			Actions.acceptFriendRequest(username);
+			String[][] newFiles = Actions.acceptFriendRequest(username);
 			
+			friendFilesPanel.populateFriendFiles(newFiles);
 			panel.friendAdded();
 		}
 	

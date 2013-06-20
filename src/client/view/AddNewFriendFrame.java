@@ -41,6 +41,7 @@ public class AddNewFriendFrame extends BaseFrame {
 	
 	private final Component verticalStrut = Box.createVerticalStrut(20);
 	private final Component verticalStrut_1 = Box.createVerticalStrut(5);
+	private final Component verticalStrut_2 = Box.createVerticalStrut(2);
 
 	/**
 	 * Create the frame.
@@ -51,7 +52,7 @@ public class AddNewFriendFrame extends BaseFrame {
 	private void initGUI() {
 		
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 450, 287);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -64,6 +65,8 @@ public class AddNewFriendFrame extends BaseFrame {
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,},
 			new RowSpec[] {
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
@@ -117,9 +120,11 @@ public class AddNewFriendFrame extends BaseFrame {
 		sliderSecurityLevel.setFont(museosans_500_12p);
 		
 		contentPane.add(sliderSecurityLevel, "4, 18");
+		
+		contentPane.add(verticalStrut_2, "4, 20");
 		btnPanel.setBackground(Color.WHITE);
 		
-		contentPane.add(btnPanel, "4, 22, right, fill");
+		contentPane.add(btnPanel, "4, 24, right, fill");
 		btnAddFriend.setHorizontalAlignment(SwingConstants.RIGHT);
 		btnAddFriend.setFont(new Font("Dialog", Font.BOLD, 11));
 		Object[] objects = {this};

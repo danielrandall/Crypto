@@ -194,7 +194,7 @@ public class ServerComms {
 	public static void exit() {
 		
 		toServer(EXIT_CODE);
-		getInt();
+		while (getInt() != 1);
 		destroy();
 		
 	}

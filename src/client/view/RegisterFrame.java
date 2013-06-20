@@ -30,7 +30,7 @@ public class RegisterFrame extends BaseFrame {
 	/* Frame to transfer to when a user cancels registration */
 	private BaseFrame prevFrame;
 	/* Menu to transfer to if a user successfully completes registration */
-	private MenuFrame menuFrame = new MenuFrame(prevFrame);
+	private MenuFrame menuFrame;
 	
 
 	private JPanel contentPane;
@@ -53,6 +53,7 @@ public class RegisterFrame extends BaseFrame {
 	 */
 	public RegisterFrame(BaseFrame frame) {
 		prevFrame = frame;
+		menuFrame = new MenuFrame(prevFrame);
 		initGUI();
 	}
 	

@@ -29,9 +29,9 @@ public class MenuFrame extends BaseFrame {
 	private final BaseFrame prevFrame;
 	private final MyFilesPanel myFilesPanel = new MyFilesPanel();
 	private final FriendsPanel friendsPanel = new FriendsPanel();
-	private final FriendRequestsPanel friendRequestsPanel =
-											  new FriendRequestsPanel();
 	private final FriendFilesPanel friendFilesPanel = new FriendFilesPanel();
+	private final FriendRequestsPanel friendRequestsPanel =
+											  new FriendRequestsPanel(friendFilesPanel);
 
 	private JPanel contentPane;
 	private final JTabbedPane tabbedOptionsPane = new JTabbedPane(JTabbedPane.TOP);
@@ -148,6 +148,7 @@ public class MenuFrame extends BaseFrame {
 		
 		this.setVisible(false);
 		
+		tabbedOptionsPane.setSelectedIndex(0);
 		myFilesPanel.exit();
 		friendFilesPanel.exit();
 		friendsPanel.exit();

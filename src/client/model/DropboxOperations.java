@@ -218,20 +218,15 @@ public class DropboxOperations {
 		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
 		
 		try {
-			Entry entry = client.metadata("/" + username + OWN_FILE_FOLDER, 0, null,
-					true, null);
-			if (entry.isDeleted)
 				client.createFolder(username + OWN_FILE_FOLDER);
-			
-			entry = client.metadata("/" + username + FRIENDS_FILE_FOLDER, 0, null,
-					true, null);
-			if (entry.isDeleted)
-			client.createFolder(username + FRIENDS_FILE_FOLDER);
-			
 		} catch (DropboxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+			
+		try {
+			client.createFolder(username + FRIENDS_FILE_FOLDER);
+		} catch (DropboxException e) {
+		}
+
 		
 	}
 	
@@ -417,6 +412,42 @@ public class DropboxOperations {
 			e.printStackTrace();
 		}
 		
+	}
+
+
+	public static String[][] getNewlyAddedFiles(String friend) {
+		
+		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
+		String[][] files = null;
+		List<String[]> fileList = new ArrayList<String[]>();
+		String path =  "/" + username + FRIENDS_FILE_FOLDER + "/"
+                + friend;
+		
+		try {
+			Entry usersFriendFolder = client.metadata(path, 0, null, true, null);
+     		List<Entry> friendFiles = client.metadata(path, 0, null,
+							                            true, null).contents;
+					
+			/* For each file in the friend folder add it to the
+			* array */
+			for (int j = 0; j < friendFiles.size(); j++) {
+				Entry friendFile = friendFiles.get(j);
+						
+				String[] file = new String[2];
+				file[0] = friendFile.fileName();
+				file[1] = friend;
+						
+				fileList.add(file);
+	
+			}
+				
+			files = (String[][]) fileList.toArray(new String[0][0]);
+		} catch (DropboxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return files;
 	}
 
 }

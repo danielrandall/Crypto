@@ -93,8 +93,8 @@ public class Actions {
 		
 	}
 	
-	
-	public static void acceptFriendRequest(String username) {
+	/* Returns all files which have been added. */
+	public static String[][] acceptFriendRequest(String username) {
 		
 		ServerComms.toServer(ACCEPT_FRIEND_REQUEST);
 		ServerComms.toServer(username);
@@ -108,6 +108,11 @@ public class Actions {
 		byte[] privateKeyBytes = KeyStoreOperations.retrievePrivateKey();
 		
 		KeyDerivation.deriveKeys(username, privateKeyBytes, securityLevel);
+		
+		/* Receive acknowledgement that the files have been added. */
+		ServerComms.getInt();
+		
+		return DropboxOperations.getNewlyAddedFiles(username);
 		
 	}
 	
@@ -154,6 +159,8 @@ public class Actions {
 		/* Send file name to the server for file transfer to friends. */
 		ServerComms.toServer(fileName);
 		
+		ServerComms.getInt();
+		
 		return newFileName;
 		
 	}
@@ -173,7 +180,6 @@ public class Actions {
 		/* Send file information to the server */
 		ServerComms.toServer(rev);
 		ServerComms.getInt();
-		
 		
 		/* Retrieve necessary information from the server */
 		byte[] iv = ServerComms.getBytes();
@@ -196,11 +202,17 @@ public class Actions {
 		
 		/* Send file information to the server */
 		ServerComms.toServer(owner);
+		ServerComms.getInt();
+		
 		ServerComms.toServer(fileName);
+		ServerComms.getInt();
 		
 		/* Receive back the IV and security level needed for decryption */
 		byte[] iv = ServerComms.getBytes();
+		ServerComms.sendInt(1);
+		
 		String securityLevel  = ServerComms.fromServer();
+		ServerComms.sendInt(1);
 		
 		String downloadFolderLocation = DOWNLOAD_LOCATION + myUsername + "/" + FRIEND_FILE_DOWNLOAD_LOCATION + "/" + owner;
 		
@@ -272,7 +284,10 @@ public class Actions {
 			ServerComms.sendInt(1);
 			
 			byte[] iv = ServerComms.getBytes();
+			ServerComms.sendInt(1);
+			
 			int fileSLevel = Integer.parseInt(ServerComms.fromServer());
+			ServerComms.sendInt(1);
 			
 			filesToUnencrypt.put(rev, new ClientFile(rev, iv, fileSLevel));
 		}
@@ -523,6 +538,7 @@ public class Actions {
 		
 		ServerComms.toServer(fileName);
 		ServerComms.getInt();
+		
 		ServerComms.toServer(owner);
 		ServerComms.getInt();
 		
@@ -539,7 +555,7 @@ public class Actions {
 		byte[] encryptedFile = FileOperations.encryptFile(file, friendKey, iv);
 		
 		ServerComms.sendBytes(iv, iv.length);
-		ServerComms.sendInt(1);
+		ServerComms.getInt();
 		
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(encryptedFile);
 		DropboxOperations.updateFile(fileName, owner, inputStream, encryptedFile.length);
@@ -547,6 +563,9 @@ public class Actions {
 		/* Tell server when the file has finished uploading */
 		ServerComms.sendInt(1);
 		
+		/* Receive acknowledgement from the server that it has finished
+		 * processing */
+		ServerComms.getInt();
 	}
 
 }

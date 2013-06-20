@@ -49,8 +49,13 @@ public class ServerCentralAuthority {
 			/* Get central option from user */
 			String decision = comms.fromClient();
 			
-			if (decision == null || decision.equals(EXIT_CODE))
+			if (decision == null)
 				return;
+			
+			if (decision.equals(EXIT_CODE)) {
+				comms.sendInt(1);
+				return;
+			}
 		
 			if (decision.equals(UPLOAD_FILE))
 				uploadEncryptedFile(user.getUsername(), user.getSession(), comms);
@@ -128,7 +133,11 @@ public class ServerCentralAuthority {
 		ServerFileOperations.removeFile(rev);
 		ServerFileOperations.addFile(securityLevel, owner, iv, newRev);
 		
-		/* Update other friends files */		
+		/* Update other friends files */
+		sendFiletoFriends(owner, fileName, securityLevel, ownerSession, comms);
+		
+		/* Tell client that processing has completed */
+		comms.sendInt(1);
 		
 	}
 
@@ -233,15 +242,6 @@ public class ServerCentralAuthority {
 		User sourceUser = Authentication.loadUser(sourceUsername);
 		Session sourceSession = sourceUser.getSession();
 		
-		/*
-		try {
-			Thread.sleep(1);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
-		
 		try {
 			Thread.sleep(1);
 		} catch (InterruptedException e) {
@@ -265,6 +265,7 @@ public class ServerCentralAuthority {
 			
 		/* Share relevant files with user */
 		ServerDropboxOperations.shareFilesWithFriend(sourceUsername, sourceSession, destUsername, destSession, permittedFiles);
+		comms.sendInt(1);
 			
 		UserOperations.removeRequest(sourceUsername, destUsername);
 	}
@@ -345,7 +346,7 @@ public class ServerCentralAuthority {
 		
 		sendFiletoFriends(username, fileName, securityLevel, session, comms);
 		
-		
+		comms.sendInt(1);
 		
 	}
 
@@ -456,7 +457,10 @@ public class ServerCentralAuthority {
 			ClientComms comms) {
 
 		String owner = comms.fromClient();
+		comms.sendInt(1);
+		
 		String fileName = comms.fromClient();
+		comms.sendInt(1);
 		
 		User user = Authentication.loadUser(owner);
 		Session ownerSession = user.getSession();
@@ -469,7 +473,10 @@ public class ServerCentralAuthority {
 		int securityLevel = (Integer) fileInfo.getSecurityLevel();
 		
 		comms.sendBytes(iv, iv.length);
+		comms.getInt();
+		
 		comms.toClient(Integer.toString(securityLevel));
+		comms.getInt();
 		
 	}
 	
@@ -501,16 +508,11 @@ public class ServerCentralAuthority {
 			
 			byte[] iv = fileInfo[i].getIV();
 			comms.sendBytes(iv, iv.length);
-			
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			comms.getInt();
 			
 			int fileSecurityLevel = fileInfo[i].getSecurityLevel();
 			comms.toClient(Integer.toString(fileSecurityLevel));
+			comms.getInt();
 			
 			/* Remove the file from the database */
 			ServerFileOperations.removeFile(rev);

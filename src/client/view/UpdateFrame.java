@@ -22,6 +22,7 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+import java.awt.Dimension;
 
 public class UpdateFrame extends BaseFrame {
 	
@@ -37,9 +38,11 @@ public class UpdateFrame extends BaseFrame {
 	private final JLabel lblUpdateFile = new JLabel();
 	private final JPanel buttonPanel = new JPanel();
 	private final JButton btnCancel = new JButton("Cancel");
-	private final Component horizontalStrut = Box.createHorizontalStrut(20);
 	private final Component verticalStrut = Box.createVerticalStrut(20);
 	private final Component verticalStrut_1 = Box.createVerticalStrut(5);
+	private final Component horizontalStrut = Box.createHorizontalStrut(20);
+	private final JLabel lblfileName = new JLabel("");
+	private final Component verticalStrut_2 = Box.createVerticalStrut(10);
 
 
 	/**
@@ -56,7 +59,7 @@ public class UpdateFrame extends BaseFrame {
 		btnUpdateFile.addActionListener(new GenericActionListener(new UpdateCommand(), objects));		
 		
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 450, 250);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -64,12 +67,18 @@ public class UpdateFrame extends BaseFrame {
 		contentPane.setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),
+				ColumnSpec.decode("min(50dlu;default):grow"),
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,},
 			new RowSpec[] {
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
@@ -102,12 +111,18 @@ public class UpdateFrame extends BaseFrame {
 		
 		contentPane.add(lblUpdateFile, "3, 3");
 		lblUpdateFile.setFont(museosans_900_18p);
+		lblfileName.setFont(museosans_900_18p);
+		
+		contentPane.add(lblfileName, "3, 5");
+		
+		contentPane.add(verticalStrut_2, "3, 9");
+		
 		lblFileToUpload.setFont(museosans_700_14p);
 		
-		contentPane.add(lblFileToUpload, "3, 7");
+		contentPane.add(lblFileToUpload, "3, 11");
 		fileNameTextField.setColumns(10);
 		
-		contentPane.add(fileNameTextField, "3, 9, fill, default");
+		contentPane.add(fileNameTextField, "3, 13, fill, default");
 		btnChoose.setFont(new Font("Dialog", Font.BOLD, 10));
 		btnChoose.addActionListener(new ActionListener() {
 			@Override
@@ -116,15 +131,15 @@ public class UpdateFrame extends BaseFrame {
 			}
 		});
 		
-		contentPane.add(btnChoose, "5, 9");
+		contentPane.add(btnChoose, "5, 13");
 		
-		contentPane.add(verticalStrut_1, "3, 11");
+		contentPane.add(horizontalStrut, "7, 13");
 		
-		contentPane.add(horizontalStrut, "6, 13, 2, 1");
+		contentPane.add(verticalStrut_1, "3, 15");
 		
 		buttonPanel.setBackground(Color.WHITE);
 		
-		contentPane.add(buttonPanel, "3, 21, 3, 1, right, fill");
+		contentPane.add(buttonPanel, "3, 27, 3, 1, right, fill");
 		buttonPanel.add(btnUpdateFile);
 		btnUpdateFile.setFont(new Font("Dialog", Font.BOLD, 11));
 		btnCancel.addActionListener(new ActionListener() {
@@ -170,8 +185,8 @@ public class UpdateFrame extends BaseFrame {
 		this.fileToBeUpdated = fileToBeUpdated;
 		this.fileOwner = owner;
 		
-		lblUpdateFile.setText("Update " + this.fileOwner + "'s file: "
-				+ this.fileToBeUpdated);
+		lblUpdateFile.setText("Update " + this.fileOwner + "'s file: ");
+		lblfileName.setText(this.fileToBeUpdated);
 		
 	}
 	

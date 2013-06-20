@@ -3,6 +3,8 @@ package client.view;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Panel;
+
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -21,6 +23,7 @@ import java.awt.Dimension;
 
 public class FriendRequestsPanel extends JPanel {
 	
+	private final JPanel friendFilesPanel;
 	private final JPanel buttonPanel = new JPanel();
 	private final JTable requestTable = new JTable();
 	private final JScrollPane tableScrollPane = new JScrollPane(requestTable);
@@ -28,15 +31,15 @@ public class FriendRequestsPanel extends JPanel {
 	/* Table information */
 	private final String[] columnNames = {"Username", "Security Level"};
 	private final JButton btnAcceptFriend = new JButton("Accept request");
-	private final JButton btnRejectFriend = new JButton("Reject request");
 	private final JButton btnIgnoreFriend = new JButton("Ignore request");
 	private final Component rigidArea = Box.createRigidArea(new Dimension(0, 50));
 
 	/**
 	 * Create the panel.
 	 */
-	public FriendRequestsPanel() {
+	public FriendRequestsPanel(JPanel panel) {
 
+		friendFilesPanel = panel;
 		initGUI();
 		
 	}
@@ -69,7 +72,7 @@ public class FriendRequestsPanel extends JPanel {
 		add(tableScrollPane);
 		add(buttonPanel);
 		
-		Object[] objects = {this};
+		Object[] objects = {this, friendFilesPanel};
 		Object[] ignoreObjects = {this};
 		
 		GridBagLayout gbl_buttonPanel = new GridBagLayout();
