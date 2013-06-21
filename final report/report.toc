@@ -1,54 +1,56 @@
 \contentsline {section}{\numberline {1}Introduction}{3}
 \contentsline {subsection}{\numberline {1.1}Motivation}{3}
-\contentsline {subsection}{\numberline {1.2}Objectives}{3}
-\contentsline {section}{\numberline {2}Background Research}{4}
-\contentsline {subsection}{\numberline {2.1}Overview}{4}
-\contentsline {subsection}{\numberline {2.2}Technical Research}{4}
-\contentsline {subsubsection}{\numberline {2.2.1}Hierarchical Cryptography for Access Control}{6}
-\contentsline {subsubsection}{\numberline {2.2.2}Interval-Based Access Control}{7}
-\contentsline {subsubsection}{\numberline {2.2.3}Key Assignment Schemes (KAS)}{8}
-\contentsline {subsubsection}{\numberline {2.2.4}Revokation of Permissions and Re-encryption}{10}
-\contentsline {subsubsection}{\numberline {2.2.5}Building the Tree}{11}
-\contentsline {subsection}{\numberline {2.3}Related work}{12}
-\contentsline {section}{\numberline {3}Initial Assessments}{12}
-\contentsline {subsection}{\numberline {3.1}System design}{12}
-\contentsline {subsubsection}{\numberline {3.1.1}Information storage}{13}
-\contentsline {subsubsection}{\numberline {3.1.2}Authentication}{14}
-\contentsline {subsubsection}{\numberline {3.1.3}Encryption of files}{14}
-\contentsline {subsubsection}{\numberline {3.1.4}Key exchange}{14}
-\contentsline {subsubsection}{\numberline {3.1.5}Friends}{15}
-\contentsline {subsubsection}{\numberline {3.1.6}Key revocation}{16}
-\contentsline {subsubsection}{\numberline {3.1.7}Key storage}{16}
-\contentsline {subsubsection}{\numberline {3.1.8}File updating}{17}
-\contentsline {subsubsection}{\numberline {3.1.9}GUI}{17}
-\contentsline {subsection}{\numberline {3.2}Algorithm choices}{17}
-\contentsline {subsubsection}{\numberline {3.2.1}Symmetric Algorithm}{18}
-\contentsline {subsubsection}{\numberline {3.2.2}Asymmetric algorithm}{19}
-\contentsline {subsubsection}{\numberline {3.2.3}Password hashing algorithm}{20}
-\contentsline {subsection}{\numberline {3.3}Algorithm providers}{21}
-\contentsline {subsubsection}{\numberline {3.3.1}AES algorithm provider}{22}
-\contentsline {subsubsection}{\numberline {3.3.2}RSA algorithm provider}{22}
-\contentsline {subsection}{\numberline {3.4}File sharing platform}{23}
-\contentsline {subsection}{\numberline {3.5}Platform and programming language}{24}
-\contentsline {subsection}{\numberline {3.6}Databases}{25}
-\contentsline {section}{\numberline {4}Implementation}{26}
-\contentsline {subsection}{\numberline {4.1}Structure}{26}
-\contentsline {subsubsection}{\numberline {4.1.1}Client}{26}
-\contentsline {subsubsection}{\numberline {4.1.2}Server}{28}
-\contentsline {subsection}{\numberline {4.2}Security}{30}
-\contentsline {subsubsection}{\numberline {4.2.1}Dropbox tampering}{30}
-\contentsline {section}{\numberline {5}Testing}{31}
-\contentsline {section}{\numberline {6}Benchmarking}{31}
-\contentsline {subsection}{\numberline {6.1}Uploading a file}{31}
-\contentsline {subsection}{\numberline {6.2}Downloading a file}{32}
-\contentsline {subsection}{\numberline {6.3}Log in}{32}
-\contentsline {subsection}{\numberline {6.4}Register}{32}
-\contentsline {section}{\numberline {7}Evaluation}{32}
-\contentsline {subsection}{\numberline {7.1}User stories}{32}
-\contentsline {subsubsection}{\numberline {7.1.1}Test 1}{32}
-\contentsline {subsubsection}{\numberline {7.1.2}Test 2}{33}
-\contentsline {subsubsection}{\numberline {7.1.3}What we have learnt}{33}
-\contentsline {subsection}{\numberline {7.2}What I would have done differently}{33}
-\contentsline {section}{\numberline {8}Conclusion}{33}
-\contentsline {subsection}{\numberline {8.1}Achievements}{33}
-\contentsline {subsection}{\numberline {8.2}Future work}{33}
+\contentsline {subsection}{\numberline {1.2}Objectives}{4}
+\contentsline {section}{\numberline {2}Background research}{5}
+\contentsline {subsection}{\numberline {2.1}Cryptography}{5}
+\contentsline {subsection}{\numberline {2.2}Access control}{8}
+\contentsline {subsection}{\numberline {2.3}Hierarchical cryptography for access control}{8}
+\contentsline {subsubsection}{\numberline {2.3.1}Interval-based access control}{8}
+\contentsline {subsubsection}{\numberline {2.3.2}Key assignment schemes (KAS)}{10}
+\contentsline {subsubsection}{\numberline {2.3.3}Revocation of permissions and re-encryption}{12}
+\contentsline {subsubsection}{\numberline {2.3.4}Tree optimisations}{14}
+\contentsline {subsection}{\numberline {2.4}Related work}{15}
+\contentsline {section}{\numberline {3}Design}{17}
+\contentsline {subsection}{\numberline {3.1}System design}{17}
+\contentsline {subsubsection}{\numberline {3.1.1}Information storage}{17}
+\contentsline {subsubsection}{\numberline {3.1.2}Authentication}{18}
+\contentsline {subsubsection}{\numberline {3.1.3}Encryption of files}{19}
+\contentsline {subsubsection}{\numberline {3.1.4}Key exchange}{19}
+\contentsline {subsubsection}{\numberline {3.1.5}Friends}{20}
+\contentsline {subsubsection}{\numberline {3.1.6}Key revocation}{21}
+\contentsline {subsubsection}{\numberline {3.1.7}Key storage}{22}
+\contentsline {subsubsection}{\numberline {3.1.8}File updating}{22}
+\contentsline {subsubsection}{\numberline {3.1.9}GUI}{23}
+\contentsline {subsection}{\numberline {3.2}File sharing platform}{23}
+\contentsline {subsection}{\numberline {3.3}Programming language}{25}
+\contentsline {subsection}{\numberline {3.4}Algorithm choices}{26}
+\contentsline {subsubsection}{\numberline {3.4.1}Symmetric Algorithm}{27}
+\contentsline {subsubsection}{\numberline {3.4.2}Asymmetric algorithm}{29}
+\contentsline {subsubsection}{\numberline {3.4.3}Password hashing algorithm}{31}
+\contentsline {subsubsection}{\numberline {3.4.4}Random number generator}{33}
+\contentsline {subsection}{\numberline {3.5}Algorithm providers}{34}
+\contentsline {subsubsection}{\numberline {3.5.1}AES algorithm provider}{35}
+\contentsline {subsubsection}{\numberline {3.5.2}RSA algorithm provider}{36}
+\contentsline {subsubsection}{\numberline {3.5.3}Random number generator provider}{37}
+\contentsline {subsection}{\numberline {3.6}Databases}{38}
+\contentsline {section}{\numberline {4}Implementation}{39}
+\contentsline {subsection}{\numberline {4.1}Structure}{39}
+\contentsline {subsubsection}{\numberline {4.1.1}Client}{39}
+\contentsline {subsubsection}{\numberline {4.1.2}Server}{43}
+\contentsline {subsection}{\numberline {4.2}Dropbox tampering}{43}
+\contentsline {section}{\numberline {5}Benchmarking}{47}
+\contentsline {subsection}{\numberline {5.1}Uploading a file}{47}
+\contentsline {subsection}{\numberline {5.2}Downloading a file}{53}
+\contentsline {subsection}{\numberline {5.3}Log in}{58}
+\contentsline {subsection}{\numberline {5.4}Registration}{60}
+\contentsline {subsection}{\numberline {5.5}Overhead evaluation}{61}
+\contentsline {section}{\numberline {6}Evaluation}{63}
+\contentsline {subsection}{\numberline {6.1}User stories}{63}
+\contentsline {subsubsection}{\numberline {6.1.1}Test 1}{64}
+\contentsline {subsubsection}{\numberline {6.1.2}Test 2}{65}
+\contentsline {subsubsection}{\numberline {6.1.3}Test 3}{65}
+\contentsline {subsubsection}{\numberline {6.1.4}What we have learnt}{66}
+\contentsline {subsection}{\numberline {6.2}Security analysis}{67}
+\contentsline {section}{\numberline {7}Conclusion}{73}
+\contentsline {subsection}{\numberline {7.1}What I would have done differently}{74}
+\contentsline {subsection}{\numberline {7.2}Future work}{74}
