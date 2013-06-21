@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.PrivateKey;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -134,8 +135,6 @@ public class Actions {
 		
 		/* Send security level of file to server. */
 		ServerComms.toServer(Integer.toString(securityLevel));
-		
-		/* Receive Acknowledgement */
 		ServerComms.getInt();
 		
 		byte[] key = KeyStoreOperations.retrieveOwnKey(Integer.toString(securityLevel));
@@ -154,10 +153,15 @@ public class Actions {
 		
 		/* Send iv, needed for decryption, to be stored in the server. */
 		ServerComms.sendBytes(iv, iv.length);
+		ServerComms.getInt();
+		
 		/* Send file id to the server for file identification. */
 		ServerComms.toServer(rev);
+		ServerComms.getInt();
+		
 		/* Send file name to the server for file transfer to friends. */
 		ServerComms.toServer(fileName);
+		ServerComms.getInt();
 		
 		ServerComms.getInt();
 		

@@ -33,6 +33,7 @@ public class Login {
 		byte[] encryptedPasswordBytes = FileOperations.asymmetricEncrypt(passwordBytes, serverPublicKey);
 		
 		ServerComms.sendBytes(encryptedPasswordBytes, encryptedPasswordBytes.length);
+		ServerComms.getInt();
 
 		if (ServerComms.fromServer().equals(TRUE)) {
 			DropboxOperations.setUsername(username);
@@ -55,7 +56,6 @@ public class Login {
 		
 		/* Acquire Dropbox key and secret for logged in user from server */
 		String key = ServerComms.fromServer();
-		
 		String secret = ServerComms.fromServer();
 		
 		/* Create an active session for the user and store it in

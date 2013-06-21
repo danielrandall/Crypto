@@ -36,6 +36,7 @@ public class Register {
 		byte[] encryptedPasswordBytes = FileOperations.asymmetricEncrypt(passwordBytes, serverPublicKey);
 		
 		ServerComms.sendBytes(encryptedPasswordBytes, encryptedPasswordBytes.length);
+		ServerComms.getInt();
 		
 		String[] authenticationInfo = null;
 		while (authenticationInfo == null)
@@ -71,7 +72,7 @@ public class Register {
 		
 		/* Send the public to the server to store */
 		ServerComms.sendBytes(publicKeyBytes, publicKeyBytes.length);
-		
+		ServerComms.getInt();
 		
 		privateKeyBytes = null;
 		

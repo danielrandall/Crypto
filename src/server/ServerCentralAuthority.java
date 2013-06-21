@@ -41,9 +41,6 @@ public class ServerCentralAuthority {
 	
 	public static void options(User user, ClientComms comms) {
 		
-		comms.toClient(user.getAccessTokens().key);
-		comms.toClient(user.getAccessTokens().secret);
-		
 		while(true) {
 			
 			/* Get central option from user */
@@ -333,14 +330,16 @@ public class ServerCentralAuthority {
 		
 		
 		int securityLevel = Integer.parseInt(comms.fromClient());
-		
-		/* Send acknowledgement */
 		comms.sendInt(1);
 		
 		byte[] iv = comms.getBytes();
+		comms.sendInt(1);
 		
 		String rev = comms.fromClient();
+		comms.sendInt(1);
+		
 		String fileName = comms.fromClient();
+		comms.sendInt(1);
 		
 		ServerFileOperations.addFile(securityLevel, username, iv, rev);
 		
@@ -362,6 +361,7 @@ public class ServerCentralAuthority {
 		
 		comms.sendBytes(iv, iv.length);
 		comms.getInt();
+		
 		comms.toClient(Integer.toString(securityLevel));
 		comms.getInt();
 		

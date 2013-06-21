@@ -35,11 +35,13 @@ public final class Authentication {
 		comms.sendInt(1);
 		
 		byte[] publicKeyBytes = ServerKeyStoreOperations.retrievePublicKey();
-		comms.sendBytes(publicKeyBytes, publicKeyBytes.length);
 		
+		comms.sendBytes(publicKeyBytes, publicKeyBytes.length);
 		comms.getInt();
 		
 		byte[] encryptedPasswordBytes = comms.getBytes();
+		comms.sendInt(1);
+		
 		byte[] privateKeyBytes = ServerKeyStoreOperations.retrievePrivateKey();
 		passwordBytes = ServerFileOperations.decrypt(privateKeyBytes, encryptedPasswordBytes);
 		
@@ -57,8 +59,13 @@ public final class Authentication {
 		
 		/* Tell client the user/pass was correct */
 		comms.toClient(TRUE);
-    			
-    	return loadUser(username);
+    	
+		User user = loadUser(username);
+		
+		comms.toClient(user.getAccessTokens().key);
+		comms.toClient(user.getAccessTokens().secret);
+		
+		return user;
     }
     
     /* Loads a user given a username, creates a new session and returns the

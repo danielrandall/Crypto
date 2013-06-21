@@ -87,11 +87,13 @@ public class UserOperations {
 		//String password = comms.fromClient();
 		
 		byte[] publicKeyBytes = ServerKeyStoreOperations.retrievePublicKey();
-		comms.sendBytes(publicKeyBytes, publicKeyBytes.length);
 		
+		comms.sendBytes(publicKeyBytes, publicKeyBytes.length);
 		comms.getInt();
 		
 		byte[] encryptedPasswordBytes = comms.getBytes();
+		comms.sendInt(1);
+		
 		byte[] privateKeyBytes = ServerKeyStoreOperations.retrievePrivateKey();
 		byte[] passwordBytes = ServerFileOperations.decrypt(privateKeyBytes, encryptedPasswordBytes);
 		
@@ -105,6 +107,7 @@ public class UserOperations {
 		
 		/* Receive the user's public key */
 		byte[] publicKey = comms.getBytes();
+		comms.sendInt(1);
 
 		User user = Authentication.createUser(username, passwordBytes, comms, key, secret, uid, publicKey);
 		
