@@ -31,12 +31,12 @@ public class Register {
 		byte[] passwordBytes = charArraytoByteArray(password);
 		
 		byte[] serverPublicKey = ServerComms.getBytes();
-		ServerComms.sendInt(1);
+		ServerComms.sendAcknowledgement();
 		
 		byte[] encryptedPasswordBytes = FileOperations.asymmetricEncrypt(passwordBytes, serverPublicKey);
 		
 		ServerComms.sendBytes(encryptedPasswordBytes, encryptedPasswordBytes.length);
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 		
 		String[] authenticationInfo = null;
 		while (authenticationInfo == null)
@@ -72,7 +72,7 @@ public class Register {
 		
 		/* Send the public to the server to store */
 		ServerComms.sendBytes(publicKeyBytes, publicKeyBytes.length);
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 		
 		privateKeyBytes = null;
 		
@@ -95,11 +95,11 @@ public class Register {
 		for (int i = 0; i < encryptedKeys.length; i++) {
 			byte[] encryptedKey = encryptedKeys[i].getEncryptedKey();
 			ServerComms.sendBytes(encryptedKey, encryptedKey.length);
-			ServerComms.getInt();
+			ServerComms.getAcknowledgement();
 			
 			byte[] iv = encryptedKeys[i].getIV();
 			ServerComms.sendBytes(iv, iv.length);
-			ServerComms.getInt();
+			ServerComms.getAcknowledgement();
 		}
 		
 		keys = null;

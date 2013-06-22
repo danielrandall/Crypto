@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.util.List;
 
 import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.DropboxAPI.DeltaEntry;
 import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.session.Session;
@@ -73,48 +72,6 @@ public class ServerDropboxOperations {
         return entry;
 	}
 	
-	/* Initially pass in a null cursor and then pass in the returned cursor in future calls.
-	 * Page limit of -1 means no limit. */
-	public static String updateCache(Session session, String cursor, int pageLimit,
-											Session targetSession, String folderName) {
-		
-		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
-		
-		int pageNum = 0;
-		
-		String destPath;
-		
-		while (pageLimit < 0 || pageNum < pageLimit) {
-			DropboxAPI.DeltaPage<DropboxAPI.Entry> page;
-			
-			try {
-				page = client.delta(cursor);
-				pageNum++;
-			
-				if (page.reset) {
-					/* TODO: reset tree */
-				}
-            
-				/* Apply the entries one by one. */
-				for (DeltaEntry<DropboxAPI.Entry> e : page.entries) {
-					destPath = folderName + e.lcPath;
-					copyBetweenAccounts(session, targetSession, e.lcPath, destPath);
-				}
-            
-				cursor = page.cursor;     
-			
-				if (!page.hasMore)
-					break;
-			
-			} catch (DropboxException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
-		
-		return cursor;
-	}
-	
 	
 	public static String[][] getUserUploads(String username, Session session) {
 		
@@ -161,7 +118,7 @@ public class ServerDropboxOperations {
 					client.delete(destPath);
 			} catch (DropboxException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			
 			copyBetweenAccounts(sourceSession, destSession, sourcePath, destPath);

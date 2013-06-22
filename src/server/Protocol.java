@@ -1,6 +1,5 @@
 package server;
 
-import server.operations.UserOperations;
 import server.users.Authentication;
 import server.users.User;
  
@@ -20,15 +19,15 @@ public class Protocol {
 			String decision = comms.fromClient();
 			
 			if (decision == null || decision.equals(EXIT_CODE)) {
-				comms.sendInt(1);
+				comms.sendAcknowledgement();
 				return;
 			}
 		
 			if (decision.equals(LOGIN))
-				user = Authentication.link(comms);
+				user = Authentication.login(comms);
 			
 			if (decision.equals(REGISTER))
-				user = UserOperations.registerAttempt(comms);
+				user = Authentication.registerAttempt(comms);
 		
 		}
 		

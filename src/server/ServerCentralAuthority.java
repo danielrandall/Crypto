@@ -47,7 +47,7 @@ public class ServerCentralAuthority {
 				return;
 			
 			if (decision.equals(EXIT_CODE)) {
-				comms.sendInt(1);
+				comms.sendAcknowledgement();
 				return;
 			}
 		
@@ -96,10 +96,10 @@ public class ServerCentralAuthority {
 	private static void updateFile(String sourceUsername, Session sourceSession, ClientComms comms) {
 		
 		String fileName = comms.fromClient();
-		comms.sendInt(1);
+		comms.sendAcknowledgement();
 		
 		String owner = comms.fromClient();
-		comms.sendInt(1);
+		comms.sendAcknowledgement();
 		
 		User user = Authentication.loadUser(owner);
 		Session ownerSession = user.getSession();
@@ -113,13 +113,13 @@ public class ServerCentralAuthority {
 		
 		int securityLevel = fileInfo.getSecurityLevel();
 		comms.toClient(Integer.toString(securityLevel));
-		comms.getInt();
+		comms.getAcknowledgement();
 		
 		byte[] iv = comms.getBytes();
-		comms.sendInt(1);
+		comms.sendAcknowledgement();
 		
 		/* Get acknowledgement when the file has finished uploading */
-		comms.getInt();
+		comms.getAcknowledgement();
 		
 		String newRev = ServerDropboxOperations.updateOwnersFile(fileName, sourceUsername, owner, sourceSession, ownerSession);
 		
@@ -131,7 +131,7 @@ public class ServerCentralAuthority {
 		sendFiletoFriends(owner, fileName, securityLevel, ownerSession, comms);
 		
 		/* Tell client that processing has completed */
-		comms.sendInt(1);
+		comms.sendAcknowledgement();
 		
 	}
 
@@ -158,13 +158,16 @@ public class ServerCentralAuthority {
 			 * send of the security level as the client needs time to process
 			 * the messages. */
 			comms.sendBytes(key, key.length);
+			comms.getAcknowledgement();
 			
+			/*
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			*/
 			
 			/* Send the encrypted lower keys to the user to derive */
 			sendLowerEncryptedKeys(sourceUsername, Integer.parseInt(securityLevel), comms);
@@ -188,15 +191,17 @@ public class ServerCentralAuthority {
 			return;
 		}
 			
-		int upperBound = comms.getInt();   // DEAL WITH NON INT ENTRY
+		int upperBound = Integer.parseInt(comms.fromClient());
 		
 		byte[] publicKey = UserOperations.getPublicKey(usernameToAdd);
 		
 		/* Send the user to add's public key */
 		comms.sendBytes(publicKey, publicKey.length);
+		comms.getAcknowledgement();
 		
 		/* Receive the encrypted key to send with the request */
-		byte[] key = comms.getBytes();		
+		byte[] key = comms.getBytes();	
+		comms.sendAcknowledgement();
 		
 		UserOperations.addRequest(username, usernameToAdd, upperBound, key);
 		
@@ -215,19 +220,23 @@ public class ServerCentralAuthority {
 		Object[] requestInfo = UserOperations.getRequestInfo(sourceUsername, destUsername);
 		int securityLevel = (Integer) requestInfo[0];
 		
+		/*
 		try {
 			Thread.sleep(1);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 		
 		byte[] key = (byte[]) requestInfo[1];
 		
 		/* Send security level the user */
 		comms.toClient(Integer.toString(securityLevel));
-		comms.getInt();
+		comms.getAcknowledgement();
+		
 		comms.sendBytes(key, key.length);
+		comms.getAcknowledgement();
 		
 		/* Add user to friends list */
 		UserOperations.addUserToFriendsList(sourceUsername, destUsername, securityLevel, securityLevel);
@@ -235,12 +244,14 @@ public class ServerCentralAuthority {
 		User sourceUser = Authentication.loadUser(sourceUsername);
 		Session sourceSession = sourceUser.getSession();
 		
+		/*
 		try {
 			Thread.sleep(1);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 		
 		/* Send the encrypted lower keys to the user to derive */
 		sendLowerEncryptedKeys(sourceUsername, securityLevel, comms);
@@ -251,6 +262,8 @@ public class ServerCentralAuthority {
 		
 		for (int i = 0; i < userUploads.length; i++) {
 			ServerFile file = ServerFileOperations.getFileInfo(userUploads[i][1]);
+			if (file == null)
+				continue;
 			int fileSecurityLevel = file.getSecurityLevel();
 			if (fileSecurityLevel >= securityLevel)
 				permittedFiles.add(userUploads[i][0]);
@@ -258,7 +271,7 @@ public class ServerCentralAuthority {
 			
 		/* Share relevant files with user */
 		ServerDropboxOperations.shareFilesWithFriend(sourceUsername, sourceSession, destUsername, destSession, permittedFiles);
-		comms.sendInt(1);
+		comms.sendAcknowledgement();
 			
 		UserOperations.removeRequest(sourceUsername, destUsername);
 	}
@@ -275,36 +288,40 @@ public class ServerCentralAuthority {
 		
 		/* Tell the user how many weaker keys are being sent */
 		comms.toClient(Integer.toString(numberOfWeakerKeys));
-		comms.getInt();
+		comms.getAcknowledgement();
 		
 		for (int i = securityLevel + 1; i <= (securityLevel + keys.size()); i++) {
 			
 			/* Give the client time to process each key */
+			/*
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			*/
 			
 			
 			Object[] keyAndIV = keys.get(i);
 			
 			byte[] key = (byte[]) keyAndIV[0];
 			comms.sendBytes(key, key.length);
-			comms.getInt();
+			comms.getAcknowledgement();
 			
+			/*
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			*/
 			
 			
 			byte[] iv = (byte[]) keyAndIV[1];
 			comms.sendBytes(iv, iv.length);
-			comms.getInt();
+			comms.getAcknowledgement();
 		
 		}
 		
@@ -326,29 +343,29 @@ public class ServerCentralAuthority {
 		
 		
 		int securityLevel = Integer.parseInt(comms.fromClient());
-		comms.sendInt(1);
+		comms.sendAcknowledgement();
 		
 		byte[] iv = comms.getBytes();
-		comms.sendInt(1);
+		comms.sendAcknowledgement();
 		
 		String rev = comms.fromClient();
-		comms.sendInt(1);
+		comms.sendAcknowledgement();
 		
 		String fileName = comms.fromClient();
-		comms.sendInt(1);
+		comms.sendAcknowledgement();
 		
 		ServerFileOperations.addFile(securityLevel, username, iv, rev);
 		
 		sendFiletoFriends(username, fileName, securityLevel, session, comms);
 		
-		comms.sendInt(1);
+		comms.sendAcknowledgement();
 		
 	}
 
 	private static void downloadDecryptedFile(String username, ClientComms comms) {
 		
 		String rev = comms.fromClient();
-		comms.sendInt(1);
+		comms.sendAcknowledgement();
 		
 		ServerFile fileInfo = ServerFileOperations.getFileInfo(rev);
 		
@@ -356,10 +373,10 @@ public class ServerCentralAuthority {
 		int securityLevel = fileInfo.getSecurityLevel();
 		
 		comms.sendBytes(iv, iv.length);
-		comms.getInt();
+		comms.getAcknowledgement();
 		
 		comms.toClient(Integer.toString(securityLevel));
-		comms.getInt();
+		comms.getAcknowledgement();
 		
 	}
 	
@@ -453,10 +470,10 @@ public class ServerCentralAuthority {
 			ClientComms comms) {
 
 		String owner = comms.fromClient();
-		comms.sendInt(1);
+		comms.sendAcknowledgement();
 		
 		String fileName = comms.fromClient();
-		comms.sendInt(1);
+		comms.sendAcknowledgement();
 		
 		User user = Authentication.loadUser(owner);
 		Session ownerSession = user.getSession();
@@ -469,10 +486,10 @@ public class ServerCentralAuthority {
 		int securityLevel = (Integer) fileInfo.getSecurityLevel();
 		
 		comms.sendBytes(iv, iv.length);
-		comms.getInt();
+		comms.getAcknowledgement();
 		
 		comms.toClient(Integer.toString(securityLevel));
-		comms.getInt();
+		comms.getAcknowledgement();
 		
 	}
 	
@@ -500,15 +517,15 @@ public class ServerCentralAuthority {
 			/* Send the information for this file to the user */
 			String rev = fileInfo[i].getRev();
 			comms.toClient(rev);
-			comms.getInt();
+			comms.getAcknowledgement();
 			
 			byte[] iv = fileInfo[i].getIV();
 			comms.sendBytes(iv, iv.length);
-			comms.getInt();
+			comms.getAcknowledgement();
 			
 			int fileSecurityLevel = fileInfo[i].getSecurityLevel();
 			comms.toClient(Integer.toString(fileSecurityLevel));
-			comms.getInt();
+			comms.getAcknowledgement();
 			
 			/* Remove the file from the database */
 			ServerFileOperations.removeFile(rev);
@@ -538,7 +555,7 @@ public class ServerCentralAuthority {
 		/* Send the client the number of affected friends to expect */
 		int numAffectedFriends = affectedFriends.size();
 		comms.toClient(Integer.toString(numAffectedFriends));
-		comms.getInt();
+		comms.getAcknowledgement();
 		
 		for (int i = 0; i < numAffectedFriends; i++) {
 			
@@ -546,7 +563,7 @@ public class ServerCentralAuthority {
 			
 			/* Send the max security level to the user */
 			comms.toClient(friendsSecurityLevel);
-			comms.getInt();
+			comms.getAcknowledgement();
 			
 			/* Get the user to notify's public key */
 			byte[] publicKey = UserOperations.getPublicKey(affectedFriends.get(i)[0]);
@@ -562,7 +579,7 @@ public class ServerCentralAuthority {
 			
 		}
 		
-		comms.sendInt(1);
+		comms.sendAcknowledgement();
 		
 	}
 

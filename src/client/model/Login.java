@@ -25,15 +25,15 @@ public class Login {
 		ServerComms.toServer(username);
 		
 		/* Receive Acknowledgement */
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 	
 		byte[] serverPublicKey = ServerComms.getBytes();
-		ServerComms.sendInt(1);
+		ServerComms.sendAcknowledgement();
 		
 		byte[] encryptedPasswordBytes = FileOperations.asymmetricEncrypt(passwordBytes, serverPublicKey);
 		
 		ServerComms.sendBytes(encryptedPasswordBytes, encryptedPasswordBytes.length);
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 
 		if (ServerComms.fromServer().equals(TRUE)) {
 			DropboxOperations.setUsername(username);

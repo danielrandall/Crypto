@@ -16,12 +16,9 @@ import server.users.friends.Permissions;
 
 public class UserOperations {
 	
-	private static final String TRUE = "1";
-	private static final String FALSE = "0";
-	
+	/* The number of available security levels */
 	public static final int NUMBER_SECURITY_LEVELS = 5;
-	public static final int HIGHEST_SECURITY_LEVEL = 1;
-
+	
 	private static H2Users database = new H2Users();
 	private static H2Requests requestDatabase = new H2Requests();
 	private static H2KeyUpdates updateDatabase = new H2KeyUpdates();
@@ -56,64 +53,6 @@ public class UserOperations {
 		database.updateFriends(username, friends);
 	}
 
-	/* Receive username and check whether the username is acceptable
-	 * If the username is accepted then notify the user and proceed to register
-	 * the new user.
-	 * Else notify the user that the username is invalid. */
-	public static User registerAttempt(ClientComms comms) {
-			
-		String username = comms.fromClient();
-			
-		boolean	 usernameAccepted = !checkUserExists(username);
-			
-		if (!usernameAccepted) {
-			comms.toClient(FALSE);
-			return null;
-		}
-		
-		comms.toClient(TRUE);
-		
-		return register(comms, username);
-		
-	}
-	
-
-	/* Receive the username and password.
-	 * Store the information.
-	 * Receive the generated keys for user's security levels.UserOperations.getRequestLevel(sourceUsername, destUsername);
-	 * Store. */
-	private static User register(ClientComms comms, String username) {
-		
-		//String password = comms.fromClient();
-		
-		byte[] publicKeyBytes = ServerKeyStoreOperations.retrievePublicKey();
-		
-		comms.sendBytes(publicKeyBytes, publicKeyBytes.length);
-		comms.getInt();
-		
-		byte[] encryptedPasswordBytes = comms.getBytes();
-		comms.sendInt(1);
-		
-		byte[] privateKeyBytes = ServerKeyStoreOperations.retrievePrivateKey();
-		byte[] passwordBytes = ServerFileOperations.decrypt(privateKeyBytes, encryptedPasswordBytes);
-		
-		
-		
-		String key = comms.fromClient();
-		String secret = comms.fromClient();
-		String uid = comms.fromClient();
-		
-		storeSymmetricKeys(username, HIGHEST_SECURITY_LEVEL + 1, false, comms);
-		
-		/* Receive the user's public key */
-		byte[] publicKey = comms.getBytes();
-		comms.sendInt(1);
-
-		User user = Authentication.createUser(username, passwordBytes, comms, key, secret, uid, publicKey);
-		
-		return user;
-		
-	}
 	
 	/* Given the number of keys it is to receive. */
 	public static void storeSymmetricKeys(String username,
@@ -127,10 +66,10 @@ public class UserOperations {
 		
 		for (int i = 0; i < numKeys; i++) {
 			encryptedKeys[i] = comms.getBytes();
-			comms.sendInt(1);
+			comms.sendAcknowledgement();
 			
 			ivs[i] = comms.getBytes();
-			comms.sendInt(1);
+			comms.sendAcknowledgement();
 			
 			securityLevels[i] = highestSecurityLevel + i;
 		}

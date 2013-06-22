@@ -65,7 +65,7 @@ public class Actions {
 			return false;
 		
 		/* Send bounds to the server */
-		ServerComms.sendInt(upperBound);
+		ServerComms.toServer(Integer.toString(upperBound));
 		
 		encryptKey(Integer.toString(upperBound));
 		
@@ -77,6 +77,7 @@ public class Actions {
 		
 		/* Receive the user to add's public key */
 		byte[] usersPublicKey = ServerComms.getBytes();
+		ServerComms.sendAcknowledgement();
 		
 		/* Get the highest level key to send to the user */
 		byte[] keyToSend = KeyStoreOperations.retrieveOwnKey(
@@ -87,6 +88,7 @@ public class Actions {
 		
 		/* Send key to the server */
 		ServerComms.sendBytes(encryptedKey, encryptedKey.length);
+		ServerComms.getAcknowledgement();
 		
 	}
 	
@@ -99,7 +101,7 @@ public class Actions {
 		/* Retrieve the most influential key (ie. the highest security level
 		 * you have access to) and its security level from the server */
 		String securityLevel = ServerComms.fromServer();
-		ServerComms.sendInt(1);
+		ServerComms.sendAcknowledgement();
 		
 		/* Retrieve this user's private key */
 		byte[] privateKeyBytes = KeyStoreOperations.retrievePrivateKey();
@@ -107,7 +109,7 @@ public class Actions {
 		KeyDerivation.deriveKeys(username, privateKeyBytes, securityLevel);
 		
 		/* Receive acknowledgement that the files have been added. */
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 		
 		return DropboxOperations.getNewlyAddedFiles(username);
 		
@@ -131,7 +133,7 @@ public class Actions {
 		
 		/* Send security level of file to server. */
 		ServerComms.toServer(Integer.toString(securityLevel));
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 		
 		byte[] key = KeyStoreOperations.retrieveOwnKey(Integer.toString(securityLevel));
 		
@@ -149,17 +151,17 @@ public class Actions {
 		
 		/* Send iv, needed for decryption, to be stored in the server. */
 		ServerComms.sendBytes(iv, iv.length);
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 		
 		/* Send file id to the server for file identification. */
 		ServerComms.toServer(rev);
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 		
 		/* Send file name to the server for file transfer to friends. */
 		ServerComms.toServer(fileName);
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 		
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 		
 		return newFileName;
 		
@@ -179,14 +181,14 @@ public class Actions {
 		
 		/* Send file information to the server */
 		ServerComms.toServer(rev);
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 		
 		/* Retrieve necessary information from the server */
 		byte[] iv = ServerComms.getBytes();
-		ServerComms.sendInt(1);
+		ServerComms.sendAcknowledgement();
 		
 		String securityLevel = ServerComms.fromServer();
-		ServerComms.sendInt(1);
+		ServerComms.sendAcknowledgement();
 		
 		byte[] key = KeyStoreOperations.retrieveOwnKey(securityLevel);
 		
@@ -202,17 +204,17 @@ public class Actions {
 		
 		/* Send file information to the server */
 		ServerComms.toServer(owner);
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 		
 		ServerComms.toServer(fileName);
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 		
 		/* Receive back the IV and security level needed for decryption */
 		byte[] iv = ServerComms.getBytes();
-		ServerComms.sendInt(1);
+		ServerComms.sendAcknowledgement();
 		
 		String securityLevel  = ServerComms.fromServer();
-		ServerComms.sendInt(1);
+		ServerComms.sendAcknowledgement();
 		
 		String downloadFolderLocation = DOWNLOAD_LOCATION + myUsername + "/" + FRIEND_FILE_DOWNLOAD_LOCATION + "/" + owner;
 		
@@ -281,13 +283,13 @@ public class Actions {
 		for (int i = 0; i < numberFilesEffected; i++) {
 			
 			String rev = ServerComms.fromServer();
-			ServerComms.sendInt(1);
+			ServerComms.sendAcknowledgement();
 			
 			byte[] iv = ServerComms.getBytes();
-			ServerComms.sendInt(1);
+			ServerComms.sendAcknowledgement();
 			
 			int fileSLevel = Integer.parseInt(ServerComms.fromServer());
-			ServerComms.sendInt(1);
+			ServerComms.sendAcknowledgement();
 			
 			filesToUnencrypt.put(rev, new ClientFile(rev, iv, fileSLevel));
 		}
@@ -323,18 +325,18 @@ public class Actions {
 		
 		/* Get number of friends to notify */
 		int numFriends = Integer.parseInt(ServerComms.fromServer());
-		ServerComms.sendInt(1);
+		ServerComms.sendAcknowledgement();
 		
 		/* Receive public key and highest security level of friend, encrypt and
 		 * send to the server */
 		for (int i = 0; i < numFriends; i++) {
 			String maxSecurityLevel = ServerComms.fromServer();
-			ServerComms.sendInt(1);
+			ServerComms.sendAcknowledgement();
 			
 			encryptKey(maxSecurityLevel);
 		}
 		
-		if (!(ServerComms.getInt() == 1))
+		if (!(ServerComms.getAcknowledgement() == 1))
 			System.out.println("out of synce before file re-uploading");
 		
 		/* Encrypt and upload each decrypted file as normal.
@@ -442,7 +444,7 @@ public class Actions {
 		if (!downloadFolder.exists())
 			downloadFolder.mkdirs();
 		
-		String downloadLocation = folderLocation + fileName;
+		String downloadLocation = folderLocation + "/" + fileName;
 		
 		File file = new File(downloadLocation);
 		
@@ -521,11 +523,11 @@ public class Actions {
 		for (int i = 0; i < encryptedKeys.length; i++) {
 			byte[] encryptedKey = encryptedKeys[i].getEncryptedKey();
 			ServerComms.sendBytes(encryptedKey, encryptedKey.length);
-			ServerComms.getInt();
+			ServerComms.getAcknowledgement();
 			
 			byte[] iv = encryptedKeys[i].getIV();
 			ServerComms.sendBytes(iv, iv.length);
-			ServerComms.getInt();
+			ServerComms.getAcknowledgement();
 		}
 		
 		keys = null;
@@ -537,16 +539,16 @@ public class Actions {
 		ServerComms.toServer(UPDATE_FILE);
 		
 		ServerComms.toServer(fileName);
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 		
 		ServerComms.toServer(owner);
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 		
 		if (!ServerComms.fromServer().equals(TRUE))
 			return;
 		
 		String securityLevel = ServerComms.fromServer();
-		ServerComms.sendInt(1);
+		ServerComms.sendAcknowledgement();
 		
 		byte[] friendKey = KeyStoreOperations.retrieveFriendKey(owner, securityLevel);
 		
@@ -555,17 +557,17 @@ public class Actions {
 		byte[] encryptedFile = FileOperations.encryptFile(file, friendKey, iv);
 		
 		ServerComms.sendBytes(iv, iv.length);
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 		
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(encryptedFile);
 		DropboxOperations.updateFile(fileName, owner, inputStream, encryptedFile.length);
 		
 		/* Tell server when the file has finished uploading */
-		ServerComms.sendInt(1);
+		ServerComms.sendAcknowledgement();
 		
 		/* Receive acknowledgement from the server that it has finished
 		 * processing */
-		ServerComms.getInt();
+		ServerComms.getAcknowledgement();
 	}
 
 }

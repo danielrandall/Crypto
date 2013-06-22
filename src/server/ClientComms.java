@@ -19,6 +19,8 @@ public class ClientComms {
 	private DataOutputStream dOut = null;
 	private static ObjectOutputStream OOut = null;
     private static ObjectInputStream OIn = null;
+    
+    private static final int ACKNOWLEDGEMENT = 1;
 	
 	public ClientComms(Socket socket) {
 		
@@ -73,7 +75,19 @@ public class ClientComms {
     }
     
     
-    public void sendInt(int i) {
+    public void sendAcknowledgement() {
+    	
+    	sendInt(ACKNOWLEDGEMENT);
+    	
+    }
+    
+    public int getAcknowledgement() {
+    	
+    	return getInt();
+    	
+    }
+    
+    private void sendInt(int i) {
     	
     	try {
 			dOut.writeInt(i);
@@ -85,7 +99,7 @@ public class ClientComms {
     }
     
     
-    public int getInt() {
+    private int getInt() {
     	
     	int i = 0;
     	
@@ -99,7 +113,6 @@ public class ClientComms {
     	return i;
     	
     }
-    
 	
 	
 	/* Close all open streams. */
@@ -143,7 +156,6 @@ public class ClientComms {
 		}
 		
 		return input;
-		
 		
 	}
 

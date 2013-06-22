@@ -9,7 +9,8 @@ public class KeyDerivation {
 		
 		/* Retrieve the most influential key (ie. the highest security level
 		 * you have access to) and its security level from the server */
-		byte[] encryptedHighestKey = ServerComms.getBytes();		
+		byte[] encryptedHighestKey = ServerComms.getBytes();
+		ServerComms.sendAcknowledgement();
 		
 		/* Decrypt the highest key with the user's private key */
 		byte[] highestKey = FileOperations.asymmetricDecrypt(encryptedHighestKey, privateKey);
@@ -22,7 +23,7 @@ public class KeyDerivation {
 		
 		/* Receive from the server the number of keys to decrypt and use */
 		int numberOfWeakerKeys = Integer.parseInt(ServerComms.fromServer());
-		ServerComms.sendInt(1);
+		ServerComms.sendAcknowledgement();
 		
 		/* Retrieve the following, encrypted, keys from the server in order.
 		 * Decrypt them with their previous key and store them with their
@@ -30,10 +31,10 @@ public class KeyDerivation {
 		for (int i = securityLevelInt + 1; i <= securityLevelInt + numberOfWeakerKeys; i++) {
 			
 			byte[] encryptedKey = ServerComms.getBytes();
-			ServerComms.sendInt(1);
+			ServerComms.sendAcknowledgement();
 			
 			byte[] iv = ServerComms.getBytes();
-			ServerComms.sendInt(1);
+			ServerComms.sendAcknowledgement();
 			
 			byte[] decryptedKey = FileOperations.decryptKey(encryptedKey, previousKey, iv);
 			

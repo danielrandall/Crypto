@@ -29,6 +29,8 @@ public class ServerComms {
     private static ObjectOutputStream OOut = null;
     private static ObjectInputStream OIn = null;
     
+    public static final int ACKNOWLEDGEMENT = 1;
+    
     public static void main(String[] args) {
     	
     	setup();
@@ -143,8 +145,20 @@ public class ServerComms {
 		
 	}
     
+    public static void sendAcknowledgement() {
+    	
+    	sendInt(ACKNOWLEDGEMENT);
+    	
+    }
     
-    public static void sendInt(int i) {
+    public static int getAcknowledgement() {
+    	
+    	return getInt();
+    	
+    }
+    
+    
+    private static void sendInt(int i) {
     	
     	try {
 			dOut.writeInt(i);
@@ -156,7 +170,7 @@ public class ServerComms {
     }
     
     
-    public static int getInt() {
+    private static int getInt() {
     	
     	int i = 0;
     	
