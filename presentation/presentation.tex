@@ -104,6 +104,19 @@
     \vspace*{1.5cm}
     Therefore, Group5 $\subseteq$ Group4 $\subseteq$ Group3 ...
   \end{frame}
+  
+  
+	\begin{frame}
+	\frametitle{How we achieve this}
+	\framesubtitle{Asymmetric cryptography}
+	\begin{center}
+	\includegraphics[scale=0.7]{images/symmetricCrypt/encryption/encryption_scissored.pdf} \\
+	\includegraphics[scale=0.7]{images/symmetricCrypt/decryption/decryption_scissored.pdf}
+	\end{center}
+	\end{frame}  
+  
+  
+  
 %  \begin{itemize}
 %  	\item Users generate a key for each level they can assign files to \\
 %  	\item When a file is shared, the file is encrypted the corresponding key \\
@@ -138,16 +151,32 @@
   \end{frame}
   
   \begin{frame}
+	\frametitle{How keys are shared}
+	\framesubtitle{Asymmetric cryptography}
+	\begin{center}
+	\includegraphics[scale=0.7]{images/asymmetricCrypt/encryption_scissored.pdf} \\
+	\includegraphics[scale=0.7]{images/asymmetricCrypt/decryption_scissored.pdf}
+	\end{center}
+	\end{frame}  
+  
+  \begin{frame}
   	\frametitle{How keys are shared}
-  	\framesubtitle{Public key cryptography}
+  	\framesubtitle{Asymmetric cryptography}
+  	\vspace*{1cm}
   	\begin{center}
   		\includegraphics[scale=0.65]{images/publicKey/rsaKeyExchange.pdf}
+  		\vspace*{2cm} \\
+  	\tiny{Image source: http://technet.microsoft.com/en-us/library/cc962035.aspx}
   	\end{center}
   \end{frame}
   
   \begin{frame}
   	\frametitle{Updating files}
-  	
+  	When a friend wishes to modify a file shared with them...
+  	\begin{itemize}
+		\item Encrypt the new file
+		\item Share it with all others who have access to it
+	\end{itemize}
   \end{frame}
   
   

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.10.18)  22 JUN 2013 11:35
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.10.18)  22 JUN 2013 17:34
 entering extended mode
  %&-line parsing enabled.
 **presentation.tex
@@ -842,42 +842,67 @@ File: images/folder/friends3.png Graphic file (type png)
 iends2.png> <./images/folder/friends3.png>]
 [3
 
-] <images/sharing/sharing_scissored.pdf, id=104, 562.1pt x 406.51875pt>
+]
+<images/symmetricCrypt/encryption/encryption_scissored.pdf, id=104, 239.89626pt
+ x 136.51pt>
+File: images/symmetricCrypt/encryption/encryption_scissored.pdf Graphic file (t
+ype pdf)
+ <use images/symmetricCrypt/encryption/encryption_scissored.pdf>
+<images/symmetricCrypt/decryption/decryption_scissored.pdf, id=106, 229.85875pt
+ x 136.51pt>
+File: images/symmetricCrypt/decryption/decryption_scissored.pdf Graphic file (t
+ype pdf)
+ <use images/symmetricCrypt/decryption/decryption_scissored.pdf>
+[4
+
+ <./images/symmetricCrypt/encryption/encryption_scissored.pdf> <./images/symmet
+ricCrypt/decryption/decryption_scissored.pdf>]
+<images/sharing/sharing_scissored.pdf, id=147, 562.1pt x 406.51875pt>
 File: images/sharing/sharing_scissored.pdf Graphic file (type pdf)
 
-<use images/sharing/sharing_scissored.pdf> [4
+<use images/sharing/sharing_scissored.pdf> [5
 
  <./images/sharing/sharing_scissored.pdf>]
-<images/keyStorage/keyStorage_scissored.pdf, id=145, 508.90125pt x 361.35pt>
+<images/keyStorage/keyStorage_scissored.pdf, id=188, 532.99126pt x 360.34625pt>
 File: images/keyStorage/keyStorage_scissored.pdf Graphic file (type pdf)
-
-<use images/keyStorage/keyStorage_scissored.pdf> [5
+<use images/keyStorage/keyStorage_scissored.pdf> [6
 
  <./images/keyStorage/keyStorage_scissored.pdf>]
-<images/keyDerivation/keyDerivation_scissored.pdf, id=189, 511.9125pt x 295.102
+<images/keyDerivation/keyDerivation_scissored.pdf, id=232, 511.9125pt x 295.102
 5pt>
 File: images/keyDerivation/keyDerivation_scissored.pdf Graphic file (type pdf)
- <use images/keyDerivation/keyDerivation_scissored.pdf> [6
+ <use images/keyDerivation/keyDerivation_scissored.pdf> [7
 
  <./images/keyDerivation/keyDerivation_scissored.pdf>]
-<images/publicKey/rsaKeyExchange.pdf, id=231, 342.27875pt x 168.63pt>
+<images/asymmetricCrypt/encryption_scissored.pdf, id=275, 240.9pt x 132.495pt>
+File: images/asymmetricCrypt/encryption_scissored.pdf Graphic file (type pdf)
+
+<use images/asymmetricCrypt/encryption_scissored.pdf>
+<images/asymmetricCrypt/decryption_scissored.pdf, id=277, 231.86626pt x 134.502
+5pt>
+File: images/asymmetricCrypt/decryption_scissored.pdf Graphic file (type pdf)
+ <use images/asymmetricCrypt/decryption_scissored.pdf> [8
+
+ <./images/asymmetricCrypt/encryption_scissored.pdf> <./images/asymmetricCrypt/
+decryption_scissored.pdf>] <images/publicKey/rsaKeyExchange.pdf, id=326, 342.27
+875pt x 168.63pt>
 File: images/publicKey/rsaKeyExchange.pdf Graphic file (type pdf)
 
-<use images/publicKey/rsaKeyExchange.pdf> [7
+<use images/publicKey/rsaKeyExchange.pdf> [9
 
- <./images/publicKey/rsaKeyExchange.pdf>] [8
-
-] [9
-
-] [10
+ <./images/publicKey/rsaKeyExchange.pdf>] [10
 
 ] [11
 
+] [12
+
+] [13
+
 ]
-<images/lowerBounds/hasse.pdf, id=361, 2348.775pt x 1122.1925pt>
+<images/lowerBounds/hasse.pdf, id=456, 2348.775pt x 1122.1925pt>
 File: images/lowerBounds/hasse.pdf Graphic file (type pdf)
 
-<use images/lowerBounds/hasse.pdf> [12
+<use images/lowerBounds/hasse.pdf> [14
 
  <./images/lowerBounds/hasse.pdf>]
 \tf@nav=\write6
@@ -900,10 +925,10 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 14565 strings out of 495000
- 271617 string characters out of 1180492
+ 14594 strings out of 495000
+ 272740 string characters out of 1180492
  340117 words of memory out of 3000000
- 17342 multiletter control sequences out of 15000+50000
+ 17362 multiletter control sequences out of 15000+50000
  14590 words of font info for 53 fonts, out of 3000000 for 9000
  36 hyphenation exceptions out of 8191
  49i,14n,53p,401b,606s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -915,9 +940,9 @@ ic/amsfonts/cm/cmss9.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/
 cm/cmssbx10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmssi1
 0.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr
 /share/texmf-texlive/fonts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on presentation.pdf (12 pages, 654918 bytes).
+Output written on presentation.pdf (14 pages, 804998 bytes).
 PDF statistics:
- 425 PDF objects out of 1000 (max. 8388607)
- 25 named destinations out of 1000 (max. 500000)
- 78 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 520 PDF objects out of 1000 (max. 8388607)
+ 29 named destinations out of 1000 (max. 500000)
+ 98 words of extra memory for PDF output out of 10000 (max. 10000000)
 
