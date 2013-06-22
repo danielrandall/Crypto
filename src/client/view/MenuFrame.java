@@ -25,6 +25,11 @@ import java.awt.event.ActionEvent;
 
 public class MenuFrame extends BaseFrame {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7126676771584595851L;
+	
 	/* Panels used for the tabs */
 	private final BaseFrame prevFrame;
 	private final MyFilesPanel myFilesPanel = new MyFilesPanel();
@@ -39,9 +44,10 @@ public class MenuFrame extends BaseFrame {
 	private final JPanel headerPanel = new JPanel();
 	private final JButton btnLogOut = new JButton("Log out");
 	private final JPanel buttonPanel = new JPanel();
-	private final Component rigidArea = Box.createRigidArea(new Dimension(100, 0));
+	private final Component rigidArea = Box.createRigidArea(new Dimension(5, 0));
 	private final JPanel logoPanel = new JPanel();
 	private final Component rigidArea_1 = Box.createRigidArea(new Dimension(10, 0));
+	private final JLabel lblUsername = new JLabel("");
 
 	/**
 	 * Create the frame.
@@ -80,15 +86,27 @@ public class MenuFrame extends BaseFrame {
 		
 		headerPanel.add(buttonPanel);
 		GridBagLayout gbl_buttonPanel = new GridBagLayout();
-		gbl_buttonPanel.columnWidths = new int[]{88, 0, 0, 0, 0, 0, 0};
+		gbl_buttonPanel.columnWidths = new int[]{88, 0, 0, 0, 0, 0, 0, 0};
 		gbl_buttonPanel.rowHeights = new int[]{25, 0};
-		gbl_buttonPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_buttonPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		gbl_buttonPanel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
 		buttonPanel.setLayout(gbl_buttonPanel);
 		
+		GridBagConstraints gbc_lblUsername = new GridBagConstraints();
+		gbc_lblUsername.weightx = 1.0;
+		gbc_lblUsername.anchor = GridBagConstraints.EAST;
+		gbc_lblUsername.gridwidth = 5;
+		gbc_lblUsername.insets = new Insets(0, 0, 0, 5);
+		gbc_lblUsername.gridx = 0;
+		gbc_lblUsername.gridy = 0;
+		lblUsername.setHorizontalAlignment(SwingConstants.RIGHT);
+		
+		lblUsername.setFont(museosans_700_14p);
+		buttonPanel.add(lblUsername, gbc_lblUsername);
+		
 		GridBagConstraints gbc_rigidArea = new GridBagConstraints();
 		gbc_rigidArea.insets = new Insets(0, 0, 0, 5);
-		gbc_rigidArea.gridx = 4;
+		gbc_rigidArea.gridx = 5;
 		gbc_rigidArea.gridy = 0;
 		buttonPanel.add(rigidArea, gbc_rigidArea);
 		btnLogOut.addActionListener(new ActionListener() {
@@ -99,10 +117,10 @@ public class MenuFrame extends BaseFrame {
 		btnLogOut.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		GridBagConstraints gbc_btnLogOut = new GridBagConstraints();
 		gbc_btnLogOut.anchor = GridBagConstraints.EAST;
-		gbc_btnLogOut.gridx = 5;
+		gbc_btnLogOut.gridx = 6;
 		gbc_btnLogOut.gridy = 0;
 		buttonPanel.add(btnLogOut, gbc_btnLogOut);
-		btnLogOut.setHorizontalAlignment(SwingConstants.LEFT);
+		btnLogOut.setHorizontalAlignment(SwingConstants.RIGHT);
 		btnLogOut.setFont(new Font("Dialog", Font.BOLD, 11));
 		
 		contentPane.add(tabbedOptionsPane);
@@ -141,6 +159,12 @@ public class MenuFrame extends BaseFrame {
 	public void populateFriendFiles(Object[][] friendFiles) {
 		
 		friendFilesPanel.populateFriendFiles(friendFiles);
+		
+	}
+	
+	public void setUsername(String username) {
+		
+		lblUsername.setText(username);
 		
 	}
 	

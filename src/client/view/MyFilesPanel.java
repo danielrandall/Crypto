@@ -26,6 +26,11 @@ import java.awt.Dimension;
 
 public class MyFilesPanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5803354299954998207L;
+
 	/* Frame to transfer to when the user wishes to upload a file */
 	private Frame uploadFileFrame = new UploadFileFrame(this);
 	
@@ -72,10 +77,16 @@ public class MyFilesPanel extends JPanel {
 				},
 				columnNames
 			) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = -8425056983929257980L;
+				@SuppressWarnings("rawtypes")
 				Class[] columnTypes = new Class[] {
 					String.class, Integer.class
 				};
-				public Class getColumnClass(int columnIndex) {
+				
+				public Class<?> getColumnClass(int columnIndex) {
 					return columnTypes[columnIndex];
 				}
 			});

@@ -1,7 +1,5 @@
 package client.view;
 
-import java.awt.Frame;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -26,6 +24,11 @@ import javax.swing.Box;
 import java.awt.Font;
 
 public class RegisterFrame extends BaseFrame {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5918858251962347048L;
 	
 	/* Frame to transfer to when a user cancels registration */
 	private BaseFrame prevFrame;
@@ -178,7 +181,7 @@ public class RegisterFrame extends BaseFrame {
 	/* Called when registration is completed successfully.
 	 * The user is then taken to a new window
 	 */
-	public void register() {
+	public void register(String username) {
 		
 		usernameField.setText("");
 		passwordField.setText("");
@@ -186,6 +189,8 @@ public class RegisterFrame extends BaseFrame {
 		lblPasswordError.setVisible(false);
 		lblUsernameError.setVisible(false);
 		setVisible(false);
+		
+		menuFrame.setUsername(username);
 		
 		menuFrame.setVisible(true);
 		

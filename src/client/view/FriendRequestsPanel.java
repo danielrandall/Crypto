@@ -3,8 +3,6 @@ package client.view;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.Panel;
-
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -22,6 +20,11 @@ import javax.swing.Box;
 import java.awt.Dimension;
 
 public class FriendRequestsPanel extends JPanel {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2283729499828612089L;
 	
 	private final JPanel friendFilesPanel;
 	private final JPanel buttonPanel = new JPanel();
@@ -61,10 +64,16 @@ public class FriendRequestsPanel extends JPanel {
 				},
 				columnNames
 			) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = -6239063655641676003L;
+				@SuppressWarnings("rawtypes")
 				Class[] columnTypes = new Class[] {
 					String.class, Integer.class
 				};
-				public Class getColumnClass(int columnIndex) {
+
+				public Class<?> getColumnClass(int columnIndex) {
 					return columnTypes[columnIndex];
 				}
 			});

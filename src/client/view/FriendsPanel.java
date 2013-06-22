@@ -24,6 +24,11 @@ import java.awt.Dimension;
 
 public class FriendsPanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5797972076111277241L;
+
 	private Frame friendFrame = new AddNewFriendFrame();
 	
 	private final JButton btnAddFriend = new JButton("Add Friend");
@@ -68,10 +73,16 @@ public class FriendsPanel extends JPanel {
 				},
 				columnNames
 			) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 3069666961602779225L;
+				@SuppressWarnings("rawtypes")
 				Class[] columnTypes = new Class[] {
 					String.class, Integer.class
 				};
-				public Class getColumnClass(int columnIndex) {
+
+				public Class<?> getColumnClass(int columnIndex) {
 					return columnTypes[columnIndex];
 				}
 			});

@@ -5,7 +5,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Arrays;
 
-import ciphers.SecurityVariables;
+import client.ciphers.SecurityVariables;
 import client.model.keystore.KeyStoreOperations;
 
 public class Register {

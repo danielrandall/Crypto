@@ -1,4 +1,4 @@
-package ciphers;
+package client.ciphers;
 
 public interface Ciphers {
 

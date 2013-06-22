@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.10.18)  21 JUN 2013 18:42
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.10.18)  22 JUN 2013 11:35
 entering extended mode
  %&-line parsing enabled.
 **presentation.tex
@@ -874,7 +874,7 @@ File: images/publicKey/rsaKeyExchange.pdf Graphic file (type pdf)
 ] [11
 
 ]
-<images/lowerBounds/hasse.pdf, id=360, 2348.775pt x 1122.1925pt>
+<images/lowerBounds/hasse.pdf, id=361, 2348.775pt x 1122.1925pt>
 File: images/lowerBounds/hasse.pdf Graphic file (type pdf)
 
 <use images/lowerBounds/hasse.pdf> [12
@@ -900,10 +900,10 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 14563 strings out of 495000
- 271601 string characters out of 1180492
- 336117 words of memory out of 3000000
- 17340 multiletter control sequences out of 15000+50000
+ 14565 strings out of 495000
+ 271617 string characters out of 1180492
+ 340117 words of memory out of 3000000
+ 17342 multiletter control sequences out of 15000+50000
  14590 words of font info for 53 fonts, out of 3000000 for 9000
  36 hyphenation exceptions out of 8191
  49i,14n,53p,401b,606s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -915,7 +915,7 @@ ic/amsfonts/cm/cmss9.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/
 cm/cmssbx10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmssi1
 0.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr
 /share/texmf-texlive/fonts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on presentation.pdf (12 pages, 654209 bytes).
+Output written on presentation.pdf (12 pages, 654918 bytes).
 PDF statistics:
  425 PDF objects out of 1000 (max. 8388607)
  25 named destinations out of 1000 (max. 500000)

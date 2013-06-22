@@ -1,12 +1,9 @@
 package server;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.dropbox.client2.session.Session;
-import com.dropbox.client2.session.WebAuthSession;
-
 import server.operations.KeyOperations;
 import server.operations.ServerDropboxOperations;
 import server.operations.ServerFileOperations;
@@ -191,7 +188,6 @@ public class ServerCentralAuthority {
 			return;
 		}
 			
-		int lowerBound = comms.getInt();   // DEAL WITH NON INT ENTRY
 		int upperBound = comms.getInt();   // DEAL WITH NON INT ENTRY
 		
 		byte[] publicKey = UserOperations.getPublicKey(usernameToAdd);
@@ -202,7 +198,7 @@ public class ServerCentralAuthority {
 		/* Receive the encrypted key to send with the request */
 		byte[] key = comms.getBytes();		
 		
-		UserOperations.addRequest(username, usernameToAdd, lowerBound, key);
+		UserOperations.addRequest(username, usernameToAdd, upperBound, key);
 		
 	}
 	

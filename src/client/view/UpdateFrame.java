@@ -22,9 +22,13 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-import java.awt.Dimension;
 
 public class UpdateFrame extends BaseFrame {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5834221543572973459L;
 	
 	/* File being updated */
 	private String fileToBeUpdated = "";

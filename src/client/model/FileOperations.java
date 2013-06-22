@@ -5,13 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.Key;
-import java.security.PublicKey;
+import client.ciphers.AESSunJCECipher;
+import client.ciphers.Ciphers;
+import client.ciphers.RSASunJCECipher;
 
-import ciphers.AESSunJCECipher;
-import ciphers.RSASunJCECipher;
-import ciphers.Ciphers;
-import ciphers.SecurityVariables;
 
 public class FileOperations {
 	

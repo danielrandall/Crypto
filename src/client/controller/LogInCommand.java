@@ -24,7 +24,7 @@ public class LogInCommand implements Command {
 			Object[][] friendRequests = Actions.getFriendRequests();
 			Object[][] friendFiles = Actions.getFriendFiles();
 			Actions.checkUpdates();
-			frame.login(rows, friends, friendRequests, friendFiles);
+			frame.login(rows, friends, friendRequests, friendFiles, username);
 			//Login.getRequests();
 		} else
 			frame.loginFail();

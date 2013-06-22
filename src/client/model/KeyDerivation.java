@@ -1,12 +1,10 @@
 package client.model;
 
-import java.security.PrivateKey;
-
 import client.model.keystore.KeyStoreOperations;
 
 public class KeyDerivation {
 	
-	
+	/* Given a key it derives all lower level keys and stores them */
 	public static void deriveKeys(String username, byte[] privateKey, String securityLevel) {
 		
 		/* Retrieve the most influential key (ie. the highest security level
@@ -16,7 +14,6 @@ public class KeyDerivation {
 		/* Decrypt the highest key with the user's private key */
 		byte[] highestKey = FileOperations.asymmetricDecrypt(encryptedHighestKey, privateKey);
 		
-		/* Store the key */
 		KeyStoreOperations.storeFriendKey(username, securityLevel, highestKey);
 		
 		int securityLevelInt = Integer.parseInt(securityLevel);

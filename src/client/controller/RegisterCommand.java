@@ -23,7 +23,7 @@ public class RegisterCommand implements Command {
 		else
 			if (Register.userRegister(username, password)) {
 				Actions.setUsername(username);
-				frame.register();
+				frame.register(username);
 			} else
 				frame.usernameError();		
 		

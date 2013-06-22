@@ -30,6 +30,11 @@ import java.awt.Color;
  * wish for the application to exit when this window closes. */
 public class UploadFileFrame extends BaseFrame {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2456422387771472976L;
+
 	/* Frame to send for updates if a file is uploaded */
 	private JPanel updatePanel;
 

@@ -4,11 +4,6 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
-import client.model.EncryptedKey;
-import client.model.FileOperations;
-import client.model.ServerComms;
-import client.model.keystore.KeyStoreOperations;
 
 public class SecurityVariables {
 	

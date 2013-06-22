@@ -37,6 +37,11 @@ import javax.swing.ImageIcon;
 
 public class MainFrame extends BaseFrame {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7918270300417517253L;
+	
 	/* Frame to transfer to when a user logs in */
 	private MenuFrame mFrame = new MenuFrame(this);
 	/* Frame to transfer to when a user decides to register */
@@ -117,7 +122,7 @@ public class MainFrame extends BaseFrame {
 		
 		Object[] objects1 = {this, usernameField, passwordField};
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//setBounds(100, 100, 600, 400);
+
 		setBounds(100, 100, 450, 285);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
@@ -253,7 +258,8 @@ public class MainFrame extends BaseFrame {
 	
 	/* Called when username and password verification succeeds */
 	public void login(Object[][] uploadedFileRows, Object[][] friends,
-			          Object[][] friendRequests, Object[][] friendFiles) {
+			          Object[][] friendRequests, Object[][] friendFiles,
+			          String username) {
 		
 		usernameField.setText("");
 		passwordField.setText("");
@@ -264,6 +270,7 @@ public class MainFrame extends BaseFrame {
 		mFrame.populateFriends(friends);
 		mFrame.populateFriendRequests(friendRequests);
 		mFrame.populateFriendFiles(friendFiles);
+		mFrame.setUsername(username);
 		
 		mFrame.setVisible(true);
 	}

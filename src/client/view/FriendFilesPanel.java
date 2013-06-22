@@ -23,6 +23,11 @@ import java.awt.event.ActionEvent;
 
 public class FriendFilesPanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2067989960916445599L;
+
 	private UpdateFrame updateFrame = new UpdateFrame();
 	
 	private final JPanel buttonPanel = new JPanel();
@@ -62,10 +67,16 @@ public class FriendFilesPanel extends JPanel {
 				},
 				columnNames
 			) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = -6312900869039524928L;
+				
+				@SuppressWarnings("rawtypes")
 				Class[] columnTypes = new Class[] {
 					String.class, Integer.class
 				};
-				public Class getColumnClass(int columnIndex) {
+				public Class<?> getColumnClass(int columnIndex) {
 					return columnTypes[columnIndex];
 				}
 			});

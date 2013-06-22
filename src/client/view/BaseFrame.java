@@ -13,6 +13,11 @@ import client.controller.Controller;
 
 public abstract class BaseFrame extends JFrame implements WindowListener {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4725240344997672108L;
+	
 	/* Mainly used for miscellaneous stuff - slider ticks */
 	protected static Font museosans_500_12p;
 	/* Mainly used for field descriptors */

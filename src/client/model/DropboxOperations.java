@@ -1,9 +1,6 @@
 package client.model;
 
 import java.awt.Desktop;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,7 +14,6 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 
 import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.DropboxAPI.DeltaEntry;
 import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.session.AccessTokenPair;
@@ -91,6 +87,10 @@ public class DropboxOperations {
     }
     
     
+    /* Function used to upload large files.
+     * Large files are more volatile than small files and can be dropped
+     * by the network. FOr this reason it is uploaded in chunks instead of
+     * all at once. */
     public static String[] chunkedUpload(String path, InputStream inputStream,
 			int length) {
     	
@@ -98,8 +98,10 @@ public class DropboxOperations {
 		Entry newEntry = null;
 		
 		try {
+			@SuppressWarnings("rawtypes")
 			DropboxAPI.ChunkedUploader uploader = client.getChunkedUploader(inputStream, length);
 	         int retryCounter = 0;
+	         
 	         while(!uploader.isComplete()) {
 	             try {
 	                 uploader.upload();
@@ -121,7 +123,6 @@ public class DropboxOperations {
 		String[] fileInfo = {newEntry.fileName(), newEntry.rev};
 
 		return fileInfo;
-    	
     	
     }
 
@@ -268,10 +269,12 @@ public class DropboxOperations {
 	}
 	
 	
-	public static String downloadFriendFile(String fileName, String friendName, OutputStream stream) {
+	public static String downloadFriendFile(String fileName, String friendName,
+			OutputStream stream) {
 		
 		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
-		String filePath = "/" + username + FRIENDS_FILE_FOLDER + "/" + friendName + "/" + fileName;
+		String filePath = "/" + username + FRIENDS_FILE_FOLDER + "/" + friendName
+				+ "/" + fileName;
 		
 		try {
 			return client.getFile(filePath, null, stream, null).getMetadata().rev;
@@ -359,7 +362,7 @@ public class DropboxOperations {
 					}
 				}
 				
-				files = (String[][]) fileList.toArray(new String[0][0]);
+				files = fileList.toArray(new String[0][0]);
 			}
 		} catch (DropboxException e) {
 			// TODO Auto-generated catch block
@@ -400,13 +403,14 @@ public class DropboxOperations {
 	}
 	
 	
-	public static void updateFile(String fileName, String owner, InputStream inputStream,
-			int length) {
+	public static void updateFile(String fileName, String owner,
+			InputStream inputStream, int length) {
 		
 		DropboxAPI<Session> client = new DropboxAPI<Session>(session);
+		String path = username + FRIENDS_FILE_FOLDER + "/" + owner + "/" + fileName;
 		
 		try {
-			client.putFileOverwrite(username + FRIENDS_FILE_FOLDER + "/" + owner + "/" + fileName, inputStream, length, null);
+			client.putFileOverwrite(path, inputStream, length, null);
 		} catch (DropboxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -424,7 +428,7 @@ public class DropboxOperations {
                 + friend;
 		
 		try {
-			Entry usersFriendFolder = client.metadata(path, 0, null, true, null);
+		//	Entry usersFriendFolder = client.metadata(path, 0, null, true, null);
      		List<Entry> friendFiles = client.metadata(path, 0, null,
 							                            true, null).contents;
 					
@@ -441,7 +445,7 @@ public class DropboxOperations {
 	
 			}
 				
-			files = (String[][]) fileList.toArray(new String[0][0]);
+			files = fileList.toArray(new String[0][0]);
 		} catch (DropboxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

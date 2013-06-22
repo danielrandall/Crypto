@@ -24,6 +24,12 @@ import javax.swing.Box;
 
 public class AddNewFriendFrame extends BaseFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -59051318114269944L;
+	
+	
 	private JPanel contentPane;
 	private final JLabel lblUsername = new JLabel("Username");
 	private final JLabel lblHeader = new JLabel("Add a new friend");

@@ -4,15 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.PrivateKey;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import ciphers.SecurityVariables;
+import client.ciphers.SecurityVariables;
 import client.model.keystore.KeyStoreOperations;
 
 public class Actions {
@@ -51,7 +48,7 @@ public class Actions {
 		
 	}
 	
-	public static boolean friendRequest(String usernameToAdd, int lowerBound, int upperBound) {
+	public static boolean friendRequest(String usernameToAdd, int upperBound) {
 		
 		String response = null;
 		
@@ -68,10 +65,9 @@ public class Actions {
 			return false;
 		
 		/* Send bounds to the server */
-		ServerComms.sendInt(lowerBound);
 		ServerComms.sendInt(upperBound);
 		
-		encryptKey(Integer.toString(lowerBound));
+		encryptKey(Integer.toString(upperBound));
 		
 		return true;
 		

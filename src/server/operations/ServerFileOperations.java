@@ -3,7 +3,6 @@ package server.operations;
 import java.util.List;
 import java.util.Map;
 
-import server.ClientComms;
 import server.ServerFile;
 import server.ciphers.Ciphers;
 import server.ciphers.RSASunJCECipher;

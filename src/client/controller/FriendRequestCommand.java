@@ -16,7 +16,7 @@ public class FriendRequestCommand implements Command {
 		String username = frame.getUsername();
 		int securityLevel = frame.getSecurityLevel();
 		
-		if (Actions.friendRequest(username, securityLevel, securityLevel))
+		if (Actions.friendRequest(username, securityLevel))
 			frame.friendAdded();
 		else
 			frame.userDoesNotExist();
