@@ -570,9 +570,11 @@ public class ServerCentralAuthority {
 			
 			/* Send the user to notify's public key */
 			comms.sendBytes(publicKey, publicKey.length);
+			comms.getAcknowledgement();
 			
 			/* Receive the encrypted key to send with the request */
 			byte[] key = comms.getBytes();
+			comms.sendAcknowledgement();
 			
 			UserOperations.addUpdate(username, affectedFriends.get(i)[0],
 					Integer.parseInt(friendsSecurityLevel), key);
